@@ -7,12 +7,12 @@ import java.util.List;
  */
 public class NewsGroups {
 
-    private List<NewsGroup> newsGroupList;
+    private List<NewsGroup> newsgroups;
 
     private Meta meta;
 
     public List<NewsGroup> getNewsGroupList(){
-        return newsGroupList;
+        return newsgroups;
     }
 
     /**
@@ -22,7 +22,7 @@ public class NewsGroups {
         return meta.getLastSyncAt();
     }
 
-    private class NewsGroup {
+    public class NewsGroup {
 
         private Integer id;
 

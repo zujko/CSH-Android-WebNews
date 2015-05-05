@@ -1,16 +1,28 @@
 package edu.csh.cshwebnews.activities;
 
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.facebook.stetho.Stetho;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.models.AccessToken;
+import edu.csh.cshwebnews.network.ServiceGenerator;
+import edu.csh.cshwebnews.network.WebNewsService;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
+
+    private String clientId;
+    private String clientSecret;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +38,45 @@ public class MainActivity extends ActionBarActivity {
                                 Stetho.defaultInspectorModulesProvider(this))
                         .build());
 
+        WebView loginWebView = (WebView) findViewById(R.id.webView);
+        loginWebView.getSettings().setJavaScriptEnabled(true);
 
+        //TODO: Handle webview error
+        loginWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url != null && url.startsWith(WebNewsService.REDIRECT_URI)) {
+                    getAccessToken(url);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+        loginWebView.loadUrl(WebNewsService.BASE_URL + "/oauth/authorize" +
+                "?client_id=" + clientId + "&redirect_uri=" + WebNewsService.REDIRECT_URI + "&response_type=code");
+    }
+
+    private void getAccessToken(String url) {
+        String code = Uri.parse(url).getQueryParameter("code");
+        if (code != null) {
+            WebNewsService generator = ServiceGenerator.createService(WebNewsService.class,
+                    WebNewsService.BASE_URL, null, null);
+
+            generator.getAccessToken("authorization_code", code, WebNewsService.REDIRECT_URI, clientId, clientSecret,
+                    new Callback<AccessToken>() {
+                        @Override
+                        public void success(AccessToken accessToken, Response response) {
+                            //TODO: Get access token
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            //TODO: Handle error
+                        }
+                    });
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package edu.csh.cshwebnews.network;
 
+import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.Post;
 import edu.csh.cshwebnews.models.RetrievingPosts;
@@ -18,6 +19,9 @@ import retrofit.http.Query;
  */
 public interface WebNewsService {
 
+    String BASE_URL     = "https://webnews-dev.csh.rit.edu";
+    String REDIRECT_URI = "REDIRECT URI";
+
 
     @GET("/user")
     void getUser(Callback<User> userCallback);
@@ -27,7 +31,8 @@ public interface WebNewsService {
 
     @GET("/posts/{id}")
     void getSinglePost(@Path("id") String id,
-                 @Query("as_thread") Boolean asThread, Callback<Post> postCallback);
+                 @Query("as_thread") Boolean asThread,
+                       Callback<Post> postCallback);
 
     @GET("/posts")
     void getPosts(@Query("as_meta") Boolean asMeta,
@@ -44,7 +49,8 @@ public interface WebNewsService {
                   @Query("only_sticky") Boolean onlySticky,
                   @Query("reverse_order") Boolean reverseOrder,
                   @Query("since") String sinceDate,
-                  @Query("until") String untilDate, Callback<RetrievingPosts> retrievingPostsCallback);
+                  @Query("until") String untilDate,
+                  Callback<RetrievingPosts> retrievingPostsCallback);
 
     @POST("/posts")
     void post(@Query("body") String body,
@@ -52,27 +58,41 @@ public interface WebNewsService {
               @Query("newsgroup_ids") String newsgroupIds,
               @Query("parent_id") Integer parentId,
               @Query("posting_host") String postingHost,
-              @Query("subject") String subject, Callback<Response> responseCallback);
+              @Query("subject") String subject,
+              Callback<Response> responseCallback);
 
     @DELETE("/posts/{id}")
     void deletePost(@Path("id") String id,
                     @Query("posting_host") String postingHost,
-                    @Query("reason") String reason, Callback<Response> responseCallback);
+                    @Query("reason") String reason,
+                    Callback<Response> responseCallback);
 
     @DELETE("/unreads")
-    void markPostRead(@Query("post_ids") String postIds, Callback<Response> responseCallback);
+    void markPostRead(@Query("post_ids") String postIds,
+                      Callback<Response> responseCallback);
 
     @POST("/unreads")
-    void markPostUnread(@Query("post_ids") String postIds, Callback<Response> responseCallback);
+    void markPostUnread(@Query("post_ids") String postIds,
+                        Callback<Response> responseCallback);
 
     @POST("/posts/{id}/star")
-    void starPost(@Path("id") String id, Callback<Response> responseCallback);
+    void starPost(@Path("id") String id,
+                  Callback<Response> responseCallback);
 
     @DELETE("/posts/{id}/star")
-    void unstarPost(@Path("id") String id, Callback<Response> responseCallback);
+    void unstarPost(@Path("id") String id,
+                    Callback<Response> responseCallback);
 
     @PATCH("/posts/{id}/sticky")
     void stickyPost(@Query("expires_at") String expireDate,
-                    @Path("id") String id, Callback<Response> responseCallback);
+                    @Path("id") String id,
+                    Callback<Response> responseCallback);
 
+    @POST("/oauth/token")
+    void getAccessToken(@Query("grant_type") String grantType,
+                               @Query("code") String code,
+                               @Query("redirect_uri") String redirectUri,
+                               @Query("client_id") String clientId,
+                               @Query("client_secret") String clientSecret,
+                               Callback<AccessToken> accessTokenCallback);
 }
