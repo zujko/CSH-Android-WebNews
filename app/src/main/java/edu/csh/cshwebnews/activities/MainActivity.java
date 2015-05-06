@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -14,6 +15,7 @@ import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.network.ServiceGenerator;
 import edu.csh.cshwebnews.network.WebNewsService;
+import mehdi.sakout.dynamicbox.DynamicBox;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -24,10 +26,15 @@ public class MainActivity extends AppCompatActivity {
     private String clientId;
     private String clientSecret;
 
+    DynamicBox box;
+    WebView loginWebView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        box = new DynamicBox(this,R.layout.activity_main);
 
         /* Stetho for debugging */
         Stetho.initialize(
@@ -38,10 +45,9 @@ public class MainActivity extends AppCompatActivity {
                                 Stetho.defaultInspectorModulesProvider(this))
                         .build());
 
-        WebView loginWebView = (WebView) findViewById(R.id.webView);
+        loginWebView = (WebView) findViewById(R.id.webView);
         loginWebView.getSettings().setJavaScriptEnabled(true);
 
-        //TODO: Handle webview error
         loginWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -51,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     return false;
                 }
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl){
+                showErrorLayout(description);
             }
         });
 
@@ -68,15 +79,33 @@ public class MainActivity extends AppCompatActivity {
                     new Callback<AccessToken>() {
                         @Override
                         public void success(AccessToken accessToken, Response response) {
-                            //TODO: Get access token
+                            //TODO: Open the 'main' activity
+                            loginWebView.destroy();
+                            loginWebView = null;
                         }
 
                         @Override
                         public void failure(RetrofitError error) {
-                            //TODO: Handle error
+                            loginWebView.setVisibility(View.GONE);
+                            showErrorLayout(error.getMessage());
                         }
                     });
         }
+    }
+
+    private void showErrorLayout(String errorMsg) {
+        box.setOtherExceptionMessage(errorMsg+"\n Please refresh");
+        box.setOtherExceptionTitle("Error");
+
+        box.setClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginWebView.setVisibility(View.VISIBLE);
+                loginWebView.loadUrl(WebNewsService.BASE_URL + "/oauth/authorize" +
+                        "?client_id=" + clientId + "&redirect_uri=" + WebNewsService.REDIRECT_URI + "&response_type=code");
+            }
+        });
+
     }
 
 

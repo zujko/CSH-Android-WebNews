@@ -11,7 +11,8 @@
         android:theme="@style/CSHTheme">
         <activity
             android:name=".activities.MainActivity"
-            android:theme="@style/NoActionBar" >
+            android:theme="@style/NoActionBar"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
