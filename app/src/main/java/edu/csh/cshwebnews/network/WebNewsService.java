@@ -1,3 +1,10 @@
+/*
+ * Represents the WebNews api v1 as an interface
+ * https://github.com/grantovich/CSH-WebNews/wiki/API-v1
+ *
+ * Peter Zujko
+ */
+
 package edu.csh.cshwebnews.network;
 
 import edu.csh.cshwebnews.models.AccessToken;
@@ -14,13 +21,10 @@ import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
-/**
- * Service to interact with the WebNews API
- */
 public interface WebNewsService {
 
     String BASE_URL     = "https://webnews-dev.csh.rit.edu";
-    String REDIRECT_URI = "REDIRECT URI";
+    String REDIRECT_URI = "webnewstest://data";
 
 
     @GET("/user")
