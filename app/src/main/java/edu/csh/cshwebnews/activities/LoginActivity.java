@@ -1,43 +1,45 @@
 package edu.csh.cshwebnews.activities;
 
-import android.net.Uri;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.facebook.stetho.Stetho;
 
 import edu.csh.cshwebnews.R;
-import edu.csh.cshwebnews.models.AccessToken;
-import edu.csh.cshwebnews.network.ServiceGenerator;
-import edu.csh.cshwebnews.network.WebNewsService;
-import mehdi.sakout.dynamicbox.DynamicBox;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import edu.csh.cshwebnews.fragments.AuthFragment;
+import mehdi.sakout.fancybuttons.FancyButton;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends FragmentActivity {
 
-    private String clientId = "87e72e81dd28a246ecb8dd3bff1843b342d79f6697d01a486751860a10114d03";
-    private String clientSecret = "00444e0fcb122d20a0a528e8960b515daa986d106cddeeaccc5010240c28131a";
-
-    DynamicBox dynamicBox;
-    WebView loginWebView;
+    FancyButton button;
+    TextView webNewsText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        dynamicBox      = new DynamicBox(this, R.layout.activity_login);
-        loginWebView    = (WebView) findViewById(R.id.webView);
+        button      = (FancyButton) findViewById(R.id.btn_login);
+        webNewsText = (TextView) findViewById(R.id.textView);
 
-        /* Stetho for debugging */
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAuthDialog();
+            }
+        });
+
+        introAnimation();
+
+        // Stetho for debugging
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(
@@ -45,106 +47,51 @@ public class LoginActivity extends AppCompatActivity {
                         .enableWebKitInspector(
                                 Stetho.defaultInspectorModulesProvider(this))
                         .build());
-
-        createAuthWebView();
-
-        // Load the authorize url to get code for authentication
-        loginWebView.loadUrl(WebNewsService.BASE_URL + "/oauth/authorize" +
-                "?client_id=" + clientId + "&redirect_uri=" + WebNewsService.REDIRECT_URI + "&response_type=code");
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
-        return true;
-    }
+    /**
+     * Displays the OAuth dialog.
+     */
+    void showAuthDialog() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("AuthFragment");
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (prev != null) {
+            ft.remove(prev);
         }
 
-        return super.onOptionsItemSelected(item);
+        ft.addToBackStack(null);
+        AuthFragment authFragment = new AuthFragment();
+        authFragment.show(ft, "AuthFragment");
     }
 
     /**
-     * Gets an access token using code from the url callback
-     *
-     * @param url the callback url which contains the code
+     * Displays the splash screen animation.
      */
-    private void getAccessToken(String url) {
-        //Get auth code from callback uri
-        String code = Uri.parse(url).getQueryParameter("code");
+    void introAnimation() {
+        button.setVisibility(View.GONE);
+        webNewsText.setVisibility(View.GONE);
+        Animation anim = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.translate);
 
-        if (code != null) {
-            WebNewsService generator = ServiceGenerator.createService(WebNewsService.class,
-                    WebNewsService.BASE_URL, null, null);
-
-            //Get an access token
-            generator.getAccessToken("authorization_code", code, WebNewsService.REDIRECT_URI, clientId, clientSecret,
-                    new Callback<AccessToken>() {
-                        @Override
-                        public void success(AccessToken accessToken, Response response) {
-                            //TODO: Open the 'main' activity
-                            loginWebView.destroy();
-                            loginWebView = null;
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            loginWebView.setVisibility(View.GONE);
-                            showErrorLayout(error.getMessage());
-                        }
-                    });
-        }
-    }
-
-    /**
-     * Displays a layout with notifying the user that there was an error
-     *
-     * @param errorMsg the error message to display in the layout
-     */
-    private void showErrorLayout(String errorMsg) {
-        dynamicBox.setOtherExceptionMessage(errorMsg + "\n Please refresh");
-        dynamicBox.setOtherExceptionTitle("Error");
-
-        dynamicBox.setClickListener(new View.OnClickListener() {
+        anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onClick(View v) {
-                loginWebView.setVisibility(View.VISIBLE);
-                loginWebView.loadUrl(WebNewsService.BASE_URL + "/oauth/authorize" +
-                        "?client_id=" + clientId + "&redirect_uri=" + WebNewsService.REDIRECT_URI + "&response_type=code");
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                button.setVisibility(View.VISIBLE);
+                webNewsText.setVisibility(View.VISIBLE);
+                Animation animFade = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.fade);
+                button.startAnimation(animFade);
+                webNewsText.startAnimation(animFade);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
             }
         });
-
-    }
-
-    /**
-     * Creates the webview for CSH WebNews authentication
-     */
-    private void createAuthWebView() {
-        loginWebView.getSettings().setJavaScriptEnabled(true);
-
-        loginWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url != null && url.startsWith(WebNewsService.REDIRECT_URI)) {
-                    getAccessToken(url);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                showErrorLayout(description);
-            }
-        });
+        ImageView logo = (ImageView) findViewById(R.id.image_logo);
+        logo.startAnimation(anim);
     }
 }
