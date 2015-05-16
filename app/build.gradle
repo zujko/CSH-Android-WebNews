@@ -28,4 +28,5 @@ dependencies {
     compile 'com.facebook.stetho:stetho:1.1.0'
     compile 'com.facebook.stetho:stetho-okhttp:1.1.0'
     compile 'com.github.medyo:dynamicbox:1.1@aar'
+    compile 'com.github.medyo:fancybuttons:1.2@aar'
 }
