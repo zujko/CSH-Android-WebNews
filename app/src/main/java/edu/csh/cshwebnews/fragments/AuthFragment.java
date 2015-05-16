@@ -1,6 +1,7 @@
 package edu.csh.cshwebnews.fragments;
 
 import android.app.DialogFragment;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -62,7 +63,8 @@ public class AuthFragment extends DialogFragment {
                     new Callback<AccessToken>() {
                         @Override
                         public void success(AccessToken accessToken, Response response) {
-                            //TODO: Open the 'main' activity
+                            getActivity().getSharedPreferences("data",Context.MODE_PRIVATE).edit().putString("token",accessToken.getAccessToken()).apply();
+                            getActivity().getSharedPreferences("data",Context.MODE_PRIVATE).edit().putString("tokenType",accessToken.getTokenType()).apply();
                             loginWebView.destroy();
                             loginWebView = null;
                         }
