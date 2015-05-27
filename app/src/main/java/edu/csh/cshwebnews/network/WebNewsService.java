@@ -23,7 +23,7 @@ import retrofit.http.Query;
 
 public interface WebNewsService {
 
-    String BASE_URL     = "https://webnews-dev.csh.rit.edu";
+    String BASE_URL     = "https://webnews-staging.csh.rit.edu";
     String REDIRECT_URI = "webnewstest://data";
 
 
