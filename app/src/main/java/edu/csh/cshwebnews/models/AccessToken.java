@@ -10,8 +10,15 @@ public class AccessToken {
     @SerializedName("token_type")
     private String tokenType;
 
+    @SerializedName("refresh_token")
+    private String refreshToken;
+
     public String getAccessToken() {
         return accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
     public String getTokenType() {

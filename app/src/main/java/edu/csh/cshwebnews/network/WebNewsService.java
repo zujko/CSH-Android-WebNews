@@ -99,4 +99,13 @@ public interface WebNewsService {
                                @Query("client_id") String clientId,
                                @Query("client_secret") String clientSecret,
                                Callback<AccessToken> accessTokenCallback);
+
+    @POST("/oauth/token")
+    void refreshAccessToken(@Query("grant_type") String grantType,
+                            @Query("refresh_token") String refreshToken,
+                            Callback<AccessToken> accessTokenCallback);
+
+    @POST("/oauth/token")
+    AccessToken synchronousRefreshAccessToken(@Query("grant_type") String grantType,
+                            @Query("refresh_token") String refreshToken);
 }
