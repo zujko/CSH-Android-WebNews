@@ -1,6 +1,9 @@
 package edu.csh.cshwebnews.activities;
 
+import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.AccountManager;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +20,7 @@ import com.facebook.stetho.Stetho;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.models.AccessToken;
+import edu.csh.cshwebnews.models.User;
 import edu.csh.cshwebnews.network.ServiceGenerator;
 import edu.csh.cshwebnews.network.WebNewsService;
 import mehdi.sakout.fancybuttons.FancyButton;
@@ -27,8 +31,14 @@ import retrofit.client.Response;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
 
+    public final static String ARG_ACCOUNT_TYPE = "ACCOUNT_TYPE";
+    public final static String ARG_AUTH_TYPE = "AUTH_TYPE";
+    public final static String PARAM_USER_PASS = "USER_PASS";
+
     private String clientId;
     private String clientSecret;
+
+    AccountManager accountManager;
     WebView loginWebView;
     ImageView logo;
     FancyButton button;
@@ -39,6 +49,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        accountManager = AccountManager.get(getBaseContext());
         logo         = (ImageView) findViewById(R.id.image_logo);
         button       = (FancyButton) findViewById(R.id.btn_login);
         webNewsText  = (TextView) findViewById(R.id.textView);
@@ -139,7 +150,29 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             generator.getAccessToken("authorization_code", code, WebNewsService.REDIRECT_URI, clientId, clientSecret,
                     new Callback<AccessToken>() {
                         @Override
-                        public void success(AccessToken accessToken, Response response) {
+                        public void success(final AccessToken accessToken, Response response) {
+                            final Intent result = new Intent();
+
+                            WebNewsService webNewsService= ServiceGenerator.createService(WebNewsService.class,
+                                    WebNewsService.BASE_URL, accessToken.getAccessToken(), accessToken.getTokenType());
+                            // Get user data
+                            webNewsService.getUser(new Callback<User>() {
+
+                                @Override
+                                public void success(User user, Response response) {
+                                    result.putExtra(AccountManager.KEY_ACCOUNT_NAME, user.getUserName());
+                                    result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken.getAccessToken());
+                                    result.putExtra(PARAM_USER_PASS, accessToken.getRefreshToken());
+                                    result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, "edu.csh.cshwebnews");
+                                    finishLogin(result);
+                                }
+
+                                @Override
+                                public void failure(RetrofitError error) {
+                                    Toast.makeText(getBaseContext(),"FAILED TO GET USER",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
                             loginWebView.destroy();
                             loginWebView = null;
                         }
@@ -155,4 +188,18 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                     });
         }
     }
+
+    private void finishLogin(Intent intent) {
+        String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+        String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
+        final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+
+        accountManager.addAccountExplicitly(account, accountPassword, null);
+        accountManager.setAuthToken(account, "Bearer", intent.getStringExtra(AccountManager.KEY_AUTHTOKEN));
+
+        setAccountAuthenticatorResult(intent.getExtras());
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
 }

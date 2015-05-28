@@ -104,4 +104,8 @@ public interface WebNewsService {
     void refreshAccessToken(@Query("grant_type") String grantType,
                             @Query("refresh_token") String refreshToken,
                             Callback<AccessToken> accessTokenCallback);
+
+    @POST("/oauth/token")
+    AccessToken synchronousRefreshAccessToken(@Query("grant_type") String grantType,
+                            @Query("refresh_token") String refreshToken);
 }
