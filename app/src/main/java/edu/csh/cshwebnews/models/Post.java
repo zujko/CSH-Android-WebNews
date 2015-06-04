@@ -46,6 +46,10 @@ public class Post {
 
     private String unread_class;
 
+    private String child_ids;
+
+    private String descendant_ids;
+
     /**
      * @return The unique ID of the post on WebNews.
      */
@@ -160,6 +164,14 @@ public class Post {
      */
     public Integer getStarsTotal() {
         return total_stars;
+    }
+
+    public String getChildIds() {
+        return child_ids;
+    }
+
+    public String getDescendantIds() {
+        return descendant_ids;
     }
 
     /**

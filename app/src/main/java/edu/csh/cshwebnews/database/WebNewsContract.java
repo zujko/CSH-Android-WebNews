@@ -1,0 +1,95 @@
+package edu.csh.cshwebnews.database;
+
+import android.provider.BaseColumns;
+
+/**
+ * Defines table and column names for the database.
+ */
+public class WebNewsContract {
+
+    public static final class NewsGroupEntry implements BaseColumns {
+
+        public static final String TABLE_NAME       = "newsgroups";
+
+        public static final String DESCRIPTION      = "description";
+
+        public static final String MAX_UNREAD_LEVEL = "max_unread_level";
+
+        public static final String NAME             = "name";
+
+        public static final String NEWEST_POST_AT   = "newest_post_at";
+
+        public static final String OLDEST_POST_AT   = "oldest_post_at";
+
+        public static final String POSTING_ALLOWED  = "posting_allowed";
+
+        public static final String UNREAD_COUNT     = "unread_count";
+    }
+
+    public static final class PostEntry implements BaseColumns {
+
+        public static final String TABLE_NAME       = "posts";
+
+        public static final String ANCESTOR_IDS     = "ancestor_ids";
+
+        public static final String AUTHOR_KEY       = "author";
+
+        public static final String BODY             = "body";
+
+        public static final String CREATED_AT       = "created_at";
+
+        public static final String FOLLOWUP_NEWSGROUP_ID = "followup_newsgroup_id";
+
+        public static final String HAD_ATTACHMENTS  = "had_attachments";
+
+        public static final String HEADERS          = "headers";
+
+        public static final String NEWSGROUP_IDS    = "newsgroup_ids";
+
+        public static final String IS_DETHREADED    = "is_dethreaded";
+
+        public static final String IS_STARRED       = "is_starred";
+
+        public static final String MESSAGE_ID       = "message_id";
+
+        public static final String PERSONAL_LEVEL   = "personal_level";
+
+        public static final String IS_STICKIED      = "sticky";
+
+        public static final String SUBJECT          = "subject";
+
+        public static final String TOTAL_STARS      = "total_stars";
+
+        public static final String UNREAD_CLASS     = "unread_class";
+
+        public static String CHILD_IDS              = "child_ids";
+
+        public static String DESCENDANT_IDS         = "descendant_ids";
+    }
+
+    public static final class AuthorEntry implements BaseColumns {
+
+        public static final String TABLE_NAME   = "authors";
+
+        public static final String NAME         = "name";
+
+        public static final String EMAIL        = "email";
+
+        public static final String RAW          = "raw";
+
+    }
+
+    public static final class UserEntry implements BaseColumns {
+
+        public static final String TABLE_NAME   = "user";
+
+        public static final String EMAIL        = "email";
+
+        public static final String DISPLAY_NAME = "display_name";
+
+        public static final String CREATED_AT   = "created_at";
+
+        public static final String IS_ADMIN     = "is_admin";
+    }
+
+}
