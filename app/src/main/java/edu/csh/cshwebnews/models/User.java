@@ -44,7 +44,7 @@ public class User {
     }
 
 
-    private class UserResponse{
+    private class UserResponse {
 
         private String username;
 

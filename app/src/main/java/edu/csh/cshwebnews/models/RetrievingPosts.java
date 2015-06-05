@@ -16,6 +16,8 @@ public class RetrievingPosts {
 
     private Meta meta;
 
+    private Posts descendants;
+
     /**
      * @return The IDs of the posts that matched the query.
      */
@@ -33,6 +35,8 @@ public class RetrievingPosts {
     public List<Post> getListOfPosts(){
         return posts.getPosts();
     }
+
+    public List<Post> getListOfDescendants() { return descendants.getDescendants(); }
 
     private class Meta {
 
@@ -52,6 +56,12 @@ public class RetrievingPosts {
     private class Posts {
 
         private List<Post> posts;
+
+        private List<Post> descendants;
+
+        public List<Post> getDescendants() {
+            return descendants;
+        }
 
         public List<Post> getPosts() {
             return posts;
