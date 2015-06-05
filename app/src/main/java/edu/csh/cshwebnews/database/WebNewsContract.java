@@ -1,5 +1,8 @@
 package edu.csh.cshwebnews.database;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
@@ -7,7 +10,26 @@ import android.provider.BaseColumns;
  */
 public class WebNewsContract {
 
+    public static final String CONTENT_AUTHORITY = "edu.csh.cshwebnews";
+
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+
+    public static final String PATH_NEWSGROUPS = "newsgroups";
+    public static final String PATH_POSTS = "posts";
+    public static final String PATH_USER = "user";
+    public static final String PATH_AUTHORS = "authors";
+
     public static final class NewsGroupEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_NEWSGROUPS).build();
+
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_NEWSGROUPS;
+
+        public static String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_NEWSGROUPS;
 
         public static final String TABLE_NAME       = "newsgroups";
 
@@ -24,9 +46,23 @@ public class WebNewsContract {
         public static final String POSTING_ALLOWED  = "posting_allowed";
 
         public static final String UNREAD_COUNT     = "unread_count";
+
+
+        public static Uri buildNewsGroupUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
     }
 
     public static final class PostEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_POSTS).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POSTS;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POSTS;
 
         public static final String TABLE_NAME       = "posts";
 
@@ -65,9 +101,23 @@ public class WebNewsContract {
         public static String CHILD_IDS              = "child_ids";
 
         public static String DESCENDANT_IDS         = "descendant_ids";
+
+        public static Uri buildPostsUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI,id);
+        }
+
     }
 
     public static final class AuthorEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_AUTHORS).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_AUTHORS;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_AUTHORS;
+
 
         public static final String TABLE_NAME   = "authors";
 
@@ -77,9 +127,22 @@ public class WebNewsContract {
 
         public static final String RAW          = "raw";
 
+        public static Uri buildAuthorUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI,id);
+        }
+
+
     }
 
     public static final class UserEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_USER).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER;
 
         public static final String TABLE_NAME   = "user";
 
@@ -90,6 +153,10 @@ public class WebNewsContract {
         public static final String CREATED_AT   = "created_at";
 
         public static final String IS_ADMIN     = "is_admin";
+
+        public static Uri buildUserUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI,id);
+        }
     }
 
 }
