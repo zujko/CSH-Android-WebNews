@@ -3,6 +3,7 @@ package edu.csh.cshwebnews.activities;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.dd.processbutton.iml.ActionProcessButton;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.User;
 import edu.csh.cshwebnews.network.ServiceGenerator;
@@ -51,7 +53,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
 
         accountManager = AccountManager.get(getBaseContext());
         logo         = (ImageView) findViewById(R.id.image_logo);
@@ -176,6 +177,14 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
                                 @Override
                                 public void success(User user, Response response) {
+                                    ContentValues userValues = new ContentValues();
+                                    userValues.put(WebNewsContract.UserEntry._ID,1);
+                                    userValues.put(WebNewsContract.UserEntry.DISPLAY_NAME,user.getDisplayName());
+                                    userValues.put(WebNewsContract.UserEntry.EMAIL,user.getEmail());
+                                    userValues.put(WebNewsContract.UserEntry.IS_ADMIN,user.isAdmin());
+                                    userValues.put(WebNewsContract.UserEntry.CREATED_AT,user.getCreatedAt());
+                                    getBaseContext().getContentResolver().insert(WebNewsContract.UserEntry.CONTENT_URI,userValues);
+
                                     result.putExtra(AccountManager.KEY_ACCOUNT_NAME, user.getUserName());
                                     result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken.getAccessToken());
                                     result.putExtra(PARAM_USER_PASS, accessToken.getRefreshToken());

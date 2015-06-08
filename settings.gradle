@@ -1,0 +1,2 @@
+include ':webnews'
+project(':webnews').projectDir = new File('app')

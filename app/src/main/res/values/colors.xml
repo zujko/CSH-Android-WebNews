@@ -19,4 +19,6 @@
     <color name="blue"  >#2A91BD</color>
     <color name="orange">#FF9D2F</color>
     <color name="red"   >#FF432F</color>
+
+    <color name="star_yellow">#F4B300</color>
 </resources>
