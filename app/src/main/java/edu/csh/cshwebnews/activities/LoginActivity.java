@@ -6,24 +6,24 @@ import android.accounts.AccountManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.stetho.Stetho;
+import com.dd.processbutton.iml.ActionProcessButton;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.User;
 import edu.csh.cshwebnews.network.ServiceGenerator;
 import edu.csh.cshwebnews.network.WebNewsService;
-import mehdi.sakout.fancybuttons.FancyButton;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -34,6 +34,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     public final static String ARG_ACCOUNT_TYPE = "ACCOUNT_TYPE";
     public final static String ARG_AUTH_TYPE = "AUTH_TYPE";
     public final static String PARAM_USER_PASS = "USER_PASS";
+    private int isLoginError = 0;
 
     private String clientId;
     private String clientSecret;
@@ -41,69 +42,37 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     AccountManager accountManager;
     WebView loginWebView;
     ImageView logo;
-    FancyButton button;
     TextView webNewsText;
+    ActionProcessButton button;
+    EditText username;
+    EditText password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
         accountManager = AccountManager.get(getBaseContext());
         logo         = (ImageView) findViewById(R.id.image_logo);
-        button       = (FancyButton) findViewById(R.id.btn_login);
-        webNewsText  = (TextView) findViewById(R.id.textView);
+        button       = (ActionProcessButton) findViewById(R.id.btn_login);
+        webNewsText  = (TextView) findViewById(R.id.textview_webnews);
+        username     = (EditText) findViewById(R.id.edittext_username);
+        password     = (EditText) findViewById(R.id.edittext_password);
         loginWebView = (WebView) findViewById(R.id.web_oauth);
+
+        button.setMode(ActionProcessButton.Mode.ENDLESS);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Show the webview to sign in and "remove" everything else
-                loginWebView.loadUrl(WebNewsService.BASE_URL + "/oauth/authorize" +
-                        "?client_id=" + clientId + "&redirect_uri=" + WebNewsService.REDIRECT_URI + "&response_type=code");
-                logo.clearAnimation();
-                logo.setVisibility(View.INVISIBLE);
-                button.clearAnimation();
-                button.setVisibility(View.INVISIBLE);
-                webNewsText.clearAnimation();
-                webNewsText.setVisibility(View.INVISIBLE);
-                loginWebView.setVisibility(View.VISIBLE);
+                button.setProgress(1);
+                isLoginError = 0;
+                loginWebView.loadUrl("https://webauth.csh.rit.edu/");
             }
         });
-
-        introAnimation();
 
         createAuthWebView();
-    }
-
-    /**
-     * Displays the splash screen animation.
-     */
-    void introAnimation() {
-        button.setVisibility(View.GONE);
-        webNewsText.setVisibility(View.GONE);
-        Animation anim = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.translate);
-
-        anim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                button.setVisibility(View.VISIBLE);
-                webNewsText.setVisibility(View.VISIBLE);
-                Animation animFade = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.fade);
-                button.startAnimation(animFade);
-                webNewsText.startAnimation(animFade);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-
-        logo.startAnimation(anim);
     }
 
     /**
@@ -111,10 +80,60 @@ public class LoginActivity extends AccountAuthenticatorActivity {
      */
     private void createAuthWebView() {
         loginWebView.getSettings().setJavaScriptEnabled(true);
+        loginWebView.getSettings().setDomStorageEnabled(true);
+        loginWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                if(consoleMessage.message().equals("1")) {
+                    Toast.makeText(getApplicationContext(),"Error! email or username is invalid! Please try again",Toast.LENGTH_SHORT).show();
+                    button.setProgress(0);
+                    loginWebView.stopLoading();
+                }
+                return super.onConsoleMessage(consoleMessage);
+            }
+        });
         loginWebView.setWebViewClient(new WebViewClient() {
+
+            //Super sketchy way to get auth code for OAuth
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                Log.d("ONPAGEFINISHED: ",url);
+                if(url.contains("webauth") ) {
+                    if(isLoginError == 0) {
+                        if(username.getText().toString().equals("") || password.getText().toString().equals("")){
+                            Toast.makeText(getApplicationContext(),"Error! email or username is invalid! Please try again",Toast.LENGTH_SHORT).show();
+                            button.setProgress(0);
+                            loginWebView.stopLoading();
+                        } else {
+                            view.loadUrl("javascript:document.getElementById('login_username').value = " +
+                                    "'" + username.getText().toString() + "';" +
+                                    "document.getElementById('login_password').value = " +
+                                    "'" + password.getText().toString() + "'; " +
+                                    "document.getElementById('login_submit').click();");
+                            Log.d("WebView", "Javascript injected");
+                        }
+                    } else if(isLoginError > 0) {
+                        view.loadUrl("javascript:" +
+                                "if(document.getElementsByClassName('alert alert-error').length > 0){" +
+                                "console.log('1');};");
+                    }
+                    isLoginError++;
+                } else if (url.contains("members")) {
+                    Log.d("WebView", "Loading oauth url");
+                    view.loadUrl(WebNewsService.BASE_URL + "/oauth/authorize" +
+                            "?client_id=" + clientId + "&redirect_uri=" + WebNewsService.REDIRECT_URI + "&response_type=code");
+
+                } else if(url.contains("webnews-staging")) {
+                    Log.d("WebView","Injection second JS");
+                    view.loadUrl("javascript:document.getElementsByName('commit')[0].click();");
+                }
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url != null && url.startsWith(WebNewsService.REDIRECT_URI)) {
+                    Log.d("WebView","Got token uri");
+                    view.stopLoading();
                     getAccessToken(url);
                     return true;
                 } else {
@@ -125,10 +144,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 Toast.makeText(getBaseContext(), "An error occurred, please try signing in again", Toast.LENGTH_LONG).show();
-                loginWebView.setVisibility(View.INVISIBLE);
-                logo.setVisibility(View.VISIBLE);
-                button.setVisibility(View.VISIBLE);
-                webNewsText.setVisibility(View.VISIBLE);
+                button.setProgress(0);
             }
         });
     }
@@ -180,10 +196,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                         @Override
                         public void failure(RetrofitError error) {
                             Toast.makeText(getBaseContext(), "Error getting access token, please try signing in again", Toast.LENGTH_LONG).show();
-                            loginWebView.setVisibility(View.INVISIBLE);
-                            logo.setVisibility(View.VISIBLE);
-                            button.setVisibility(View.VISIBLE);
-                            webNewsText.setVisibility(View.VISIBLE);
                         }
                     });
         }
@@ -199,6 +211,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
+        button.setProgress(100);
         finish();
     }
 
