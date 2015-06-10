@@ -91,7 +91,6 @@ public class TestUtilities extends AndroidTestCase {
         ContentValues testValues = new ContentValues();
         testValues.put(WebNewsContract.PostEntry._ID, 1);
         testValues.put(WebNewsContract.PostEntry.ANCESTOR_IDS, "[]");
-        testValues.put(WebNewsContract.PostEntry.AUTHOR_KEY, "Some CSHer".hashCode());
         testValues.put(WebNewsContract.PostEntry.BODY, "...post body...");
         testValues.put(WebNewsContract.PostEntry.CREATED_AT, "2014-11-14T23:48:05-05:00");
         testValues.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, "NULL");
@@ -106,6 +105,8 @@ public class TestUtilities extends AndroidTestCase {
         testValues.put(WebNewsContract.PostEntry.TOTAL_STARS, 2);
         testValues.put(WebNewsContract.PostEntry.SUBJECT, "Suscipit est illo a consequuntur");
         testValues.put(WebNewsContract.PostEntry.UNREAD_CLASS, "auto");
+        testValues.put(WebNewsContract.PostEntry.AUTHOR_NAME,"CSHUSER");
+        testValues.put(WebNewsContract.PostEntry.AUTHOR_EMAIL,"CSHUSER@csh.rit.edu");
 
         return testValues;
     }
@@ -123,28 +124,7 @@ public class TestUtilities extends AndroidTestCase {
         return postRowId;
     }
 
-    static ContentValues createAuthorValues() {
-        ContentValues testValues = new ContentValues();
-        testValues.put(WebNewsContract.AuthorEntry._ID, "Some CSHer".hashCode());
-        testValues.put(WebNewsContract.AuthorEntry.NAME, "Some CSHer");
-        testValues.put(WebNewsContract.AuthorEntry.EMAIL, "somecsher@csh.edu");
-        testValues.put(WebNewsContract.AuthorEntry.RAW, "\"something all <asdhiouasd>");
 
-        return testValues;
-    }
-
-    static long insertAuthorValues(Context context) {
-        WebNewsDbHelper dbHelper = new WebNewsDbHelper(context);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues testValues = TestUtilities.createAuthorValues();
-
-        long authorRowId;
-        authorRowId = db.insert(WebNewsContract.AuthorEntry.TABLE_NAME, null, testValues);
-
-        assertTrue("Error: Failure to insert Author Values", authorRowId != -1);
-
-        return authorRowId;
-    }
 
     static class TestContentObserver extends ContentObserver {
         final HandlerThread mHT;

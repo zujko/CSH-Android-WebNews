@@ -37,7 +37,6 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_POST_TABLE = "CREATE TABLE " + WebNewsContract.PostEntry.TABLE_NAME + "(" +
                 WebNewsContract.PostEntry._ID + " INTEGER PRIMARY KEY," +
                 WebNewsContract.PostEntry.ANCESTOR_IDS + " TEXT, " +
-                WebNewsContract.PostEntry.AUTHOR_KEY + " INTEGER NOT NULL, " +
                 WebNewsContract.PostEntry.BODY + " TEXT NOT NULL, " +
                 WebNewsContract.PostEntry.CREATED_AT + " TEXT NOT NULL, " +
                 WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID + " INTEGER, " +
@@ -53,21 +52,14 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 WebNewsContract.PostEntry.TOTAL_STARS + " INTEGER NOT NULL, " +
                 WebNewsContract.PostEntry.CHILD_IDS + " TEXT, " +
                 WebNewsContract.PostEntry.DESCENDANT_IDS + " TEXT, " +
+                WebNewsContract.PostEntry.AUTHOR_NAME + " TEXT, " +
+                WebNewsContract.PostEntry.AUTHOR_EMAIL + " TEXT, " +
                 WebNewsContract.PostEntry.UNREAD_CLASS + " String);";
 
-        final String SQL_CREATE_AUTHOR_TABLE = "CREATE TABLE " + WebNewsContract.AuthorEntry.TABLE_NAME +
-                " (" + WebNewsContract.AuthorEntry._ID + " INTEGER PRIMARY KEY," +
-                WebNewsContract.AuthorEntry.NAME + " TEXT NOT NULL, " +
-                WebNewsContract.AuthorEntry.EMAIL + " TEXT NOT NULL, " +
-                WebNewsContract.AuthorEntry.RAW + " TEXT NOT NULL, " +
-                " FOREIGN KEY (" + WebNewsContract.AuthorEntry._ID + ") REFERENCES " +
-                WebNewsContract.PostEntry.TABLE_NAME + " (" + WebNewsContract.PostEntry.AUTHOR_KEY +
-                "), " + " UNIQUE (" + WebNewsContract.AuthorEntry.NAME + ") ON CONFLICT IGNORE);";
 
         db.execSQL(SQL_CREATE_USER_TABLE);
         db.execSQL(SQL_CREATE_NEWSGROUP_TABLE);
         db.execSQL(SQL_CREATE_POST_TABLE);
-        db.execSQL(SQL_CREATE_AUTHOR_TABLE);
 
     }
 
@@ -76,7 +68,6 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + WebNewsContract.NewsGroupEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + WebNewsContract.PostEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + WebNewsContract.UserEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + WebNewsContract.AuthorEntry.TABLE_NAME);
         onCreate(db);
     }
 }

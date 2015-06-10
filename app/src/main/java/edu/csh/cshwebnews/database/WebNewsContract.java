@@ -17,7 +17,6 @@ public class WebNewsContract {
     public static final String PATH_NEWSGROUPS = "newsgroups";
     public static final String PATH_POSTS = "posts";
     public static final String PATH_USER = "user";
-    public static final String PATH_AUTHORS = "authors";
 
     public static final class NewsGroupEntry implements BaseColumns {
 
@@ -68,8 +67,6 @@ public class WebNewsContract {
 
         public static final String ANCESTOR_IDS     = "ancestor_ids";
 
-        public static final String AUTHOR_KEY       = "author";
-
         public static final String BODY             = "body";
 
         public static final String CREATED_AT       = "created_at";
@@ -98,39 +95,17 @@ public class WebNewsContract {
 
         public static final String UNREAD_CLASS     = "unread_class";
 
-        public static String CHILD_IDS              = "child_ids";
+        public static final String CHILD_IDS              = "child_ids";
 
-        public static String DESCENDANT_IDS         = "descendant_ids";
+        public static final String DESCENDANT_IDS         = "descendant_ids";
+
+        public static final String AUTHOR_NAME            = "author_name";
+
+        public static final String AUTHOR_EMAIL           = "author_email";
 
         public static Uri buildPostsUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI,id);
         }
-
-    }
-
-    public static final class AuthorEntry implements BaseColumns {
-
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_AUTHORS).build();
-
-        public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_AUTHORS;
-        public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_AUTHORS;
-
-
-        public static final String TABLE_NAME   = "authors";
-
-        public static final String NAME         = "name";
-
-        public static final String EMAIL        = "email";
-
-        public static final String RAW          = "raw";
-
-        public static Uri buildAuthorUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI,id);
-        }
-
 
     }
 

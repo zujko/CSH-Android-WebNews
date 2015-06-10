@@ -17,7 +17,6 @@ public class WebNewsProvider extends ContentProvider {
 
     static final int NEWSGROUPS = 10;
     static final int POSTS = 20;
-    static final int AUTHORS = 30;
     static final int USER = 40;
 
     private static final SQLiteQueryBuilder mQueryBuilder;
@@ -29,14 +28,8 @@ public class WebNewsProvider extends ContentProvider {
                 WebNewsContract.UserEntry.TABLE_NAME +", "
                         + WebNewsContract.NewsGroupEntry.TABLE_NAME + ", "
                         + WebNewsContract.UserEntry.TABLE_NAME + ", "
-                        + WebNewsContract.AuthorEntry.TABLE_NAME +
-                        " INNER JOIN " + WebNewsContract.PostEntry.TABLE_NAME + " ON "
-                        + WebNewsContract.AuthorEntry.TABLE_NAME + "." + WebNewsContract.AuthorEntry._ID
-                        + " = " + WebNewsContract.PostEntry.TABLE_NAME
-                        + "." + WebNewsContract.PostEntry.AUTHOR_KEY);
+                        + WebNewsContract.PostEntry.TABLE_NAME);
     }
-
-
 
 
     @Override
@@ -51,7 +44,6 @@ public class WebNewsProvider extends ContentProvider {
 
         matcher.addURI(authority,WebNewsContract.PATH_NEWSGROUPS,NEWSGROUPS);
         matcher.addURI(authority,WebNewsContract.PATH_POSTS, POSTS);
-        matcher.addURI(authority,WebNewsContract.PATH_AUTHORS,AUTHORS);
         matcher.addURI(authority,WebNewsContract.PATH_USER,USER);
         return matcher;
     }
@@ -64,8 +56,6 @@ public class WebNewsProvider extends ContentProvider {
                 return WebNewsContract.NewsGroupEntry.CONTENT_TYPE;
             case POSTS:
                 return WebNewsContract.PostEntry.CONTENT_TYPE;
-            case AUTHORS:
-                return WebNewsContract.AuthorEntry.CONTENT_TYPE;
             case USER:
                 return WebNewsContract.UserEntry.CONTENT_TYPE;
             default:
@@ -112,17 +102,6 @@ public class WebNewsProvider extends ContentProvider {
                         sortOrder
                 );
                 break;
-            case AUTHORS:
-                cursor = mDbHelper.getReadableDatabase().query(
-                        WebNewsContract.AuthorEntry.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder
-                );
-                break;
             default:
                 throw new UnsupportedOperationException("Unknown Uri: " + uri);
 
@@ -152,14 +131,6 @@ public class WebNewsProvider extends ContentProvider {
                 long id = db.insert(WebNewsContract.PostEntry.TABLE_NAME,null,values);
                 if(id > 0)
                     finalUri = WebNewsContract.PostEntry.buildPostsUri(id);
-                else
-                    throw new android.database.SQLException("Failed to insert row into: " + uri);
-                break;
-            }
-            case AUTHORS: {
-                long id = db.insert(WebNewsContract.AuthorEntry.TABLE_NAME,null,values);
-                if(id > 0)
-                    finalUri = WebNewsContract.AuthorEntry.buildAuthorUri(id);
                 else
                     throw new android.database.SQLException("Failed to insert row into: " + uri);
                 break;
@@ -197,11 +168,6 @@ public class WebNewsProvider extends ContentProvider {
                         selection,
                         selectionArgs);
                 break;
-            case AUTHORS:
-                rowsDeleted = db.delete(WebNewsContract.AuthorEntry.TABLE_NAME,
-                        selection,
-                        selectionArgs);
-                break;
             case USER:
                 rowsDeleted = db.delete(WebNewsContract.UserEntry.TABLE_NAME,
                         selection,
@@ -231,12 +197,6 @@ public class WebNewsProvider extends ContentProvider {
                 break;
             case POSTS:
                 rowsUpdated = db.update(WebNewsContract.PostEntry.TABLE_NAME,
-                        values,
-                        selection,
-                        selectionArgs);
-                break;
-            case AUTHORS:
-                rowsUpdated = db.update(WebNewsContract.AuthorEntry.TABLE_NAME,
                         values,
                         selection,
                         selectionArgs);
@@ -286,23 +246,6 @@ public class WebNewsProvider extends ContentProvider {
                 try {
                     for(int x = 0; x<values.length; x++) {
                         long id = db.insert(WebNewsContract.PostEntry.TABLE_NAME,
-                                null,
-                                values[x]);
-                        if(id != -1) returnCount++;
-                    }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                }
-                getContext().getContentResolver().notifyChange(uri,null);
-                return returnCount;
-            }
-            case AUTHORS: {
-                db.beginTransaction();
-                int returnCount = 0;
-                try {
-                    for(int x = 0; x<values.length; x++) {
-                        long id = db.insert(WebNewsContract.AuthorEntry.TABLE_NAME,
                                 null,
                                 values[x]);
                         if(id != -1) returnCount++;

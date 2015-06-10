@@ -40,11 +40,6 @@ public class TestProvider extends AndroidTestCase {
                 null
         );
         mContext.getContentResolver().delete(
-                WebNewsContract.AuthorEntry.CONTENT_URI,
-                null,
-                null
-        );
-        mContext.getContentResolver().delete(
                 WebNewsContract.UserEntry.CONTENT_URI,
                 null,
                 null
@@ -70,15 +65,6 @@ public class TestProvider extends AndroidTestCase {
         assertEquals("Error: Records not deleted from the posts table during delete", 0, cursor.getCount());
         cursor.close();
 
-        cursor = mContext.getContentResolver().query(
-                WebNewsContract.AuthorEntry.CONTENT_URI,
-                null,
-                null,
-                null,
-                null
-        );
-        assertEquals("Error: Records not deleted from the authors table during delete", 0, cursor.getCount());
-        cursor.close();
 
         cursor = mContext.getContentResolver().query(
                 WebNewsContract.UserEntry.CONTENT_URI,
@@ -138,12 +124,6 @@ public class TestProvider extends AndroidTestCase {
 
         assertEquals("Error: the PostEntry CONTENT_URI should return PostEntry.CONTENT_TYPE",
                 WebNewsContract.PostEntry.CONTENT_TYPE, type);
-
-        // content://edu.csh.cshwebnews/authors/
-        type = mContext.getContentResolver().getType(WebNewsContract.AuthorEntry.CONTENT_URI);
-
-        assertEquals("Error: the AuthorEntry CONTENT_URI should return AuthorEntry.CONTENT_TYPE",
-                WebNewsContract.AuthorEntry.CONTENT_TYPE, type);
 
         // content://edu.csh.cshwebnews/user/
         type = mContext.getContentResolver().getType(WebNewsContract.UserEntry.CONTENT_URI);
@@ -227,31 +207,6 @@ public class TestProvider extends AndroidTestCase {
         );
 
         TestUtilities.validateCursor("testBasicPostQuery", postCursor, testValues);
-    }
-
-    /**
-     * Tests querying using the ContentProvider by directly inserting data into the database then
-     * querying them with the ContentProvider
-     */
-    public void testBasicAuthorQuery() {
-        WebNewsDbHelper dbHelper = new WebNewsDbHelper(mContext);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        ContentValues testValues = TestUtilities.createAuthorValues();
-        long authorRowId = db.insert(WebNewsContract.AuthorEntry.TABLE_NAME, null, testValues);
-        assertTrue("Unable to insert AuthorEntry into the Database", authorRowId != -1);
-
-        db.close();
-
-        Cursor authorCursor = mContext.getContentResolver().query(
-                WebNewsContract.AuthorEntry.CONTENT_URI,
-                null,
-                null,
-                null,
-                null
-        );
-
-        TestUtilities.validateCursor("testBasicAuthorQuery", authorCursor, testValues);
     }
 
     /**
@@ -511,42 +466,6 @@ public class TestProvider extends AndroidTestCase {
         cursor.close();
     }
 
-    /**
-     * Tests bulk inserts using the ContentProvider
-     */
-    public void testBulkInsertAuthors() {
-        ContentValues[] bulkInsertContentValues = createBulkInsertAuthorValues();
-
-        // Register a content observer for the bulk insert.
-        TestUtilities.TestContentObserver authorObserver = TestUtilities.getTestContentObserver();
-        mContext.getContentResolver().registerContentObserver(WebNewsContract.AuthorEntry.CONTENT_URI, true, authorObserver);
-
-        int insertCount = mContext.getContentResolver().bulkInsert(WebNewsContract.AuthorEntry.CONTENT_URI, bulkInsertContentValues);
-
-        authorObserver.waitForNotificationOrFail();
-        mContext.getContentResolver().unregisterContentObserver(authorObserver);
-
-        assertEquals(insertCount, BULK_INSERT_AUTHORS_TO_INSERT);
-
-        Cursor cursor = mContext.getContentResolver().query(
-                WebNewsContract.AuthorEntry.CONTENT_URI,
-                null, // leaving "columns" null just returns all the columns.
-                null, // cols for "where" clause
-                null, // values for "where" clause
-                WebNewsContract.AuthorEntry._ID + " ASC"  // sort order == by _ID ASCENDING
-        );
-
-        //Checks if the amount of entries is the amount we wanted to insert
-        assertEquals(cursor.getCount(), BULK_INSERT_AUTHORS_TO_INSERT);
-
-        //Checks if each entry is correct
-        cursor.moveToFirst();
-        for ( int i = 0; i < BULK_INSERT_AUTHORS_TO_INSERT; i++, cursor.moveToNext() ) {
-            TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating AuthorEntry " + i,
-                    cursor, bulkInsertContentValues[i]);
-        }
-        cursor.close();
-    }
 
     static private final int BULK_INSERT_POSTS_TO_INSERT = 100;
     static ContentValues[] createBulkInsertPostValues() {
@@ -556,7 +475,6 @@ public class TestProvider extends AndroidTestCase {
             ContentValues testValues = new ContentValues();
             testValues.put(WebNewsContract.PostEntry._ID, i);
             testValues.put(WebNewsContract.PostEntry.ANCESTOR_IDS, "[" + UUID.randomUUID().toString() +"]");
-            testValues.put(WebNewsContract.PostEntry.AUTHOR_KEY, i);
             testValues.put(WebNewsContract.PostEntry.BODY, UUID.randomUUID().toString());
             testValues.put(WebNewsContract.PostEntry.CREATED_AT, UUID.randomUUID().toString());
             testValues.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, UUID.randomUUID().toString());
@@ -571,6 +489,8 @@ public class TestProvider extends AndroidTestCase {
             testValues.put(WebNewsContract.PostEntry.TOTAL_STARS, 2);
             testValues.put(WebNewsContract.PostEntry.SUBJECT, UUID.randomUUID().toString());
             testValues.put(WebNewsContract.PostEntry.UNREAD_CLASS, UUID.randomUUID().toString());
+            testValues.put(WebNewsContract.PostEntry.AUTHOR_EMAIL,UUID.randomUUID().toString());
+            testValues.put(WebNewsContract.PostEntry.AUTHOR_NAME,UUID.randomUUID().toString());
             returnContentValues[i] = testValues;
         }
 
@@ -597,19 +517,4 @@ public class TestProvider extends AndroidTestCase {
         return returnContentValues;
     }
 
-    static private final int BULK_INSERT_AUTHORS_TO_INSERT = 35;
-    static ContentValues[] createBulkInsertAuthorValues() {
-        ContentValues[] returnContentValues = new ContentValues[BULK_INSERT_AUTHORS_TO_INSERT];
-
-        for(int i = 0; i < BULK_INSERT_AUTHORS_TO_INSERT; i++) {
-            ContentValues testValues = new ContentValues();
-            testValues.put(WebNewsContract.AuthorEntry._ID,i);
-            testValues.put(WebNewsContract.AuthorEntry.NAME,UUID.randomUUID().toString());
-            testValues.put(WebNewsContract.AuthorEntry.RAW,UUID.randomUUID().toString());
-            testValues.put(WebNewsContract.AuthorEntry.EMAIL,UUID.randomUUID().toString());
-            returnContentValues[i] = testValues;
-        }
-
-        return returnContentValues;
-    }
 }

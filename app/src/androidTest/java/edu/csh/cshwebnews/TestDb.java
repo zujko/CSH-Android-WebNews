@@ -6,11 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-import junit.framework.Test;
-
-import java.util.Map;
-import java.util.Set;
-
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.database.WebNewsDbHelper;
 
@@ -88,25 +83,6 @@ public class TestDb extends AndroidTestCase {
         );
 
         TestUtilities.validateCursor("Post Cursor Error", postCursor, postValues);
-
-        // Test author table
-        ContentValues authorValues = TestUtilities.createAuthorValues();
-
-        long authorRowId = db.insert(WebNewsContract.AuthorEntry.TABLE_NAME, null, authorValues);
-        assertTrue(authorRowId != -1);
-        Log.d(LOG_TAG, "stickyRowId: " + authorRowId);
-
-        Cursor authorCursor = db.query(
-                WebNewsContract.AuthorEntry.TABLE_NAME,  // Table to Query
-                null, // all columns
-                null, // cols for "where" clause
-                null, // values for "where" clause
-                null, // columns to group by
-                null, // columns to filter by row groups
-                null  // sort order
-        );
-
-        TestUtilities.validateCursor("Author Cursor Error",authorCursor,authorValues);
 
         dbHelper.close();
     }
