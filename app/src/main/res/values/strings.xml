@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">CSH WebNews</string>
     <string name="action_settings">Settings</string>
+    <string name="label">CSH WebNews</string>
+
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_webnews">WebNews</string>
+    <string name="content_authority">edu.csh.cshwebnews</string>
 </resources>

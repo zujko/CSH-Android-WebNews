@@ -1,11 +1,15 @@
+/*
+ * Represents an individual post
+ * https://github.com/grantovich/CSH-WebNews/wiki/API%3A-Retrieving-Posts
+ * TODO: Write method to check if post is stickied
+ *
+ * Peter Zujko
+ */
+
 package edu.csh.cshwebnews.models;
 
 import java.util.List;
 
-/**
- * Represents a post
- * TODO: Write method to check if post is stickied
- */
 public class Post {
 
     private Integer id;
@@ -41,6 +45,10 @@ public class Post {
     private Integer total_stars;
 
     private String unread_class;
+
+    private String child_ids;
+
+    private String descendant_ids;
 
     /**
      * @return The unique ID of the post on WebNews.
@@ -156,6 +164,14 @@ public class Post {
      */
     public Integer getStarsTotal() {
         return total_stars;
+    }
+
+    public String getChildIds() {
+        return child_ids;
+    }
+
+    public String getDescendantIds() {
+        return descendant_ids;
     }
 
     /**

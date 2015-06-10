@@ -1,8 +1,11 @@
-package edu.csh.cshwebnews.models;
-
-/**
+/*
  * Represents the current user
+ * https://github.com/grantovich/CSH-WebNews/wiki/API%3A-The-Current-User
+ *
+ * Peter Zujko
  */
+
+package edu.csh.cshwebnews.models;
 
 public class User {
 
@@ -41,7 +44,7 @@ public class User {
     }
 
 
-    private class UserResponse{
+    private class UserResponse {
 
         private String username;
 

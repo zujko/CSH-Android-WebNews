@@ -1,15 +1,22 @@
+/*
+ * Represents posts
+ * TODO: Add id class which contains ancestor ids, child ids,..etc
+ * https://github.com/grantovich/CSH-WebNews/wiki/API%3A-Retrieving-Posts
+ *
+ * Peter Zujko
+ */
+
 package edu.csh.cshwebnews.models;
 
 import java.util.List;
 
-/**
- * TODO: Add id class which contains ancestor ids, child ids,..etc
- */
 public class RetrievingPosts {
 
     private Posts posts;
 
     private Meta meta;
+
+    private Posts descendants;
 
     /**
      * @return The IDs of the posts that matched the query.
@@ -29,6 +36,8 @@ public class RetrievingPosts {
         return posts.getPosts();
     }
 
+    public List<Post> getListOfDescendants() { return descendants.getDescendants(); }
+
     private class Meta {
 
         private List<Integer> matched_ids;
@@ -47,6 +56,12 @@ public class RetrievingPosts {
     private class Posts {
 
         private List<Post> posts;
+
+        private List<Post> descendants;
+
+        public List<Post> getDescendants() {
+            return descendants;
+        }
 
         public List<Post> getPosts() {
             return posts;

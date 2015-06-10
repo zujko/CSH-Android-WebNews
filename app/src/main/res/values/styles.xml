@@ -2,6 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="CSHTheme" parent="Theme.AppCompat">
+        <item name="colorAccent">@color/csh_pink</item>
     </style>
 
     <style name="DarkTheme" parent="Theme.AppCompat">
@@ -11,6 +12,9 @@
     </style>
 
     <style name="NoActionBar" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorAccent">@color/csh_pink_dark</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
 </resources>
