@@ -5,8 +5,10 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.ConsoleMessage;
@@ -24,6 +26,7 @@ import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.User;
+import edu.csh.cshwebnews.models.WebNewsAccount;
 import edu.csh.cshwebnews.network.ServiceGenerator;
 import edu.csh.cshwebnews.network.WebNewsService;
 import retrofit.Callback;
@@ -53,27 +56,31 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signed_in",false)) {
+            startActivity(new Intent(this,MainActivity.class));
+        } else {
 
-        accountManager = AccountManager.get(getBaseContext());
-        logo         = (ImageView) findViewById(R.id.image_logo);
-        button       = (ActionProcessButton) findViewById(R.id.btn_login);
-        webNewsText  = (TextView) findViewById(R.id.textview_webnews);
-        username     = (EditText) findViewById(R.id.edittext_username);
-        password     = (EditText) findViewById(R.id.edittext_password);
-        loginWebView = (WebView) findViewById(R.id.web_oauth);
+            accountManager = AccountManager.get(getBaseContext());
+            logo = (ImageView) findViewById(R.id.image_logo);
+            button = (ActionProcessButton) findViewById(R.id.btn_login);
+            webNewsText = (TextView) findViewById(R.id.textview_webnews);
+            username = (EditText) findViewById(R.id.edittext_username);
+            password = (EditText) findViewById(R.id.edittext_password);
+            loginWebView = (WebView) findViewById(R.id.web_oauth);
 
-        button.setMode(ActionProcessButton.Mode.ENDLESS);
+            button.setMode(ActionProcessButton.Mode.ENDLESS);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                button.setProgress(1);
-                isLoginError = 0;
-                loginWebView.loadUrl("https://webauth.csh.rit.edu/");
-            }
-        });
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    button.setProgress(1);
+                    isLoginError = 0;
+                    loginWebView.loadUrl("https://webauth.csh.rit.edu/");
+                }
+            });
 
-        createAuthWebView();
+            createAuthWebView();
+        }
     }
 
     /**
@@ -134,6 +141,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url != null && url.startsWith(WebNewsService.REDIRECT_URI)) {
                     Log.d("WebView","Got token uri");
+                    view.clearHistory();
+                    view.clearCache(true);
                     view.stopLoading();
                     getAccessToken(url);
                     return true;
@@ -178,6 +187,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                                 @Override
                                 public void success(User user, Response response) {
                                     ContentValues userValues = new ContentValues();
+                                    Log.d("LOGIN","EMAIL IS: "+user.getEmail());
                                     userValues.put(WebNewsContract.UserEntry._ID,1);
                                     userValues.put(WebNewsContract.UserEntry.DISPLAY_NAME,user.getDisplayName());
                                     userValues.put(WebNewsContract.UserEntry.EMAIL,user.getEmail());
@@ -216,12 +226,16 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
 
         accountManager.addAccountExplicitly(account, accountPassword, null);
-        accountManager.setAuthToken(account, "Bearer", intent.getStringExtra(AccountManager.KEY_AUTHTOKEN));
+        accountManager.setAuthToken(account, WebNewsAccount.AUTHTOKEN_TYPE, intent.getStringExtra(AccountManager.KEY_AUTHTOKEN));
 
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
         button.setProgress(100);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean("signed_in",true).apply();
+        startActivity(new Intent(this, MainActivity.class));
         finish();
+        return;
     }
 
 }

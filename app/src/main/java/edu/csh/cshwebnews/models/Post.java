@@ -46,9 +46,9 @@ public class Post {
 
     private String unread_class;
 
-    private String child_ids;
+    private List<Integer> child_ids;
 
-    private String descendant_ids;
+    private List<Integer> descendant_ids;
 
     /**
      * @return The unique ID of the post on WebNews.
@@ -166,11 +166,11 @@ public class Post {
         return total_stars;
     }
 
-    public String getChildIds() {
+    public List<Integer> getChildIds() {
         return child_ids;
     }
 
-    public String getDescendantIds() {
+    public List<Integer> getDescendantIds() {
         return descendant_ids;
     }
 
@@ -184,7 +184,7 @@ public class Post {
         return unread_class;
     }
 
-    private class Sticky {
+   public class Sticky {
 
         private String username;
 

@@ -8,6 +8,7 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import edu.csh.cshwebnews.activities.LoginActivity;
@@ -74,6 +75,7 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
         intent.putExtra(LoginActivity.ARG_AUTH_TYPE, authTokenType);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("signed_in",false).commit();
         return bundle;
     }
 

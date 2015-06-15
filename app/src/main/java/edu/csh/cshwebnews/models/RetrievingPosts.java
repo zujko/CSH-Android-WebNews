@@ -12,11 +12,11 @@ import java.util.List;
 
 public class RetrievingPosts {
 
-    private Posts posts;
+    private List<Post> posts;
 
     private Meta meta;
 
-    private Posts descendants;
+    private List<Post> descendants;
 
     /**
      * @return The IDs of the posts that matched the query.
@@ -33,10 +33,10 @@ public class RetrievingPosts {
     }
 
     public List<Post> getListOfPosts(){
-        return posts.getPosts();
+        return posts;
     }
 
-    public List<Post> getListOfDescendants() { return descendants.getDescendants(); }
+    public List<Post> getListOfDescendants() { return descendants; }
 
     private class Meta {
 
@@ -50,21 +50,6 @@ public class RetrievingPosts {
 
         public Integer getTotal() {
             return total;
-        }
-    }
-
-    private class Posts {
-
-        private List<Post> posts;
-
-        private List<Post> descendants;
-
-        public List<Post> getDescendants() {
-            return descendants;
-        }
-
-        public List<Post> getPosts() {
-            return posts;
         }
     }
 

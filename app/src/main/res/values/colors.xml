@@ -21,4 +21,6 @@
     <color name="red"   >#FF432F</color>
 
     <color name="star_yellow">#F4B300</color>
+    <color name="post_green">#33BB33</color>
+    <color name="material_dark">@color/background_material_dark</color>
 </resources>
