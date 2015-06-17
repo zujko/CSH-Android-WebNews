@@ -1,8 +1,11 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="CSHTheme" parent="Theme.AppCompat">
+    <style name="CSHTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorAccent">@color/csh_pink</item>
+        <item name="colorPrimary">@color/csh_pink</item>
+        <item name="colorPrimaryDark">@color/csh_pink_dark</item>
+        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
     <style name="DarkTheme" parent="Theme.AppCompat">

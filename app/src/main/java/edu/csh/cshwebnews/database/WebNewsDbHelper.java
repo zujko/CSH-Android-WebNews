@@ -19,23 +19,24 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_USER_TABLE = "CREATE TABLE " + WebNewsContract.UserEntry.TABLE_NAME
                 + " (" + WebNewsContract.UserEntry._ID + " INTEGER, " +
+                WebNewsContract.UserEntry.USERNAME + " TEXT, " +
                 WebNewsContract.UserEntry.DISPLAY_NAME + " TEXT, " +
                 WebNewsContract.UserEntry.EMAIL + " TEXT, " +
                 WebNewsContract.UserEntry.CREATED_AT + " TEXT, " +
                 WebNewsContract.UserEntry.IS_ADMIN + " TEXT);";
 
         final String SQL_CREATE_NEWSGROUP_TABLE = "CREATE TABLE " + WebNewsContract.NewsGroupEntry.TABLE_NAME
-                + " ("+ WebNewsContract.NewsGroupEntry._ID + " INTEGER PRIMARY KEY," +
-                WebNewsContract.NewsGroupEntry.DESCRIPTION + " TEXT NOT NULL, " +
-                WebNewsContract.NewsGroupEntry.MAX_UNREAD_LEVEL + " INTEGER NOT NULL, " +
-                WebNewsContract.NewsGroupEntry.NAME + " TEXT UNIQUE NOT NULL, " +
-                WebNewsContract.NewsGroupEntry.NEWEST_POST_AT + " TEXT NOT NULL, " +
-                WebNewsContract.NewsGroupEntry.OLDEST_POST_AT + " TEXT NOT NULL, " +
-                WebNewsContract.NewsGroupEntry.POSTING_ALLOWED + " TEXT NOT NULL, " +
-                WebNewsContract.NewsGroupEntry.UNREAD_COUNT + " TEXT NOT NULL);";
+                + " ("+ WebNewsContract.NewsGroupEntry._ID + " INTEGER PRIMARY KEY ON CONFLICT REPLACE," +
+                WebNewsContract.NewsGroupEntry.DESCRIPTION + " TEXT, " +
+                WebNewsContract.NewsGroupEntry.MAX_UNREAD_LEVEL + " INTEGER, " +
+                WebNewsContract.NewsGroupEntry.NAME + " TEXT, " +
+                WebNewsContract.NewsGroupEntry.NEWEST_POST_AT + " TEXT, " +
+                WebNewsContract.NewsGroupEntry.OLDEST_POST_AT + " TEXT, " +
+                WebNewsContract.NewsGroupEntry.POSTING_ALLOWED + " TEXT, " +
+                WebNewsContract.NewsGroupEntry.UNREAD_COUNT + " INTEGER);";
 
         final String SQL_CREATE_POST_TABLE = "CREATE TABLE " + WebNewsContract.PostEntry.TABLE_NAME + "(" +
-                WebNewsContract.PostEntry._ID + " INTEGER PRIMARY KEY," +
+                WebNewsContract.PostEntry._ID + " INTEGER PRIMARY KEY ON CONFLICT REPLACE," +
                 WebNewsContract.PostEntry.ANCESTOR_IDS + " TEXT, " +
                 WebNewsContract.PostEntry.BODY + " TEXT NOT NULL, " +
                 WebNewsContract.PostEntry.CREATED_AT + " TEXT NOT NULL, " +
