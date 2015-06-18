@@ -19,6 +19,7 @@
         android:layout_margin="16dp"
         app:layout_anchor="@id/coordlayout"
         app:layout_anchorGravity="bottom|right"
+        app:borderWidth="0dp"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"/>
 

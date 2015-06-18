@@ -8,6 +8,7 @@
         <item name="android:textColorPrimary">@color/primary_text_default_material_light</item>
         <item name="android:textColorSecondary">@color/secondary_text_default_material_light</item>
         <item name="android:divider">@color/divider_light</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="CSHThemeDark" parent="Theme.AppCompat.NoActionBar">

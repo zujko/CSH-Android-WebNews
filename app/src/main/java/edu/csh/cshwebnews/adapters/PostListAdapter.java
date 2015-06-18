@@ -70,7 +70,7 @@ public class PostListAdapter extends CursorAdapter {
         if(cursor.getInt(WebNewsContract.COL_PERSONAL_LEVEL) == 3) {
             viewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color.post_green));
         } else {
-            viewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color.material_dark));
+            viewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color.material_light));
         }
 
         viewHolder.authorTextView.setText(cursor.getString(WebNewsContract.COL_AUTHOR_NAME));

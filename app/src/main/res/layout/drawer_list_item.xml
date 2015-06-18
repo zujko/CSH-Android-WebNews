@@ -10,7 +10,7 @@
         android:padding="15dp"
         android:singleLine="true"
         android:id="@+id/drawer_list_newsgroup_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
