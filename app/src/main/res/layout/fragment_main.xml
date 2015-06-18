@@ -1,9 +1,9 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordlayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity$PostListFragment">
+    android:layout_height="match_parent">
 
     <ListView
         android:id="@+id/listview"
@@ -16,9 +16,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_pencil_white_48dp"
-        android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
+        app:layout_anchor="@id/coordlayout"
+        app:layout_anchorGravity="bottom|right"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"/>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
