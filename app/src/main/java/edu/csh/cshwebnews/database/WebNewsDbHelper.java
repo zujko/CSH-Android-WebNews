@@ -44,7 +44,7 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 WebNewsContract.PostEntry.HAD_ATTACHMENTS + " TEXT NOT NULL, " +
                 WebNewsContract.PostEntry.HEADERS + " TEXT NOT NULL, " +
                 WebNewsContract.PostEntry.IS_DETHREADED + " TEXT NOT NULL, " +
-                WebNewsContract.PostEntry.IS_STARRED + " TEXT NOT NULL, " +
+                WebNewsContract.PostEntry.IS_STARRED + " INTEGER NOT NULL, " +
                 WebNewsContract.PostEntry.MESSAGE_ID + " TEXT NOT NULL, " +
                 WebNewsContract.PostEntry.PERSONAL_LEVEL + " INTEGER NOT NULL, " +
                 WebNewsContract.PostEntry.IS_STICKIED + " INTEGER NOT NULL, " +
