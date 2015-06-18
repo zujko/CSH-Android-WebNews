@@ -14,7 +14,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.LinkedList;
+import java.util.List;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.database.WebNewsContract;
@@ -38,31 +39,34 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             authToken = AccountManager.get(getContext()).blockingGetAuthToken(account, WebNewsAccount.AUTHTOKEN_TYPE, true);
             WebNewsService service = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL, authToken, WebNewsAccount.AUTHTOKEN_TYPE);
             String newsGroupId;
+
             if(extras.getString("newsgroup_id") == null || extras.getString("newsgroup_id").equals("null")){
                 newsGroupId = null;
             } else {
                 newsGroupId = extras.getString("newsgroup_id");
             }
-            RetrievingPosts posts = service.syncGetPosts("false",
-                    extras.getString("as_threads"),
-                    null,
-                    null,
-                    null,
+
+            RetrievingPosts posts = service.syncGetPosts("false", //as_meta
+                    extras.getString("as_threads"), //as_threads
+                    null, //authors
+                    null, //keywords
+                    null, //keywords_match
                     "11",//limit
-                    null,
-                    newsGroupId,
-                    extras.getString("offset"),
-                    "true", //as_roots
-                    "false",
-                    "false",
-                    "false",
-                    null, null);
+                    null, //min_unread_level
+                    newsGroupId, //newsGroupId
+                    extras.getString("offset"), //offset
+                    "true", //only_roots
+                    "false", //only_starred
+                    "false", //only_sticky
+                    "false", //reverse_order
+                    null, //since
+                    null //until
+            );
 
             NewsGroups newsGroups = service.syncGetNewsGroups();
 
-
-            Vector<ContentValues> cVVector = new Vector<ContentValues>(posts.getListOfPosts().size());
-            Vector<ContentValues> nGVector = new Vector<ContentValues>(newsGroups.getNewsGroupList().size());
+            List<ContentValues> postList = new LinkedList<ContentValues>();
+            List<ContentValues> newsgroupList = new LinkedList<ContentValues>();
 
             for(Post postObj : posts.getListOfPosts()) {
                 ContentValues values = new ContentValues();
@@ -74,14 +78,20 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 values.put(WebNewsContract.PostEntry.HAD_ATTACHMENTS,postObj.hadAttachments());
                 values.put(WebNewsContract.PostEntry.HEADERS,postObj.getHeaders());
                 values.put(WebNewsContract.PostEntry.IS_DETHREADED,postObj.isDethreaded());
-                values.put(WebNewsContract.PostEntry.IS_STARRED,postObj.isStarred());
+
+                if(postObj.isStarred()) {
+                    values.put(WebNewsContract.PostEntry.IS_STARRED,1);
+                } else {
+                    values.put(WebNewsContract.PostEntry.IS_STARRED,0);
+                }
+
                 values.put(WebNewsContract.PostEntry.MESSAGE_ID,postObj.getMessageId());
                 values.put(WebNewsContract.PostEntry.PERSONAL_LEVEL,postObj.getPersonalLevel());
 
                 if(postObj.getSticky().getDisplayName() == null){
-                    values.put(WebNewsContract.PostEntry.IS_STICKIED,"false");
+                    values.put(WebNewsContract.PostEntry.IS_STICKIED,0);
                 } else {
-                    values.put(WebNewsContract.PostEntry.IS_STICKIED,"true");
+                    values.put(WebNewsContract.PostEntry.IS_STICKIED,1);
                 }
 
                 values.put(WebNewsContract.PostEntry.SUBJECT,postObj.getSubject());
@@ -96,7 +106,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 values.put(WebNewsContract.PostEntry.AUTHOR_NAME,postObj.getAuthor().getName());
                 values.put(WebNewsContract.PostEntry.AUTHOR_EMAIL,postObj.getAuthor().getEmail());
                 values.put(WebNewsContract.PostEntry.UNREAD_CLASS,postObj.getUnreadClass());
-                cVVector.add(values);
+                postList.add(values);
             }
 
             for(NewsGroups.NewsGroup newsGroup : newsGroups.getNewsGroupList()) {
@@ -109,18 +119,18 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 contentValues.put(WebNewsContract.NewsGroupEntry.OLDEST_POST_AT,newsGroup.getOldestPostAt());
                 contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,newsGroup.postingAllowed());
                 contentValues.put(WebNewsContract.NewsGroupEntry.UNREAD_COUNT,newsGroup.getUnreadCount());
-                nGVector.add(contentValues);
+                newsgroupList.add(contentValues);
             }
 
-            if ( cVVector.size() > 0 ) {
-                ContentValues[] cvArray = new ContentValues[cVVector.size()];
-                cVVector.toArray(cvArray);
+            if (postList.size() > 0) {
+                ContentValues[] cvArray = new ContentValues[postList.size()];
+                postList.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(WebNewsContract.PostEntry.CONTENT_URI, cvArray);
             }
 
-            if(nGVector.size() > 0) {
-                ContentValues[] nGArray = new ContentValues[nGVector.size()];
-                nGVector.toArray(nGArray);
+            if(newsgroupList.size() > 0) {
+                ContentValues[] nGArray = new ContentValues[newsgroupList.size()];
+                newsgroupList.toArray(nGArray);
                 getContext().getContentResolver().bulkInsert(WebNewsContract.NewsGroupEntry.CONTENT_URI,nGArray);
             }
         }
@@ -139,7 +149,6 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (AuthenticatorException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
