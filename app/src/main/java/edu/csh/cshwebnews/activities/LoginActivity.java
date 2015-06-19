@@ -58,6 +58,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         setContentView(R.layout.activity_login);
         if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signed_in",false)) {
             startActivity(new Intent(this,MainActivity.class));
+            finish();
         } else {
 
             accountManager = AccountManager.get(getBaseContext());
@@ -235,7 +236,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         prefs.edit().putBoolean("signed_in",true).apply();
         startActivity(new Intent(this, MainActivity.class));
         finish();
-        return;
     }
 
 }

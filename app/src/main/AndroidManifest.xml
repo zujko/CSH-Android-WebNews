@@ -13,15 +13,20 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/CSHThemeLight" >
+
         <activity
             android:name=".activities.LoginActivity"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/CSHThemeLight" >
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.MainActivity"
+            android:label="@string/title_activity_main" >
         </activity>
 
         <provider
@@ -50,10 +55,6 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <activity
-            android:name=".activities.MainActivity"
-            android:label="@string/title_activity_main" >
-        </activity>
     </application>
 
 </manifest>

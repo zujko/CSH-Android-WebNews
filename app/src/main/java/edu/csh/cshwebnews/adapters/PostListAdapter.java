@@ -2,6 +2,7 @@ package edu.csh.cshwebnews.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,10 +71,29 @@ public class PostListAdapter extends CursorAdapter {
         if(cursor.getInt(WebNewsContract.COL_PERSONAL_LEVEL) == 3) {
             viewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color.post_green));
         } else {
-            viewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color.material_light));
+            TypedValue typedValue = new TypedValue();
+            context.getTheme().resolveAttribute(R.attr.item_background_color,typedValue,true);
+            viewHolder.rootView.setBackgroundColor(context.getResources().getColor(typedValue.resourceId));
+            typedValue = null;
         }
 
         viewHolder.authorTextView.setText(cursor.getString(WebNewsContract.COL_AUTHOR_NAME));
+
+        // If the post is starred, make the star image yellow
+        if(cursor.getInt(WebNewsContract.COL_IS_STARRED) == 1) {
+            viewHolder.starImageView.setImageResource(R.drawable.ic_star_yellow_48dp);
+        } else {
+            TypedValue typedValue = new TypedValue();
+            context.getTheme().resolveAttribute(R.attr.star_color,typedValue,true);
+            viewHolder.starImageView.setImageResource(typedValue.resourceId);
+            typedValue = null;
+        }
+
+        viewHolder.subjectTextView.setText(cursor.getString(WebNewsContract.COL_SUBJECT));
+
+        viewHolder.summaryTextView.setText(cursor.getString(WebNewsContract.COL_BODY));
+
+        viewHolder.dateTextView.setText(cursor.getString(WebNewsContract.COL_CREATED_AT).substring(0, 10));
 
         String emailHash = Utility.md5Hex(cursor.getString(WebNewsContract.COL_AUTHOR_EMAIL));
 
@@ -82,13 +102,5 @@ public class PostListAdapter extends CursorAdapter {
                 .placeholder(R.drawable.placeholder)
                 .tag(context)
                 .into(viewHolder.authorImage);
-
-        viewHolder.starImageView.setImageResource(R.drawable.ic_star_border_white_48dp);
-
-        viewHolder.subjectTextView.setText(cursor.getString(WebNewsContract.COL_SUBJECT));
-
-        viewHolder.summaryTextView.setText(cursor.getString(WebNewsContract.COL_BODY));
-
-        viewHolder.dateTextView.setText(cursor.getString(WebNewsContract.COL_CREATED_AT).substring(0, 10));
     }
 }
