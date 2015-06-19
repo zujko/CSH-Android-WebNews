@@ -4,7 +4,7 @@
     <color name="csh_purple">#B0197E</color>
     <color name="csh_purple_dark">#7E397A</color>
     <color name="csh_pink">#E11C52</color>
-    <color name="csh_pink_dark">#B61643</color>
+    <color name="csh_pink_dark">#A9153E</color>
 
     <!-- grayscale -->
     <color name="white"     >#FFFFFF</color>
@@ -23,4 +23,7 @@
     <color name="star_yellow">#F4B300</color>
     <color name="post_green">#33BB33</color>
     <color name="material_dark">@color/background_material_dark</color>
+    <color name="material_light">@color/background_material_light</color>
+    <color name="divider_light">#1A000000</color>
+    <color name="divider_dark">#1AFFFFFF</color>
 </resources>

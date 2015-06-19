@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 getSupportActionBar().setTitle(newsgroup.getText());
                 newsgroupNameState = newsgroup.getText().toString();
             }
-        }, 250);
+        }, 300);
     }
 
     private void createFragment(Bundle savedInstanceState) {
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 if(drawerView != null){
                     super.onDrawerSlide(drawerView, 0);
-                }else{
+                } else {
                     super.onDrawerSlide(drawerView, slideOffset);
                 }
             }

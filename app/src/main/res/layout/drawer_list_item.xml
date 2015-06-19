@@ -10,15 +10,16 @@
         android:padding="15dp"
         android:singleLine="true"
         android:id="@+id/drawer_list_newsgroup_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:textSize="14sp"
+        android:textColor="?android:textColorPrimary" />
 
     <TextView
         android:padding="15dp"
         android:id="@+id/drawer_list_unread_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
+        android:textColor="?android:textColorSecondary" />
 
 </LinearLayout>
