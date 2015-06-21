@@ -31,7 +31,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
-
         mListAdapter = new PostListAdapter(getActivity(),null,0);
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
         mListView = (ListView) rootView.findViewById(R.id.listview);
@@ -57,7 +56,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
         String sortOrder = WebNewsContract.PostEntry._ID + " DESC";
 
         Uri postUri = WebNewsContract.PostEntry.CONTENT_URI;

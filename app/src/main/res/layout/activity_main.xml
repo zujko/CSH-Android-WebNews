@@ -5,25 +5,31 @@
     android:fitsSystemWindows="true">
 
     <LinearLayout
+        android:id="@+id/rootview"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <include
+        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/tool_bar"
-            layout="@layout/tool_bar">
-        </include>
+            android:theme="@style/ToolBar"
+            android:minHeight="?attr/actionBarSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="4dp">
+        </android.support.v7.widget.Toolbar>
         <FrameLayout
             android:id="@+id/frag_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
         </FrameLayout>
     </LinearLayout>
 
     <ListView
+        android:fitsSystemWindows="false"
         android:id="@+id/drawer_listview"
         android:layout_width="320dp"
         android:layout_height="match_parent"
-        android:background="@color/background_material_dark"
+        android:background="?attr/item_background_color"
         android:layout_gravity="left">
     </ListView>
 
