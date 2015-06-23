@@ -3,7 +3,6 @@ package edu.csh.cshwebnews.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +67,6 @@ public class DrawerListAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
         viewHolder.newsgroupTextView.setText(cursor.getString(COL_NAME));
-        Log.d("NEWSGROUP ADAPTER",cursor.getString(COL_NAME)+": "+cursor.getInt(COL_UNREAD_COUNT));
         if(cursor.getInt(COL_UNREAD_COUNT) > 0){
             viewHolder.unreadTextView.setText(cursor.getInt(COL_UNREAD_COUNT));
         }

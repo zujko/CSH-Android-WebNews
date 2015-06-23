@@ -1,5 +1,7 @@
 package edu.csh.cshwebnews.fragments;
 
+import android.content.ContentResolver;
+import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +27,9 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     private PostListAdapter mListAdapter;
     private ListView mListView;
+    private View mProgressBarLayout;
+    private SyncStatusObserver mSyncObserver;
+    private Object mSyncHandle;
     Bundle instanceState;
 
     private static final int POST_LOADER = 0;
@@ -33,6 +38,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
+        mProgressBarLayout = inflater.inflate(R.layout.post_list_layout_footer,null);
 
         if(Utility.isNetworkConnected(getActivity())) {
             WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
@@ -42,10 +48,46 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
         mListAdapter = new PostListAdapter(getActivity(),null,0);
         mListView = (ListView) rootView.findViewById(R.id.listview);
+        mListView.setFooterDividersEnabled(false);
+        mListView.addFooterView(mProgressBarLayout);
         mListView.setAdapter(mListAdapter);
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mSyncObserver = new SyncStatusObserver() {
+            @Override
+            public void onStatusChanged(int which) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
+                            mListView.removeFooterView(mProgressBarLayout);
+                        }
+                    }
+                });
+            }
+        };
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
+        mSyncHandle = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mSyncHandle != null) {
+            ContentResolver.removeStatusChangeListener(mSyncHandle);
+            mSyncHandle = null;
+        }
     }
 
     @Override

@@ -138,7 +138,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             if(e.getResponse() != null && e.getResponse().getStatus() == 401){
                 AccountManager.get(getContext()).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE,authToken);
             }
-            Log.e("RETROFIT ERROR", "Reason: " +e.getResponse().getReason()+"\n" +
+            Log.e("RETROFIT ERROR", "Response: " + e.getResponse()+"\n" +
                                     "Message: " +e.getMessage() +"\n" +
                                     "URL: "+e.getResponse().getUrl()+"\n");
         }

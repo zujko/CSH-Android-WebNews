@@ -1,6 +1,10 @@
 package edu.csh.cshwebnews;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SyncInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -40,5 +44,24 @@ public class Utility {
         }
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    /**
+     * Checks if there is currently a sync running with the specified authority
+     */
+    public static boolean isSyncActive(Account account, String authority) {
+        for(SyncInfo syncInfo : ContentResolver.getCurrentSyncs()) {
+            if(syncInfo.account.equals(account) && syncInfo.authority.equals(authority)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns account associated with the application
+     */
+    public static Account getAccount(Context context) {
+        return AccountManager.get(context).getAccountsByType(context.getString(R.string.account_type))[0];
     }
 }

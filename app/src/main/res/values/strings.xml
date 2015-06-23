@@ -7,6 +7,7 @@
     <string name="login_password">Password</string>
     <string name="login_webnews">WebNews</string>
     <string name="content_authority">edu.csh.cshwebnews</string>
+    <string name="account_type">edu.csh.cshwebnews</string>
     <string name="title_activity_main">MainActivity</string>
 
     <string name="error_no_network">No connection, please connect to a network and try again</string>
