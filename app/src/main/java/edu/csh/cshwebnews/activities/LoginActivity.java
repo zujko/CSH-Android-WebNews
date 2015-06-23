@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.dd.processbutton.iml.ActionProcessButton;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.User;
@@ -74,9 +75,16 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    button.setProgress(1);
-                    isLoginError = 0;
-                    loginWebView.loadUrl("https://webauth.csh.rit.edu/");
+                    if (Utility.isNetworkConnected(getApplicationContext())) {
+                        button.setProgress(1);
+                        isLoginError = 0;
+                        loginWebView.loadUrl("https://webauth.csh.rit.edu/");
+                    } else {
+                        Toast.makeText(getApplicationContext(),
+                                getString(R.string.error_no_network),
+                                Toast.LENGTH_LONG).show();
+                    }
+
                 }
             });
 

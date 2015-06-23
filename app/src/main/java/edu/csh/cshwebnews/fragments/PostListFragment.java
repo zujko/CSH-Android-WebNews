@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
@@ -30,9 +32,15 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
-        mListAdapter = new PostListAdapter(getActivity(),null,0);
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
+
+        if(Utility.isNetworkConnected(getActivity())) {
+            WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
+        } else {
+            noNetworkSnackbar(rootView);
+        }
+
+        mListAdapter = new PostListAdapter(getActivity(),null,0);
         mListView = (ListView) rootView.findViewById(R.id.listview);
         mListView.setAdapter(mListAdapter);
 
@@ -89,5 +97,22 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mListAdapter.swapCursor(null);
+    }
+
+    private void noNetworkSnackbar(final View rootView) {
+        //TODO Wait for bug fix so that snackbar will display indefinitely
+        // (Currently setting a custom duration does not work)
+        Snackbar.make(rootView, getString(R.string.error_no_network_simple),Snackbar.LENGTH_LONG)
+                .setAction(getString(R.string.snackbar_refresh), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (Utility.isNetworkConnected(getActivity())) {
+                            WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
+                        } else {
+                            noNetworkSnackbar(rootView);
+                        }
+                    }
+                })
+                .show();
     }
 }
