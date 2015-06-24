@@ -13,9 +13,15 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.database.WebNewsContract;
@@ -68,12 +74,30 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             List<ContentValues> postList = new LinkedList<ContentValues>();
             List<ContentValues> newsgroupList = new LinkedList<ContentValues>();
 
+            Calendar c = Calendar.getInstance();
+            DateTimeFormatter dateTimeFormat = ISODateTimeFormat.dateTimeNoMillis();
+            DateTime date;
+
             for(Post postObj : posts.getListOfPosts()) {
                 ContentValues values = new ContentValues();
                 values.put(WebNewsContract.PostEntry._ID,postObj.getId());
                 values.put(WebNewsContract.PostEntry.ANCESTOR_IDS,postObj.getListOfAncestorIds().toString());
                 values.put(WebNewsContract.PostEntry.BODY,postObj.getBody());
-                values.put(WebNewsContract.PostEntry.CREATED_AT, postObj.getCreatedAt());
+
+                date = dateTimeFormat.parseDateTime(postObj.getCreatedAt());
+                String finalDate;
+
+                if(date.getYear() == c.get(Calendar.YEAR)) {
+                    if(date.getDayOfYear() == c.get(Calendar.DAY_OF_YEAR)) {
+                        finalDate = date.toString("HH:mm", Locale.US);
+                    } else {
+                        finalDate = date.monthOfYear().getAsShortText()+ " " + date.getDayOfMonth();
+                    }
+                } else {
+                    finalDate = date.toString("MM/dd/yyyy", Locale.US);
+                }
+
+                values.put(WebNewsContract.PostEntry.CREATED_AT, finalDate);
                 values.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, postObj.getFollowupNewsgroupId());
                 values.put(WebNewsContract.PostEntry.HAD_ATTACHMENTS,postObj.hadAttachments());
                 values.put(WebNewsContract.PostEntry.HEADERS,postObj.getHeaders());

@@ -57,24 +57,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mSyncObserver = new SyncStatusObserver() {
-            @Override
-            public void onStatusChanged(int which) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(!Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
-                            mListView.removeFooterView(mProgressBarLayout);
-                        }
-                    }
-                });
-            }
-        };
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
@@ -96,6 +78,21 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         if(savedInstanceState != null) {
             instanceState = savedInstanceState;
         }
+
+        mSyncObserver = new SyncStatusObserver() {
+            @Override
+            public void onStatusChanged(int which) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
+                            mListView.removeFooterView(mProgressBarLayout);
+                        }
+                    }
+                });
+            }
+        };
+
     }
 
     @Override

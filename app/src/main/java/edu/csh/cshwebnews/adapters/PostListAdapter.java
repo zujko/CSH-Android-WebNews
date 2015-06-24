@@ -93,7 +93,7 @@ public class PostListAdapter extends CursorAdapter {
 
         viewHolder.summaryTextView.setText(cursor.getString(WebNewsContract.COL_BODY));
 
-        viewHolder.dateTextView.setText(cursor.getString(WebNewsContract.COL_CREATED_AT).substring(0, 10));
+        viewHolder.dateTextView.setText(cursor.getString(WebNewsContract.COL_CREATED_AT));
 
         String emailHash = Utility.md5Hex(cursor.getString(WebNewsContract.COL_AUTHOR_EMAIL));
 
