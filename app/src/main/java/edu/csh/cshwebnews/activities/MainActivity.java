@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.adapters.DrawerListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         WebNewsSyncAdapter.syncImmediately(getApplicationContext(), new Bundle());
+
+        JodaTimeAndroid.init(this);
+
         toolBar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolBar);
 
