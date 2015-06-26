@@ -24,6 +24,7 @@ import android.widget.TextView;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.ScrimInsetsFrameLayout;
 import edu.csh.cshwebnews.adapters.DrawerListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.fragments.PostListFragment;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     final int NEWSGROUP_LOADER = 1;
     DrawerListAdapter mListAdapter;
+    ScrimInsetsFrameLayout mInsetsFrameLayout;
     ListView drawerListView;
     ActionBarDrawerToggle drawerToggle;
     Toolbar toolBar;
@@ -158,13 +160,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 drawerListView.setItemChecked(position, true);
-                drawer.closeDrawer(drawerListView);
+                drawer.closeDrawer(mInsetsFrameLayout);
                 selectNewsgroup(id,position,view);
             }
         });
         drawerListView.setAdapter(mListAdapter);
 
         drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);
+        drawer.setStatusBarBackground(R.color.csh_pink_dark);
+
         drawerToggle = new ActionBarDrawerToggle(this,drawer,toolBar,R.string.app_name,R.string.app_name) {
 
             @Override
@@ -191,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void createHeader() {
+        mInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(R.id.scrimInsetsFrameLayout);
         drawerListView = (ListView) findViewById(R.id.drawer_listview);
         ViewGroup header = (ViewGroup) getLayoutInflater().inflate(R.layout.drawer_header, drawerListView, false);
 

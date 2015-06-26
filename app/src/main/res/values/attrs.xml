@@ -3,4 +3,8 @@
     <attr name="drawer_header_background" format="reference"/>
     <attr name="item_background_color" format="reference"/>
     <attr name="star_color" format="reference"/>
+
+    <declare-styleable name="ScrimInsetsView">
+        <attr name="insetForegroundNotificationBar" format="reference|color" />
+    </declare-styleable>
 </resources>
