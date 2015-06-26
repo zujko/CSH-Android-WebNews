@@ -208,23 +208,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Cursor cur = getContentResolver().query(WebNewsContract.UserEntry.CONTENT_URI,null,null,null,null);
         cur.moveToFirst();
-        username.setText(cur.getString(WebNewsContract.USER_COL_USERNAME));
 
+        username.setText(cur.getString(WebNewsContract.USER_COL_USERNAME));
         String emailStr = cur.getString(WebNewsContract.USER_COL_EMAIL);
-        if(emailStr == null) {
-            Picasso.with(getApplicationContext())
-                    .load(R.drawable.placeholder)
-                    .tag(this)
-                    .into(userImage);
-        } else {
-            email.setText(emailStr);
-            String emailHash = Utility.md5Hex(emailStr);
-            Picasso.with(getApplicationContext())
-                    .load("http://www.gravatar.com/avatar/" + emailHash + "?s=70&d=mm")
-                    .placeholder(R.drawable.placeholder)
-                    .tag(this)
-                    .into(userImage);
-        }
+        email.setText(emailStr);
+
+        String emailHash = Utility.md5Hex(emailStr);
+        Picasso.with(getApplicationContext())
+                .load("http://www.gravatar.com/avatar/" + emailHash + "?s=70&d=mm")
+                .placeholder(R.drawable.placeholder)
+                .tag(this)
+                .into(userImage);
+
 
         header.setEnabled(false);
         header.setOnClickListener(null);

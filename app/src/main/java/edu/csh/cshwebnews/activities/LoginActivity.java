@@ -173,7 +173,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
      *
      * @param url the callback url which contains the code
      */
-    private void getAccessToken(String url) {
+    private void getAccessToken(final String url) {
         //Get auth code from callback uri
         String code = Uri.parse(url).getQueryParameter("code");
 
@@ -196,10 +196,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                                 @Override
                                 public void success(User user, Response response) {
                                     ContentValues userValues = new ContentValues();
-                                    Log.d("LOGIN","EMAIL IS: "+user.getEmail());
                                     userValues.put(WebNewsContract.UserEntry._ID,1);
+                                    userValues.put(WebNewsContract.UserEntry.USERNAME,user.getUserName());
                                     userValues.put(WebNewsContract.UserEntry.DISPLAY_NAME,user.getDisplayName());
-                                    userValues.put(WebNewsContract.UserEntry.EMAIL,user.getEmail());
+                                    userValues.put(WebNewsContract.UserEntry.EMAIL,user.getUserName()+"@csh.rit.edu");
                                     userValues.put(WebNewsContract.UserEntry.IS_ADMIN,user.isAdmin());
                                     userValues.put(WebNewsContract.UserEntry.CREATED_AT,user.getCreatedAt());
                                     getBaseContext().getContentResolver().insert(WebNewsContract.UserEntry.CONTENT_URI,userValues);
