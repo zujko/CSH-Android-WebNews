@@ -59,6 +59,13 @@ public class WebNewsContract {
     public static final int COL_AUTHOR_EMAIL = 17;
     public static final int COL_UNREAD_CLASS = 18;
 
+    public static final int USER_COL_ID = 0;
+    public static final int USER_COL_USERNAME = 1;
+    public static final int USER_COL_DISPLAY_NAME = 2;
+    public static final int USER_COL_EMAIL = 3;
+    public static final int USER_COL_CREATED_AT = 4;
+    public static final int USER_COL_IS_ADMIN = 5;
+
 
     public static final class NewsGroupEntry implements BaseColumns {
 

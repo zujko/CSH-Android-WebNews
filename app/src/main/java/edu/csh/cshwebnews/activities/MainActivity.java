@@ -21,10 +21,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.ScrimInsetsFrameLayout;
+import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.adapters.DrawerListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.fragments.PostListFragment;
@@ -205,8 +208,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Cursor cur = getContentResolver().query(WebNewsContract.UserEntry.CONTENT_URI,null,null,null,null);
         cur.moveToFirst();
-        username.setText(cur.getString(1));
-        email.setText(cur.getString(3));
+        username.setText(cur.getString(WebNewsContract.USER_COL_USERNAME));
+
+        String emailStr = cur.getString(WebNewsContract.USER_COL_EMAIL);
+        if(emailStr == null) {
+            Picasso.with(getApplicationContext())
+                    .load(R.drawable.placeholder)
+                    .tag(this)
+                    .into(userImage);
+        } else {
+            email.setText(emailStr);
+            String emailHash = Utility.md5Hex(emailStr);
+            Picasso.with(getApplicationContext())
+                    .load("http://www.gravatar.com/avatar/" + emailHash + "?s=70&d=mm")
+                    .placeholder(R.drawable.placeholder)
+                    .tag(this)
+                    .into(userImage);
+        }
 
         header.setEnabled(false);
         header.setOnClickListener(null);
