@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void createNavigationDrawer() {
-        mListAdapter = new DrawerListAdapter(getApplicationContext(),null,0);
+        mListAdapter = new DrawerListAdapter(this,null,0);
         drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
