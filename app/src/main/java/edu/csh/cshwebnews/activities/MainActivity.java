@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 String title;
 
-                if (postId >= 0 && postId < Utility.DRAWER_HEADER_ITEMS.length) {
+                if (postId == Utility.DRAWER_ITEM_STARRED || postId == Utility.DRAWER_ITEM_STICKIED || postId == Utility.DRAWER_ITEM_HOME) {
                     title = Utility.DRAWER_HEADER_ITEMS[postId];
                 } else {
                     TextView newsgroup = (TextView) view.findViewById(R.id.drawer_list_newsgroup_textview);
