@@ -32,7 +32,7 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 WebNewsContract.NewsGroupEntry.NAME + " TEXT, " +
                 WebNewsContract.NewsGroupEntry.NEWEST_POST_AT + " TEXT, " +
                 WebNewsContract.NewsGroupEntry.OLDEST_POST_AT + " TEXT, " +
-                WebNewsContract.NewsGroupEntry.POSTING_ALLOWED + " TEXT, " +
+                WebNewsContract.NewsGroupEntry.POSTING_ALLOWED + " INTEGER, " +
                 WebNewsContract.NewsGroupEntry.UNREAD_COUNT + " INTEGER);";
 
         final String SQL_CREATE_POST_TABLE = "CREATE TABLE " + WebNewsContract.PostEntry.TABLE_NAME + "(" +

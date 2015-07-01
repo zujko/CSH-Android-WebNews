@@ -118,8 +118,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return new CursorLoader(this,
                 newsgroupUri,
                 DrawerListAdapter.NEWSGROUP_COLUMNS,
-                null,
-                null,
+                WebNewsContract.NewsGroupEntry.POSTING_ALLOWED + " = ?",
+                new String[]{"1"},
                 sortOrder);
     }
 

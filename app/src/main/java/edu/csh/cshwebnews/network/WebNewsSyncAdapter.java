@@ -134,7 +134,13 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 contentValues.put(WebNewsContract.NewsGroupEntry.NAME,newsGroup.getName());
                 contentValues.put(WebNewsContract.NewsGroupEntry.NEWEST_POST_AT,newsGroup.getNewestPostAt());
                 contentValues.put(WebNewsContract.NewsGroupEntry.OLDEST_POST_AT,newsGroup.getOldestPostAt());
-                contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,newsGroup.postingAllowed());
+
+                if(newsGroup.postingAllowed()) {
+                    contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,1);
+                } else {
+                    contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,0);
+                }
+
                 contentValues.put(WebNewsContract.NewsGroupEntry.UNREAD_COUNT,newsGroup.getUnreadCount());
                 newsgroupList.add(contentValues);
             }

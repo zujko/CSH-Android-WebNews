@@ -114,7 +114,8 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         } else if(args.getBoolean("only_sticky")) {
             selection = WebNewsContract.PostEntry.IS_STICKIED + " = 1";
         } else if(args.getString("newsgroup_id") == null) {
-            selection = null;
+            selection = WebNewsContract.PostEntry.ANCESTOR_IDS + " = ?";
+            selectionArgs = new String[]{"[]"};
         }
         else {
             selection = WebNewsContract.PostEntry.NEWSGROUP_IDS + " LIKE ? AND "+ WebNewsContract.PostEntry.ANCESTOR_IDS+ " = ?";
