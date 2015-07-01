@@ -44,26 +44,19 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             authToken = AccountManager.get(getContext()).blockingGetAuthToken(account, WebNewsAccount.AUTHTOKEN_TYPE, true);
             WebNewsService service = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL, authToken, WebNewsAccount.AUTHTOKEN_TYPE);
-            String newsGroupId;
-
-            if(extras.getString("newsgroup_id") == null || extras.getString("newsgroup_id").equals("null")){
-                newsGroupId = null;
-            } else {
-                newsGroupId = extras.getString("newsgroup_id");
-            }
 
             RetrievingPosts posts = service.syncGetPosts("false", //as_meta
-                    extras.getString("as_threads"), //as_threads
+                    extras.getBoolean("as_threads"), //as_threads
                     null, //authors
                     null, //keywords
                     null, //keywords_match
                     "11",//limit
                     null, //min_unread_level
-                    newsGroupId, //newsGroupId
+                    extras.getString("newsgroup_id"), //newsGroupId
                     extras.getString("offset"), //offset
-                    "true", //only_roots
-                    "false", //only_starred
-                    "false", //only_sticky
+                    extras.getBoolean("only_roots"), //only_roots
+                    extras.getBoolean("only_starred"), //only_starred
+                    extras.getBoolean("only_sticky"), //only_sticky
                     "false", //reverse_order
                     null, //since
                     null //until
@@ -122,7 +115,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 values.put(WebNewsContract.PostEntry.NEWSGROUP_IDS,postObj.getListOfNewsgroupIds().toString());
                 values.put(WebNewsContract.PostEntry.TOTAL_STARS,postObj.getStarsTotal());
 
-                if(extras.getString("as_threads") != null && extras.getString("as_threads").equals("true")){
+                if(extras.getBoolean("as_threads")){
                     values.put(WebNewsContract.PostEntry.CHILD_IDS,postObj.getChildIds().toString());
                     values.put(WebNewsContract.PostEntry.DESCENDANT_IDS,postObj.getDescendantIds().toString());
                 }
@@ -141,7 +134,13 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 contentValues.put(WebNewsContract.NewsGroupEntry.NAME,newsGroup.getName());
                 contentValues.put(WebNewsContract.NewsGroupEntry.NEWEST_POST_AT,newsGroup.getNewestPostAt());
                 contentValues.put(WebNewsContract.NewsGroupEntry.OLDEST_POST_AT,newsGroup.getOldestPostAt());
-                contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,newsGroup.postingAllowed());
+
+                if(newsGroup.postingAllowed()) {
+                    contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,1);
+                } else {
+                    contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,0);
+                }
+
                 contentValues.put(WebNewsContract.NewsGroupEntry.UNREAD_COUNT,newsGroup.getUnreadCount());
                 newsgroupList.add(contentValues);
             }
