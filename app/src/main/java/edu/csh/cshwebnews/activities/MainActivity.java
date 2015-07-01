@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,6 +35,7 @@ import edu.csh.cshwebnews.ScrimInsetsFrameLayout;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.adapters.DrawerListAdapter;
 import edu.csh.cshwebnews.adapters.DrawerListHeaderItemsAdapter;
+import edu.csh.cshwebnews.adapters.ReadOnlyNewsgroupAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.fragments.PostListFragment;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
@@ -40,8 +43,10 @@ import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
-    final int NEWSGROUP_LOADER = 1;
+    final int NEWSGROUP_LOADER = 0;
+    final int READ_ONLY_NEWSGROUP_LOADER = 1;
     DrawerListAdapter mListAdapter;
+    ReadOnlyNewsgroupAdapter mReadOnlyAdapter;
     ScrimInsetsFrameLayout mInsetsFrameLayout;
     ListView drawerListView;
     ActionBarDrawerToggle drawerToggle;
@@ -55,12 +60,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         mergeAdapter = new MergeAdapter();
-        mergeAdapter.addView(inflater.inflate(R.layout.space_layout, null));
-        mergeAdapter.addAdapter(new DrawerListHeaderItemsAdapter(this, Utility.DRAWER_HEADER_ITEMS));
-        mergeAdapter.addView(inflater.inflate(R.layout.divider_text_layout, null));
+
+        createMergeAdapter();
 
         Bundle args = new Bundle();
         args.putBoolean("only_roots",true);
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         createNavigationDrawer();
 
         getSupportLoaderManager().initLoader(NEWSGROUP_LOADER, null, this);
+        getSupportLoaderManager().initLoader(READ_ONLY_NEWSGROUP_LOADER,null,this);
 
     }
 
@@ -112,25 +116,49 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         String sortOrder = WebNewsContract.NewsGroupEntry.NAME;
-
         Uri newsgroupUri = WebNewsContract.NewsGroupEntry.CONTENT_URI;
+        String[] selectionArgs = null;
+        switch (id) {
+            case NEWSGROUP_LOADER:
+                selectionArgs = new String[]{"1"};
+                break;
+            case READ_ONLY_NEWSGROUP_LOADER:
+                selectionArgs = new String[]{"0"};
+                break;
+            default:
+                Log.e("MainActivity", "Invalid loader id");
+        }
 
         return new CursorLoader(this,
                 newsgroupUri,
-                DrawerListAdapter.NEWSGROUP_COLUMNS,
+                WebNewsContract.NEWSGROUP_COLUMNS,
                 WebNewsContract.NewsGroupEntry.POSTING_ALLOWED + " = ?",
-                new String[]{"1"},
+                selectionArgs,
                 sortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mListAdapter.swapCursor(data);
+        switch (loader.getId()){
+            case NEWSGROUP_LOADER:
+                mListAdapter.swapCursor(data);
+                break;
+            case READ_ONLY_NEWSGROUP_LOADER:
+                mReadOnlyAdapter.swapCursor(data);
+        }
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mListAdapter.swapCursor(null);
+        switch (loader.getId()){
+            case NEWSGROUP_LOADER:
+                mListAdapter.swapCursor(null);
+                break;
+            case READ_ONLY_NEWSGROUP_LOADER:
+                mReadOnlyAdapter.swapCursor(null);
+        }
+
     }
 
     private void createFragment(Bundle savedInstanceState) {
@@ -155,19 +183,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void createNavigationDrawer() {
         createHeader();
-
-        mListAdapter = new DrawerListAdapter(this,null,0);
-
-        mergeAdapter.addAdapter(mListAdapter);
-
-//        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                drawerListView.setItemChecked(position, true);
-//                drawer.closeDrawer(mInsetsFrameLayout);
-//                selectNewsgroup(id, position, view);
-//            }
-//        });
 
         drawerListView.setOnItemClickListener(this);
 
@@ -247,9 +262,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
                 currentFragment = new PostListFragment();
-//                Bundle args = new Bundle();
-//                args.putString("newsgroup_id", String.valueOf(id));
-//                args.putString("as_threads", "false");
+
                 int postId = (int) id;
 
                 Bundle args = createFragmentBundle(postId);
@@ -258,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 String title;
 
-                if(postId >= 0 && postId < Utility.DRAWER_HEADER_ITEMS.length) {
+                if (postId >= 0 && postId < Utility.DRAWER_HEADER_ITEMS.length) {
                     title = Utility.DRAWER_HEADER_ITEMS[postId];
                 } else {
                     TextView newsgroup = (TextView) view.findViewById(R.id.drawer_list_newsgroup_textview);
@@ -298,8 +311,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 break;
         }
         args.putBoolean("as_threads", false);
-        args.putBoolean("only_roots",true);
+        args.putBoolean("only_roots", true);
 
         return args;
+    }
+
+    private void createMergeAdapter() {
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        //Adds space between static items and the header
+        mergeAdapter.addView(inflater.inflate(R.layout.space_layout, null));
+        //Adds static items
+        mergeAdapter.addAdapter(new DrawerListHeaderItemsAdapter(this, Utility.DRAWER_HEADER_ITEMS));
+        //Adds divider between static items and newgroups
+        mergeAdapter.addView(inflater.inflate(R.layout.divider_text_layout, null));
+        //Adds newsgroups
+        mListAdapter = new DrawerListAdapter(this,null,0);
+        mergeAdapter.addAdapter(mListAdapter);
+        //Adds divider between newsgroups and read-only newsgroups
+        LinearLayout dividerLayout = (LinearLayout) inflater.inflate(R.layout.divider_text_layout, null);
+        TextView textView = (TextView) dividerLayout.findViewById(R.id.divider_text);
+        textView.setText("Read-Only");
+        mergeAdapter.addView(dividerLayout);
+
+        mReadOnlyAdapter = new ReadOnlyNewsgroupAdapter(this,null,0);
+        mergeAdapter.addAdapter(mReadOnlyAdapter);
     }
 }

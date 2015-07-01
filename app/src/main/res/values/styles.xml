@@ -16,6 +16,7 @@
         <item name="starred_icon">@drawable/ic_star_light_inactive</item>
         <item name="stickied_icon">@drawable/ic_pin_light_inactive</item>
         <item name="divider_color">@color/divider_light</item>
+        <item name="inactive_color">@color/primary_text_disabled_material_light</item>
     </style>
 
     <style name="CSHThemeDark" parent="Theme.AppCompat.NoActionBar">
@@ -33,6 +34,7 @@
         <item name="starred_icon">@drawable/ic_star_dark_inactive</item>
         <item name="stickied_icon">@drawable/ic_pin_dark_inactive</item>
         <item name="divider_color">@color/divider_dark</item>
+        <item name="inactive_color">@color/primary_text_disabled_material_dark</item>
     </style>
 
     <style name="ToolBar" parent="Theme.AppCompat.NoActionBar">

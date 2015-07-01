@@ -12,6 +12,7 @@
         android:background="?attr/divider_color"/>
     <TextView
         android:text="Newsgroups"
+        android:id="@+id/divider_text"
         android:gravity="center_vertical"
         android:textSize="14sp"
         android:textColor="?android:textColorSecondary"
