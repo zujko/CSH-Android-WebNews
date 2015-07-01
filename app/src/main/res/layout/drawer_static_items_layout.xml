@@ -14,7 +14,7 @@
         android:layout_weight="1"
         android:layout_marginLeft="16dp"
         android:singleLine="true"
-        android:id="@+id/drawer_header_list_item"
+        android:id="@+id/drawer_list_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="14sp"

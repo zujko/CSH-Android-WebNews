@@ -14,12 +14,12 @@ import android.widget.TextView;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
 
-public class DrawerListHeaderItemsAdapter extends ArrayAdapter<String> {
+public class DrawerListFooterAdapter extends ArrayAdapter<String> {
 
     private final Context mContext;
     private String[] mItems;
 
-    public DrawerListHeaderItemsAdapter(Context context, String[] items) {
+    public DrawerListFooterAdapter(Context context, String[] items) {
         super(context, R.layout.drawer_static_items_layout,items);
         this.mContext = context;
         this.mItems = items;
@@ -47,20 +47,16 @@ public class DrawerListHeaderItemsAdapter extends ArrayAdapter<String> {
         TypedValue val = new TypedValue();
 
         switch (position) {
-            case Utility.DRAWER_ITEM_HOME:
-                mContext.getTheme().resolveAttribute(R.attr.home_icon,val,false);
+            case Utility.DRAWER_FOOTER_SETTINGS:
+                mContext.getTheme().resolveAttribute(R.attr.settings_icon,val,false);
                 holder.itemIcon.setImageResource(val.data);
                 break;
-            case Utility.DRAWER_ITEM_STARRED:
-                mContext.getTheme().resolveAttribute(R.attr.starred_icon,val,false);
-                holder.itemIcon.setImageResource(val.data);
-                break;
-            case Utility.DRAWER_ITEM_STICKIED:
-                mContext.getTheme().resolveAttribute(R.attr.stickied_icon,val,false);
+            case Utility.DRAWER_FOOTER_ABOUT:
+                mContext.getTheme().resolveAttribute(R.attr.about_icon,val,false);
                 holder.itemIcon.setImageResource(val.data);
                 break;
         }
-        holder.itemName.setText(Utility.DRAWER_HEADER_ITEMS[position]);
+        holder.itemName.setText(Utility.DRAWER_FOOTER[position]);
 
         return rowView;
     }
@@ -72,7 +68,7 @@ public class DrawerListHeaderItemsAdapter extends ArrayAdapter<String> {
 
     @Override
     public long getItemId(int position) {
-        return (long) position;
+        return Utility.DRAWER_FOOTER_IDS[position];
     }
 
     static class ViewHolder {

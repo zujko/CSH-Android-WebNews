@@ -34,6 +34,7 @@ import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.ScrimInsetsFrameLayout;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.adapters.DrawerListAdapter;
+import edu.csh.cshwebnews.adapters.DrawerListFooterAdapter;
 import edu.csh.cshwebnews.adapters.DrawerListHeaderItemsAdapter;
 import edu.csh.cshwebnews.adapters.ReadOnlyNewsgroupAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
@@ -249,9 +250,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        drawerListView.setItemChecked(position, true);
-        drawer.closeDrawer(mInsetsFrameLayout);
-        selectNewsgroup(id, position, view);
+        switch ((int)id) {
+            case Utility.DRAWER_FOOTER_SETTINGS_ID:
+                //TODO Start Settings activity
+                break;
+            case Utility.DRAWER_FOOTER_ABOUT_ID:
+                //TODO start About activity
+                break;
+            default:
+                drawerListView.setItemChecked(position, true);
+                drawer.closeDrawer(mInsetsFrameLayout);
+                selectNewsgroup(id, position, view);
+        }
+
     }
 
     private void selectNewsgroup(final long id, int position, final View view) {
@@ -334,7 +345,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         textView.setText("Read-Only");
         mergeAdapter.addView(dividerLayout);
 
+        //Adds read-only newsgroup section
         mReadOnlyAdapter = new ReadOnlyNewsgroupAdapter(this,null,0);
         mergeAdapter.addAdapter(mReadOnlyAdapter);
+        //Adds divider
+        mergeAdapter.addView(inflater.inflate(R.layout.divider_layout,null));
+        //Adds static footer items
+        mergeAdapter.addAdapter(new DrawerListFooterAdapter(this,Utility.DRAWER_FOOTER));
+        //Adds space at the bottom
+        mergeAdapter.addView(inflater.inflate(R.layout.space_layout,null));
     }
 }
