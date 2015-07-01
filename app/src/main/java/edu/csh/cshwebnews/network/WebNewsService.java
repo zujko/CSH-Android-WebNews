@@ -61,7 +61,7 @@ public interface WebNewsService {
 
     @GET("/posts")
     RetrievingPosts syncGetPosts(@Query("as_meta") String asMeta,
-                  @Query("as_threads") String asThreads,
+                  @Query("as_threads") Boolean asThreads,
                   @Query("authors") String authors,
                   @Query("keywords") String keywords,
                   @Query("keywords_match") String keywords_match,
@@ -69,9 +69,9 @@ public interface WebNewsService {
                   @Query("min_unread_level") String minUnreadLevel,
                   @Query("newsgroup_ids") String newsgroupIds,
                   @Query("offset") String offset,
-                  @Query("only_roots") String onlyRoots,
-                  @Query("only_starred") String onlyStarred,
-                  @Query("only_sticky") String onlySticky,
+                  @Query("only_roots") Boolean onlyRoots,
+                  @Query("only_starred") Boolean onlyStarred,
+                  @Query("only_sticky") Boolean onlySticky,
                   @Query("reverse_order") String reverseOrder,
                   @Query("since") String sinceDate,
                   @Query("until") String untilDate);

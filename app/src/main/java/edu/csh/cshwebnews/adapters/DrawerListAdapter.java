@@ -50,7 +50,7 @@ public class DrawerListAdapter extends CursorAdapter {
     public long getItemId(int position) {
         Cursor cur = getCursor();
         cur.moveToPosition(position);
-        return (long) cur.getInt(0);
+        return (long) cur.getInt(COL_ID);
     }
 
     @Override

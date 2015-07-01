@@ -106,22 +106,27 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         String sortOrder = WebNewsContract.PostEntry._ID + " DESC";
 
         Uri postUri = WebNewsContract.PostEntry.CONTENT_URI;
+        String selection;
+        String[] selectionArgs = null;
 
-        if(args == null || args.getString("newsgroup_id").equals("null")) {
-            return new CursorLoader(getActivity(),
-                    postUri,
-                    WebNewsContract.POST_COLUMNS,
-                    null,
-                    null,
-                    sortOrder);
-        } else {
-            return new CursorLoader(getActivity(),
-                    postUri,
-                    WebNewsContract.POST_COLUMNS,
-                    WebNewsContract.PostEntry.NEWSGROUP_IDS + " LIKE ?",
-                    new String[]{"%"+args.getString("newsgroup_id")+"%"},
-                    sortOrder);
+        if (args.getBoolean("only_starred")) {
+            selection = WebNewsContract.PostEntry.IS_STARRED + " = 1";
+        } else if(args.getBoolean("only_sticky")) {
+            selection = WebNewsContract.PostEntry.IS_STICKIED + " = 1";
+        } else if(args.getString("newsgroup_id") == null) {
+            selection = null;
         }
+        else {
+            selection = WebNewsContract.PostEntry.NEWSGROUP_IDS + " LIKE ? AND "+ WebNewsContract.PostEntry.ANCESTOR_IDS+ " = ?";
+            selectionArgs = new String[]{"%"+args.getString("newsgroup_id")+"%","[]"};
+        }
+
+        return new CursorLoader(getActivity(),
+                postUri,
+                WebNewsContract.POST_COLUMNS,
+                selection,
+                selectionArgs,
+                sortOrder);
     }
 
     @Override

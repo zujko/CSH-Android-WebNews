@@ -14,6 +14,10 @@
         <item name="item_background_color">@color/background_material_light</item>
         <item name="star_color">@drawable/ic_star_border_black_48dp</item>
         <item name="label_icon_read">@drawable/ic_label_light_inactive_filled</item>
+        <item name="home_icon">@drawable/ic_home_light_inactive</item>
+        <item name="starred_icon">@drawable/ic_star_light_inactive</item>
+        <item name="stickied_icon">@drawable/ic_pin_light_inactive</item>
+        <item name="divider_color">@color/divider_light</item>
     </style>
 
     <style name="CSHThemeDark" parent="Theme.AppCompat.NoActionBar">
@@ -29,6 +33,10 @@
         <item name="item_background_color">@color/background_material_dark</item>
         <item name="star_color">@drawable/ic_star_border_white_48dp</item>
         <item name="label_icon_read">@drawable/ic_label_dark_inactive_filled</item>
+        <item name="home_icon">@drawable/ic_home_dark_inactive</item>
+        <item name="starred_icon">@drawable/ic_star_dark_inactive</item>
+        <item name="stickied_icon">@drawable/ic_pin_dark_inactive</item>
+        <item name="divider_color">@color/divider_dark</item>
     </style>
 
     <style name="ToolBar" parent="Theme.AppCompat.NoActionBar">

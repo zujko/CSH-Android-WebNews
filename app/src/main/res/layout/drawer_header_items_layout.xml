@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
@@ -6,7 +5,7 @@
     android:gravity="center_vertical">
 
     <ImageView
-        android:src="?attr/label_icon_read"
+        android:id="@+id/item_icon"
         android:layout_marginLeft="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -15,17 +14,10 @@
         android:layout_weight="1"
         android:layout_marginLeft="16dp"
         android:singleLine="true"
-        android:id="@+id/drawer_list_newsgroup_textview"
+        android:id="@+id/drawer_header_list_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="14sp"
         android:textColor="?android:textColorPrimary" />
-
-    <TextView
-        android:layout_marginRight="16dp"
-        android:id="@+id/drawer_list_unread_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="?android:textColorSecondary" />
 
 </LinearLayout>

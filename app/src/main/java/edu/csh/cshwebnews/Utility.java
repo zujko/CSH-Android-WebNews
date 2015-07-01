@@ -14,6 +14,13 @@ import java.security.NoSuchAlgorithmException;
 
 public class Utility {
 
+    public static final String[] DRAWER_HEADER_ITEMS = {
+            "Home", "Starred", "Stickied"
+    };
+    public static final int DRAWER_ITEM_HOME = 0;
+    public static final int DRAWER_ITEM_STARRED = 1;
+    public static final int DRAWER_ITEM_STICKIED = 2;
+
     public static String hex(byte[] array) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < array.length; ++i) {
