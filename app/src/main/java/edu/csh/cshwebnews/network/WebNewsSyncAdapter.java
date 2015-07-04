@@ -13,9 +13,15 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.database.WebNewsContract;
@@ -38,26 +44,19 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             authToken = AccountManager.get(getContext()).blockingGetAuthToken(account, WebNewsAccount.AUTHTOKEN_TYPE, true);
             WebNewsService service = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL, authToken, WebNewsAccount.AUTHTOKEN_TYPE);
-            String newsGroupId;
-
-            if(extras.getString("newsgroup_id") == null || extras.getString("newsgroup_id").equals("null")){
-                newsGroupId = null;
-            } else {
-                newsGroupId = extras.getString("newsgroup_id");
-            }
 
             RetrievingPosts posts = service.syncGetPosts("false", //as_meta
-                    extras.getString("as_threads"), //as_threads
+                    extras.getBoolean("as_threads"), //as_threads
                     null, //authors
                     null, //keywords
                     null, //keywords_match
                     "11",//limit
                     null, //min_unread_level
-                    newsGroupId, //newsGroupId
+                    extras.getString("newsgroup_id"), //newsGroupId
                     extras.getString("offset"), //offset
-                    "true", //only_roots
-                    "false", //only_starred
-                    "false", //only_sticky
+                    extras.getBoolean("only_roots"), //only_roots
+                    extras.getBoolean("only_starred"), //only_starred
+                    extras.getBoolean("only_sticky"), //only_sticky
                     "false", //reverse_order
                     null, //since
                     null //until
@@ -68,12 +67,30 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             List<ContentValues> postList = new LinkedList<ContentValues>();
             List<ContentValues> newsgroupList = new LinkedList<ContentValues>();
 
+            Calendar c = Calendar.getInstance();
+            DateTimeFormatter dateTimeFormat = ISODateTimeFormat.dateTimeNoMillis();
+            DateTime date;
+
             for(Post postObj : posts.getListOfPosts()) {
                 ContentValues values = new ContentValues();
                 values.put(WebNewsContract.PostEntry._ID,postObj.getId());
                 values.put(WebNewsContract.PostEntry.ANCESTOR_IDS,postObj.getListOfAncestorIds().toString());
                 values.put(WebNewsContract.PostEntry.BODY,postObj.getBody());
-                values.put(WebNewsContract.PostEntry.CREATED_AT, postObj.getCreatedAt());
+
+                date = dateTimeFormat.parseDateTime(postObj.getCreatedAt());
+                String finalDate;
+
+                if(date.getYear() == c.get(Calendar.YEAR)) {
+                    if(date.getDayOfYear() == c.get(Calendar.DAY_OF_YEAR)) {
+                        finalDate = date.toString("HH:mm", Locale.US);
+                    } else {
+                        finalDate = date.monthOfYear().getAsShortText()+ " " + date.getDayOfMonth();
+                    }
+                } else {
+                    finalDate = date.toString("MM/dd/yyyy", Locale.US);
+                }
+
+                values.put(WebNewsContract.PostEntry.CREATED_AT, finalDate);
                 values.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, postObj.getFollowupNewsgroupId());
                 values.put(WebNewsContract.PostEntry.HAD_ATTACHMENTS,postObj.hadAttachments());
                 values.put(WebNewsContract.PostEntry.HEADERS,postObj.getHeaders());
@@ -98,13 +115,14 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 values.put(WebNewsContract.PostEntry.NEWSGROUP_IDS,postObj.getListOfNewsgroupIds().toString());
                 values.put(WebNewsContract.PostEntry.TOTAL_STARS,postObj.getStarsTotal());
 
-                if(extras.getString("as_threads") != null && extras.getString("as_threads").equals("true")){
+                if(extras.getBoolean("as_threads")){
                     values.put(WebNewsContract.PostEntry.CHILD_IDS,postObj.getChildIds().toString());
                     values.put(WebNewsContract.PostEntry.DESCENDANT_IDS,postObj.getDescendantIds().toString());
                 }
 
                 values.put(WebNewsContract.PostEntry.AUTHOR_NAME,postObj.getAuthor().getName());
                 values.put(WebNewsContract.PostEntry.AUTHOR_EMAIL,postObj.getAuthor().getEmail());
+                values.put(WebNewsContract.PostEntry.AUTHOR_AVATAR_URL,postObj.getAuthor().getAvatarUrl());
                 values.put(WebNewsContract.PostEntry.UNREAD_CLASS,postObj.getUnreadClass());
                 postList.add(values);
             }
@@ -117,7 +135,13 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 contentValues.put(WebNewsContract.NewsGroupEntry.NAME,newsGroup.getName());
                 contentValues.put(WebNewsContract.NewsGroupEntry.NEWEST_POST_AT,newsGroup.getNewestPostAt());
                 contentValues.put(WebNewsContract.NewsGroupEntry.OLDEST_POST_AT,newsGroup.getOldestPostAt());
-                contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,newsGroup.postingAllowed());
+
+                if(newsGroup.postingAllowed()) {
+                    contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,1);
+                } else {
+                    contentValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,0);
+                }
+
                 contentValues.put(WebNewsContract.NewsGroupEntry.UNREAD_COUNT,newsGroup.getUnreadCount());
                 newsgroupList.add(contentValues);
             }
@@ -138,7 +162,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             if(e.getResponse() != null && e.getResponse().getStatus() == 401){
                 AccountManager.get(getContext()).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE,authToken);
             }
-            Log.e("RETROFIT ERROR", "Reason: " +e.getResponse().getReason()+"\n" +
+            Log.e("RETROFIT ERROR", "Response: " + e.getResponse()+"\n" +
                                     "Message: " +e.getMessage() +"\n" +
                                     "URL: "+e.getResponse().getUrl()+"\n");
         }
@@ -158,7 +182,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
     public static void syncImmediately(Context context, Bundle bundle) {
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(AccountManager.get(context).getAccountsByType("edu.csh.cshwebnews")[0],
+        ContentResolver.requestSync(AccountManager.get(context).getAccountsByType(WebNewsAccount.ACCOUNT_TYPE)[0],
                 context.getString(R.string.content_authority), bundle);
     }
 }

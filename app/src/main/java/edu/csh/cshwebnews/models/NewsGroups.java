@@ -40,7 +40,7 @@ public class NewsGroups {
 
         private String oldest_post_at;
 
-        private String posting_allowed;
+        private Boolean posting_allowed;
 
         private Integer unread_count;
 
@@ -91,7 +91,7 @@ public class NewsGroups {
         /**
          * @return Whether the newsgroup is accepting new posts.
          */
-        public String postingAllowed() {
+        public Boolean postingAllowed() {
             return posting_allowed;
         }
 

@@ -21,6 +21,7 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 + " (" + WebNewsContract.UserEntry._ID + " INTEGER, " +
                 WebNewsContract.UserEntry.USERNAME + " TEXT, " +
                 WebNewsContract.UserEntry.DISPLAY_NAME + " TEXT, " +
+                WebNewsContract.UserEntry.AVATAR_URL + " TEXT, " +
                 WebNewsContract.UserEntry.EMAIL + " TEXT, " +
                 WebNewsContract.UserEntry.CREATED_AT + " TEXT, " +
                 WebNewsContract.UserEntry.IS_ADMIN + " TEXT);";
@@ -32,7 +33,7 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 WebNewsContract.NewsGroupEntry.NAME + " TEXT, " +
                 WebNewsContract.NewsGroupEntry.NEWEST_POST_AT + " TEXT, " +
                 WebNewsContract.NewsGroupEntry.OLDEST_POST_AT + " TEXT, " +
-                WebNewsContract.NewsGroupEntry.POSTING_ALLOWED + " TEXT, " +
+                WebNewsContract.NewsGroupEntry.POSTING_ALLOWED + " INTEGER, " +
                 WebNewsContract.NewsGroupEntry.UNREAD_COUNT + " INTEGER);";
 
         final String SQL_CREATE_POST_TABLE = "CREATE TABLE " + WebNewsContract.PostEntry.TABLE_NAME + "(" +
@@ -55,6 +56,7 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 WebNewsContract.PostEntry.DESCENDANT_IDS + " TEXT, " +
                 WebNewsContract.PostEntry.AUTHOR_NAME + " TEXT, " +
                 WebNewsContract.PostEntry.AUTHOR_EMAIL + " TEXT, " +
+                WebNewsContract.PostEntry.AUTHOR_AVATAR_URL + " TEXT, " +
                 WebNewsContract.PostEntry.UNREAD_CLASS + " String);";
 
 

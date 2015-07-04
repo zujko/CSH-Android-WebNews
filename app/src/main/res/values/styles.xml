@@ -11,6 +11,14 @@
         <item name="drawer_header_background">@drawable/background_light_defaultimg</item>
         <item name="item_background_color">@color/background_material_light</item>
         <item name="star_color">@drawable/ic_star_border_black_48dp</item>
+        <item name="label_icon_read">@drawable/ic_label_light_inactive_filled</item>
+        <item name="home_icon">@drawable/ic_home_light_inactive</item>
+        <item name="starred_icon">@drawable/ic_star_light_inactive</item>
+        <item name="stickied_icon">@drawable/ic_pin_light_inactive</item>
+        <item name="settings_icon">@drawable/ic_settings_light_inactive</item>
+        <item name="about_icon">@drawable/ic_about_light_inactive</item>
+        <item name="divider_color">@color/divider_light</item>
+        <item name="inactive_color">@color/primary_text_disabled_material_light</item>
     </style>
 
     <style name="CSHThemeDark" parent="Theme.AppCompat.NoActionBar">
@@ -23,6 +31,14 @@
         <item name="drawer_header_background">@drawable/background_dark_defaultimg</item>
         <item name="item_background_color">@color/background_material_dark</item>
         <item name="star_color">@drawable/ic_star_border_white_48dp</item>
+        <item name="label_icon_read">@drawable/ic_label_dark_inactive_filled</item>
+        <item name="home_icon">@drawable/ic_home_dark_inactive</item>
+        <item name="starred_icon">@drawable/ic_star_dark_inactive</item>
+        <item name="stickied_icon">@drawable/ic_pin_dark_inactive</item>
+        <item name="settings_icon">@drawable/ic_settings_dark_inactive</item>
+        <item name="about_icon">@drawable/ic_about_dark_inactive</item>
+        <item name="divider_color">@color/divider_dark</item>
+        <item name="inactive_color">@color/primary_text_disabled_material_dark</item>
     </style>
 
     <style name="ToolBar" parent="Theme.AppCompat.NoActionBar">

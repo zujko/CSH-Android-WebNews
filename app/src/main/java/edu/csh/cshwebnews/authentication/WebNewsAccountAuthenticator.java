@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.activities.LoginActivity;
 import edu.csh.cshwebnews.network.ServiceGenerator;
 import edu.csh.cshwebnews.network.WebNewsService;
@@ -75,7 +76,7 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
         intent.putExtra(LoginActivity.ARG_AUTH_TYPE, authTokenType);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("signed_in",false).commit();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(context.getString(R.string.pref_signed_in),false).commit();
         return bundle;
     }
 

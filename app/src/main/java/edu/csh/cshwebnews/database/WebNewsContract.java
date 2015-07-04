@@ -37,6 +37,7 @@ public class WebNewsContract {
             WebNewsContract.PostEntry.DESCENDANT_IDS,
             WebNewsContract.PostEntry.AUTHOR_NAME,
             WebNewsContract.PostEntry.AUTHOR_EMAIL,
+            PostEntry.AUTHOR_AVATAR_URL,
             WebNewsContract.PostEntry.UNREAD_CLASS
     };
     public static final int COL_ID = 0;
@@ -57,7 +58,35 @@ public class WebNewsContract {
     public static final int COL_DESCENDANT_IDS =15;
     public static final int COL_AUTHOR_NAME = 16;
     public static final int COL_AUTHOR_EMAIL = 17;
-    public static final int COL_UNREAD_CLASS = 18;
+    public static final int COL_AUTHOR_AVATAR_URL = 18;
+    public static final int COL_UNREAD_CLASS = 19;
+
+    public static final int USER_COL_ID = 0;
+    public static final int USER_COL_USERNAME = 1;
+    public static final int USER_COL_DISPLAY_NAME = 2;
+    public static final int USER_COL_AVATAR_URL = 3;
+    public static final int USER_COL_EMAIL = 4;
+    public static final int USER_COL_CREATED_AT = 5;
+    public static final int USER_COL_IS_ADMIN = 6;
+
+    public static final String[] NEWSGROUP_COLUMNS = {
+            WebNewsContract.NewsGroupEntry.TABLE_NAME+"."+ WebNewsContract.NewsGroupEntry._ID,
+            WebNewsContract.NewsGroupEntry.DESCRIPTION,
+            WebNewsContract.NewsGroupEntry.MAX_UNREAD_LEVEL,
+            WebNewsContract.NewsGroupEntry.NAME,
+            WebNewsContract.NewsGroupEntry.NEWEST_POST_AT,
+            WebNewsContract.NewsGroupEntry.OLDEST_POST_AT,
+            WebNewsContract.NewsGroupEntry.POSTING_ALLOWED,
+            WebNewsContract.NewsGroupEntry.UNREAD_COUNT
+    };
+    public static final int NEWSGROUP_COL_ID = 0;
+    public static final int NEWSGROUP_COL_DESC = 1;
+    public static final int NEWSGROUP_COL_MAX_UNREAD = 2;
+    public static final int NEWSGROUP_COL_NAME = 3;
+    public static final int NEWSGROUP_COL_NEWS_POST_AT = 4;
+    public static final int NEWSGROUP_COL_OLDEST_POST_AT = 5;
+    public static final int NEWSGROUP_COL_POSTING_ALLOWED = 6;
+    public static final int NEWSGROUP_COL_UNREAD_COUNT = 7;
 
 
     public static final class NewsGroupEntry implements BaseColumns {
@@ -145,6 +174,8 @@ public class WebNewsContract {
 
         public static final String AUTHOR_EMAIL     = "author_email";
 
+        public static final String AUTHOR_AVATAR_URL = "author_avatar_url";
+
         public static Uri buildPostsUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI,id);
         }
@@ -165,13 +196,15 @@ public class WebNewsContract {
 
         public static final String USERNAME     = "username";
 
-        public static final String EMAIL        = "email";
-
         public static final String DISPLAY_NAME = "display_name";
+
+        public static final String AVATAR_URL   = "avatar_url";
 
         public static final String CREATED_AT   = "created_at";
 
         public static final String IS_ADMIN     = "is_admin";
+
+        public static final String EMAIL        = "email";
 
         public static Uri buildUserUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI,id);

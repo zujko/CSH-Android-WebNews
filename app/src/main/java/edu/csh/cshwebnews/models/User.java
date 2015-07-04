@@ -19,17 +19,14 @@ public class User {
     }
 
     /**
-     * @return The user's email address.
-     */
-    public String getEmail(){
-        return user.getEmail();
-    }
-
-    /**
      * @return The user's preferred display name ("Common Name").
      */
     public String getDisplayName(){
         return user.getDisplayName();
+    }
+
+    public String getAvatarUrl() {
+        return user.getAvatarUrl();
     }
 
     /**
@@ -48,9 +45,9 @@ public class User {
 
         private String username;
 
-        private String email;
-
         private String display_name;
+
+        private String avatar_url;
 
         private String created_at;
 
@@ -61,12 +58,12 @@ public class User {
             return username;
         }
 
-        public String getEmail() {
-            return email;
-        }
-
         public String getDisplayName() {
             return display_name;
+        }
+
+        public String getAvatarUrl() {
+            return avatar_url;
         }
 
         public String getCreatedAt() {

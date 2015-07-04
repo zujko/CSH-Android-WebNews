@@ -6,6 +6,13 @@
     android:orientation="vertical"
     android:weightSum="1">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="38dp"
+        android:id="@+id/drawer_header_user_imageview" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -20,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:fontFamily="sans-serif-medium"/>
 
         <TextView
             android:id="@+id/drawer_header_email_textview"
@@ -28,14 +35,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="5dp"
-            android:textSize="14sp"
-            android:textStyle="normal" />
+            android:fontFamily="sans-serif"
+            android:textSize="14sp" />
     </LinearLayout>
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="38dp"
-        android:id="@+id/drawer_header_user_imageview" />
 </RelativeLayout>

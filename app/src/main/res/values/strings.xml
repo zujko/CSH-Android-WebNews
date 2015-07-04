@@ -7,10 +7,14 @@
     <string name="login_password">Password</string>
     <string name="login_webnews">WebNews</string>
     <string name="content_authority">edu.csh.cshwebnews</string>
+    <string name="account_type">edu.csh.cshwebnews</string>
     <string name="title_activity_main">MainActivity</string>
 
     <string name="error_no_network">No connection, please connect to a network and try again</string>
     <string name="error_no_network_simple">No connection</string>
 
     <string name="snackbar_refresh">REFRESH</string>
+
+    <!-- Preference strings -->
+    <string name="pref_signed_in">signed_in</string>
 </resources>

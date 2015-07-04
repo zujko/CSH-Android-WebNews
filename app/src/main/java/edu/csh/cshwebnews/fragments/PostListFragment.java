@@ -1,5 +1,7 @@
 package edu.csh.cshwebnews.fragments;
 
+import android.content.ContentResolver;
+import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +27,9 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     private PostListAdapter mListAdapter;
     private ListView mListView;
+    private View mProgressBarLayout;
+    private SyncStatusObserver mSyncObserver;
+    private Object mSyncHandle;
     Bundle instanceState;
 
     private static final int POST_LOADER = 0;
@@ -33,6 +38,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
+        mProgressBarLayout = inflater.inflate(R.layout.post_list_layout_footer,null);
 
         if(Utility.isNetworkConnected(getActivity())) {
             WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
@@ -42,10 +48,28 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
         mListAdapter = new PostListAdapter(getActivity(),null,0);
         mListView = (ListView) rootView.findViewById(R.id.listview);
+        mListView.setFooterDividersEnabled(false);
+        mListView.addFooterView(mProgressBarLayout);
         mListView.setAdapter(mListAdapter);
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
+        mSyncHandle = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mSyncHandle != null) {
+            ContentResolver.removeStatusChangeListener(mSyncHandle);
+            mSyncHandle = null;
+        }
     }
 
     @Override
@@ -54,6 +78,21 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         if(savedInstanceState != null) {
             instanceState = savedInstanceState;
         }
+
+        mSyncObserver = new SyncStatusObserver() {
+            @Override
+            public void onStatusChanged(int which) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
+                            mListView.removeFooterView(mProgressBarLayout);
+                        }
+                    }
+                });
+            }
+        };
+
     }
 
     @Override
@@ -67,22 +106,28 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         String sortOrder = WebNewsContract.PostEntry._ID + " DESC";
 
         Uri postUri = WebNewsContract.PostEntry.CONTENT_URI;
+        String selection;
+        String[] selectionArgs = null;
 
-        if(args == null || args.getString("newsgroup_id").equals("null")) {
-            return new CursorLoader(getActivity(),
-                    postUri,
-                    WebNewsContract.POST_COLUMNS,
-                    null,
-                    null,
-                    sortOrder);
-        } else {
-            return new CursorLoader(getActivity(),
-                    postUri,
-                    WebNewsContract.POST_COLUMNS,
-                    WebNewsContract.PostEntry.NEWSGROUP_IDS + " LIKE ?",
-                    new String[]{"%"+args.getString("newsgroup_id")+"%"},
-                    sortOrder);
+        if (args.getBoolean("only_starred")) {
+            selection = WebNewsContract.PostEntry.IS_STARRED + " = 1";
+        } else if(args.getBoolean("only_sticky")) {
+            selection = WebNewsContract.PostEntry.IS_STICKIED + " = 1";
+        } else if(args.getString("newsgroup_id") == null) {
+            selection = WebNewsContract.PostEntry.ANCESTOR_IDS + " = ?";
+            selectionArgs = new String[]{"[]"};
         }
+        else {
+            selection = WebNewsContract.PostEntry.NEWSGROUP_IDS + " LIKE ? AND "+ WebNewsContract.PostEntry.ANCESTOR_IDS+ " = ?";
+            selectionArgs = new String[]{"%"+args.getString("newsgroup_id")+"%","[]"};
+        }
+
+        return new CursorLoader(getActivity(),
+                postUri,
+                WebNewsContract.POST_COLUMNS,
+                selection,
+                selectionArgs,
+                sortOrder);
     }
 
     @Override

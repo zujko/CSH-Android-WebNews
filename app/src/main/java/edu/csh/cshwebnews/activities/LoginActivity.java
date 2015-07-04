@@ -57,18 +57,18 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("signed_in",false)) {
+        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_signed_in),false)) {
             startActivity(new Intent(this,MainActivity.class));
             finish();
         } else {
 
-            accountManager = AccountManager.get(getBaseContext());
-            logo = (ImageView) findViewById(R.id.image_logo);
-            button = (ActionProcessButton) findViewById(R.id.btn_login);
-            webNewsText = (TextView) findViewById(R.id.textview_webnews);
-            username = (EditText) findViewById(R.id.edittext_username);
-            password = (EditText) findViewById(R.id.edittext_password);
-            loginWebView = (WebView) findViewById(R.id.web_oauth);
+            accountManager  = AccountManager.get(getBaseContext());
+            logo            = (ImageView) findViewById(R.id.image_logo);
+            button          = (ActionProcessButton) findViewById(R.id.btn_login);
+            webNewsText     = (TextView) findViewById(R.id.textview_webnews);
+            username        = (EditText) findViewById(R.id.edittext_username);
+            password        = (EditText) findViewById(R.id.edittext_password);
+            loginWebView    = (WebView) findViewById(R.id.web_oauth);
 
             button.setMode(ActionProcessButton.Mode.ENDLESS);
 
@@ -149,6 +149,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url != null && url.startsWith(WebNewsService.REDIRECT_URI)) {
+                    //Url is good so kill the webview and start function to get the auth token
                     Log.d("WebView","Got token uri");
                     view.clearHistory();
                     view.clearCache(true);
@@ -173,7 +174,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
      *
      * @param url the callback url which contains the code
      */
-    private void getAccessToken(String url) {
+    private void getAccessToken(final String url) {
         //Get auth code from callback uri
         String code = Uri.parse(url).getQueryParameter("code");
 
@@ -195,11 +196,13 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
                                 @Override
                                 public void success(User user, Response response) {
+                                    //Put user data in the db
                                     ContentValues userValues = new ContentValues();
-                                    Log.d("LOGIN","EMAIL IS: "+user.getEmail());
                                     userValues.put(WebNewsContract.UserEntry._ID,1);
+                                    userValues.put(WebNewsContract.UserEntry.USERNAME,user.getUserName());
                                     userValues.put(WebNewsContract.UserEntry.DISPLAY_NAME,user.getDisplayName());
-                                    userValues.put(WebNewsContract.UserEntry.EMAIL,user.getEmail());
+                                    userValues.put(WebNewsContract.UserEntry.EMAIL,user.getUserName()+"@csh.rit.edu");
+                                    userValues.put(WebNewsContract.UserEntry.AVATAR_URL,user.getAvatarUrl());
                                     userValues.put(WebNewsContract.UserEntry.IS_ADMIN,user.isAdmin());
                                     userValues.put(WebNewsContract.UserEntry.CREATED_AT,user.getCreatedAt());
                                     getBaseContext().getContentResolver().insert(WebNewsContract.UserEntry.CONTENT_URI,userValues);
@@ -207,7 +210,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                                     result.putExtra(AccountManager.KEY_ACCOUNT_NAME, user.getUserName());
                                     result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken.getAccessToken());
                                     result.putExtra(PARAM_USER_PASS, accessToken.getRefreshToken());
-                                    result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, "edu.csh.cshwebnews");
+                                    result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, WebNewsAccount.ACCOUNT_TYPE);
                                     finishLogin(result);
                                 }
 
@@ -241,7 +244,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         setResult(RESULT_OK, intent);
         button.setProgress(100);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putBoolean("signed_in",true).apply();
+        prefs.edit().putBoolean(getString(R.string.pref_signed_in),true).apply();
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
