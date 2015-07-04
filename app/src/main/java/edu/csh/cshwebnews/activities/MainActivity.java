@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.commonsware.cwac.merge.MergeAdapter;
+import com.facebook.stetho.Stetho;
 import com.squareup.picasso.Picasso;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -61,6 +62,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(
+                                Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build());
 
         mergeAdapter = new MergeAdapter();
 
@@ -226,17 +235,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         TextView email = (TextView) header.findViewById(R.id.drawer_header_email_textview);
         ImageView userImage = (ImageView) header.findViewById(R.id.drawer_header_user_imageview);
 
-        Cursor cur = getContentResolver().query(WebNewsContract.UserEntry.CONTENT_URI,null,null,null,null);
+        Cursor cur = getContentResolver().query(WebNewsContract.UserEntry.CONTENT_URI, null, null, null, null);
         cur.moveToFirst();
 
         username.setText(cur.getString(WebNewsContract.USER_COL_USERNAME));
         String emailStr = cur.getString(WebNewsContract.USER_COL_EMAIL);
         email.setText(emailStr);
 
-        String emailHash = Utility.md5Hex(emailStr);
         Picasso.with(getApplicationContext())
-                .load("http://www.gravatar.com/avatar/" + emailHash + "?s=70&d=mm")
+                .load(cur.getString(WebNewsContract.USER_COL_AVATAR_URL)+"&s=70")
                 .placeholder(R.drawable.placeholder)
+                .resize(64,64)
                 .tag(this)
                 .into(userImage);
 

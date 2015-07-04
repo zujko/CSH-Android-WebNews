@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import edu.csh.cshwebnews.R;
-import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 
 public class PostListAdapter extends CursorAdapter {
@@ -95,11 +94,10 @@ public class PostListAdapter extends CursorAdapter {
 
         viewHolder.dateTextView.setText(cursor.getString(WebNewsContract.COL_CREATED_AT));
 
-        String emailHash = Utility.md5Hex(cursor.getString(WebNewsContract.COL_AUTHOR_EMAIL));
-
         Picasso.with(context)
-                .load("http://www.gravatar.com/avatar/"+emailHash+"?s=60&d=mm")
+                .load(WebNewsContract.COL_AUTHOR_AVATAR_URL)
                 .placeholder(R.drawable.placeholder)
+                .resize(45,45)
                 .tag(context)
                 .into(viewHolder.authorImage);
     }

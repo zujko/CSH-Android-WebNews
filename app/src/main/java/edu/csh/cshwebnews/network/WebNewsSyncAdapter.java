@@ -122,6 +122,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 values.put(WebNewsContract.PostEntry.AUTHOR_NAME,postObj.getAuthor().getName());
                 values.put(WebNewsContract.PostEntry.AUTHOR_EMAIL,postObj.getAuthor().getEmail());
+                values.put(WebNewsContract.PostEntry.AUTHOR_AVATAR_URL,postObj.getAuthor().getAvatarUrl());
                 values.put(WebNewsContract.PostEntry.UNREAD_CLASS,postObj.getUnreadClass());
                 postList.add(values);
             }

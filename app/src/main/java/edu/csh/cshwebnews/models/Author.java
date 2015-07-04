@@ -12,6 +12,8 @@ public class Author {
 
     private String email;
 
+    private String avatar_url;
+
     private String raw;
 
     public String getName() {
@@ -20,6 +22,10 @@ public class Author {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getAvatarUrl() {
+        return avatar_url;
     }
 
     /**

@@ -200,6 +200,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                                     userValues.put(WebNewsContract.UserEntry.USERNAME,user.getUserName());
                                     userValues.put(WebNewsContract.UserEntry.DISPLAY_NAME,user.getDisplayName());
                                     userValues.put(WebNewsContract.UserEntry.EMAIL,user.getUserName()+"@csh.rit.edu");
+                                    userValues.put(WebNewsContract.UserEntry.AVATAR_URL,user.getAvatarUrl());
                                     userValues.put(WebNewsContract.UserEntry.IS_ADMIN,user.isAdmin());
                                     userValues.put(WebNewsContract.UserEntry.CREATED_AT,user.getCreatedAt());
                                     getBaseContext().getContentResolver().insert(WebNewsContract.UserEntry.CONTENT_URI,userValues);
