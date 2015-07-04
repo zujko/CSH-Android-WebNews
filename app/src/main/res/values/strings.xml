@@ -14,4 +14,7 @@
     <string name="error_no_network_simple">No connection</string>
 
     <string name="snackbar_refresh">REFRESH</string>
+
+    <!-- Preference strings -->
+    <string name="pref_signed_in">signed_in</string>
 </resources>

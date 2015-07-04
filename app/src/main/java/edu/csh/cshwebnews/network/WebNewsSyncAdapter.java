@@ -182,7 +182,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
     public static void syncImmediately(Context context, Bundle bundle) {
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(AccountManager.get(context).getAccountsByType("edu.csh.cshwebnews")[0],
+        ContentResolver.requestSync(AccountManager.get(context).getAccountsByType(WebNewsAccount.ACCOUNT_TYPE)[0],
                 context.getString(R.string.content_authority), bundle);
     }
 }

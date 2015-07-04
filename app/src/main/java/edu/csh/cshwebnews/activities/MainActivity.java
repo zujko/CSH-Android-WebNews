@@ -26,7 +26,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.commonsware.cwac.merge.MergeAdapter;
-import com.facebook.stetho.Stetho;
 import com.squareup.picasso.Picasso;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -63,23 +62,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(
-                                Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(
-                                Stetho.defaultInspectorModulesProvider(this))
-                        .build());
+        JodaTimeAndroid.init(this);
 
         mergeAdapter = new MergeAdapter();
 
         createMergeAdapter();
 
         Bundle args = new Bundle();
-        args.putBoolean("only_roots",true);
+        args.putBoolean("only_roots", true);
         WebNewsSyncAdapter.syncImmediately(getApplicationContext(), args);
-
-        JodaTimeAndroid.init(this);
 
         toolBar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolBar);
@@ -156,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case READ_ONLY_NEWSGROUP_LOADER:
                 mReadOnlyAdapter.swapCursor(data);
         }
-
     }
 
     @Override
@@ -168,9 +158,45 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case READ_ONLY_NEWSGROUP_LOADER:
                 mReadOnlyAdapter.swapCursor(null);
         }
-
     }
 
+    /**
+     * Creates the merge adapter for the navigation drawer by combing all adapters and views
+     */
+    private void createMergeAdapter() {
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        //Adds space between static items and the header
+        mergeAdapter.addView(inflater.inflate(R.layout.space_layout, null));
+        //Adds static items
+        mergeAdapter.addAdapter(new DrawerListHeaderItemsAdapter(this, Utility.DRAWER_HEADER_ITEMS));
+        //Adds divider between static items and newgroups
+        mergeAdapter.addView(inflater.inflate(R.layout.divider_text_layout, null));
+        //Adds newsgroups
+        mListAdapter = new DrawerListAdapter(this,null,0);
+        mergeAdapter.addAdapter(mListAdapter);
+        //Adds divider between newsgroups and read-only newsgroups
+        LinearLayout dividerLayout = (LinearLayout) inflater.inflate(R.layout.divider_text_layout, null);
+        TextView textView = (TextView) dividerLayout.findViewById(R.id.divider_text);
+        textView.setText("Read-Only");
+        mergeAdapter.addView(dividerLayout);
+
+        //Adds read-only newsgroup section
+        mReadOnlyAdapter = new ReadOnlyNewsgroupAdapter(this,null,0);
+        mergeAdapter.addAdapter(mReadOnlyAdapter);
+        //Adds divider
+        mergeAdapter.addView(inflater.inflate(R.layout.divider_layout,null));
+        //Adds static footer items
+        mergeAdapter.addAdapter(new DrawerListFooterAdapter(this,Utility.DRAWER_FOOTER));
+        //Adds space at the bottom
+        mergeAdapter.addView(inflater.inflate(R.layout.space_layout,null));
+    }
+
+    /**
+     * Creates a fragment based on information from savedInstanceState, if savedInstanceState is null
+     * a "Home" fragment is created
+     * @param savedInstanceState
+     */
     private void createFragment(Bundle savedInstanceState) {
         if(savedInstanceState != null){
             currentFragment = getSupportFragmentManager().getFragment(savedInstanceState,"currentFragment");
@@ -191,6 +217,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
+    /**
+     * Creates the navigation drawer
+     */
     private void createNavigationDrawer() {
         createHeader();
 
@@ -205,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
+                //Disabled hamburger icon animation
                 if(drawerView != null){
                     super.onDrawerSlide(drawerView, 0);
                 } else {
@@ -226,6 +256,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         drawerToggle.syncState();
     }
 
+    /**
+     * Creates the header in the navigation drawer
+     */
     private void createHeader() {
         mInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(R.id.scrimInsetsFrameLayout);
         drawerListView = (ListView) findViewById(R.id.drawer_listview);
@@ -274,6 +307,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
+    /**
+     * Starts a newsgroup fragment when one is selected from the navigation drawer
+     * @param id
+     * @param position
+     * @param view
+     */
     private void selectNewsgroup(final long id, int position, final View view) {
 
         new Handler().postDelayed(new Runnable() {
@@ -305,6 +344,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }, 300);
     }
 
+    /**
+     * Helper function for creating a bundle to pass into a fragment
+     * @param id
+     * @return
+     */
     private Bundle createFragmentBundle(int id) {
         Bundle args = new Bundle();
 
@@ -336,32 +380,4 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return args;
     }
 
-    private void createMergeAdapter() {
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        //Adds space between static items and the header
-        mergeAdapter.addView(inflater.inflate(R.layout.space_layout, null));
-        //Adds static items
-        mergeAdapter.addAdapter(new DrawerListHeaderItemsAdapter(this, Utility.DRAWER_HEADER_ITEMS));
-        //Adds divider between static items and newgroups
-        mergeAdapter.addView(inflater.inflate(R.layout.divider_text_layout, null));
-        //Adds newsgroups
-        mListAdapter = new DrawerListAdapter(this,null,0);
-        mergeAdapter.addAdapter(mListAdapter);
-        //Adds divider between newsgroups and read-only newsgroups
-        LinearLayout dividerLayout = (LinearLayout) inflater.inflate(R.layout.divider_text_layout, null);
-        TextView textView = (TextView) dividerLayout.findViewById(R.id.divider_text);
-        textView.setText("Read-Only");
-        mergeAdapter.addView(dividerLayout);
-
-        //Adds read-only newsgroup section
-        mReadOnlyAdapter = new ReadOnlyNewsgroupAdapter(this,null,0);
-        mergeAdapter.addAdapter(mReadOnlyAdapter);
-        //Adds divider
-        mergeAdapter.addView(inflater.inflate(R.layout.divider_layout,null));
-        //Adds static footer items
-        mergeAdapter.addAdapter(new DrawerListFooterAdapter(this,Utility.DRAWER_FOOTER));
-        //Adds space at the bottom
-        mergeAdapter.addView(inflater.inflate(R.layout.space_layout,null));
-    }
 }
