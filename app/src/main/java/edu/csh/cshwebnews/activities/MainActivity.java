@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         String emailStr = cur.getString(WebNewsContract.USER_COL_EMAIL);
         email.setText(emailStr);
 
-        Picasso.with(getApplicationContext())
+        Picasso.with(this)
                 .load(cur.getString(WebNewsContract.USER_COL_AVATAR_URL)+"&s=70")
                 .placeholder(R.drawable.placeholder)
                 .resize(64,64)

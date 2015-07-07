@@ -95,7 +95,7 @@ public class PostListAdapter extends CursorAdapter {
         viewHolder.dateTextView.setText(cursor.getString(WebNewsContract.COL_CREATED_AT));
 
         Picasso.with(context)
-                .load(WebNewsContract.COL_AUTHOR_AVATAR_URL)
+                .load(cursor.getString(WebNewsContract.COL_AUTHOR_AVATAR_URL))
                 .placeholder(R.drawable.placeholder)
                 .resize(45,45)
                 .tag(context)
