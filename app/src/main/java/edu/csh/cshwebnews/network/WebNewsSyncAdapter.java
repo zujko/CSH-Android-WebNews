@@ -91,6 +91,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 }
 
                 values.put(WebNewsContract.PostEntry.CREATED_AT, finalDate);
+                values.put(WebNewsContract.PostEntry.RAW_DATE, postObj.getCreatedAt());
                 values.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, postObj.getFollowupNewsgroupId());
                 values.put(WebNewsContract.PostEntry.HAD_ATTACHMENTS,postObj.hadAttachments());
                 values.put(WebNewsContract.PostEntry.HEADERS,postObj.getHeaders());

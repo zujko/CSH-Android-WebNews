@@ -108,7 +108,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = WebNewsContract.PostEntry._ID + " DESC";
+        String sortOrder = WebNewsContract.PostEntry.RAW_DATE + " DESC";
 
         Uri postUri = WebNewsContract.PostEntry.CONTENT_URI;
         String selection;

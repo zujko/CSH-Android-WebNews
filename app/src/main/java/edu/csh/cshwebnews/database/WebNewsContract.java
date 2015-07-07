@@ -38,6 +38,7 @@ public class WebNewsContract {
             WebNewsContract.PostEntry.AUTHOR_NAME,
             WebNewsContract.PostEntry.AUTHOR_EMAIL,
             PostEntry.AUTHOR_AVATAR_URL,
+            PostEntry.RAW_DATE,
             WebNewsContract.PostEntry.UNREAD_CLASS
     };
     public static final int COL_ID = 0;
@@ -59,7 +60,8 @@ public class WebNewsContract {
     public static final int COL_AUTHOR_NAME = 16;
     public static final int COL_AUTHOR_EMAIL = 17;
     public static final int COL_AUTHOR_AVATAR_URL = 18;
-    public static final int COL_UNREAD_CLASS = 19;
+    public static final int COL_RAW_DATE = 19;
+    public static final int COL_UNREAD_CLASS = 20;
 
     public static final int USER_COL_ID = 0;
     public static final int USER_COL_USERNAME = 1;
@@ -175,6 +177,8 @@ public class WebNewsContract {
         public static final String AUTHOR_EMAIL     = "author_email";
 
         public static final String AUTHOR_AVATAR_URL = "author_avatar_url";
+
+        public static final String RAW_DATE         = "raw_date";
 
         public static Uri buildPostsUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI,id);
