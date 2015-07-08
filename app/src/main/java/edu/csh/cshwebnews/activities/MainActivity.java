@@ -38,6 +38,7 @@ import edu.csh.cshwebnews.adapters.DrawerListFooterAdapter;
 import edu.csh.cshwebnews.adapters.DrawerListHeaderItemsAdapter;
 import edu.csh.cshwebnews.adapters.ReadOnlyNewsgroupAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.fragments.HomeFragment;
 import edu.csh.cshwebnews.fragments.PostListFragment;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
@@ -203,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             newsgroupNameState = savedInstanceState.getString("name");
             getSupportActionBar().setTitle(savedInstanceState.getString("name"));
         } else {
-            currentFragment = new PostListFragment();
+            currentFragment = new HomeFragment();
             Bundle args = new Bundle();
             args.putString("newsgroup_id", null);
             args.putBoolean("as_threads",false);
@@ -319,27 +320,39 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
-                currentFragment = new PostListFragment();
-
                 int postId = (int) id;
 
-                Bundle args = createFragmentBundle(postId);
-                currentFragment.setArguments(args);
-                getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
-
-                String title;
-
-                if (postId == Utility.DRAWER_ITEM_STARRED || postId == Utility.DRAWER_ITEM_STICKIED || postId == Utility.DRAWER_ITEM_HOME) {
-                    title = Utility.DRAWER_HEADER_ITEMS[postId];
+                if(postId == Utility.DRAWER_ITEM_HOME) {
+                    Bundle args = new Bundle();
+                    args.putString("newsgroup_id", null);
+                    args.putBoolean("only_starred", false);
+                    args.putBoolean("only_sticky", false);
+                    args.putBoolean("as_threads", false);
+                    args.putBoolean("only_roots", true);
+                    currentFragment = new HomeFragment();
+                    currentFragment.setArguments(args);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
+                    getSupportActionBar().setTitle("Home");
+                    newsgroupNameState = "Home";
                 } else {
-                    TextView newsgroup = (TextView) view.findViewById(R.id.drawer_list_newsgroup_textview);
-                    title = newsgroup.getText().toString();
-                }
+                    currentFragment = new PostListFragment();
+                    Bundle args = createFragmentBundle(postId);
+                    currentFragment.setArguments(args);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
 
-                getSupportActionBar().setTitle(title);
-                newsgroupNameState = title;
+                    String title;
+
+                    if (postId == Utility.DRAWER_ITEM_STARRED || postId == Utility.DRAWER_ITEM_STICKIED) {
+                        title = Utility.DRAWER_HEADER_ITEMS[postId];
+                    } else {
+                        TextView newsgroup = (TextView) view.findViewById(R.id.drawer_list_newsgroup_textview);
+                        title = newsgroup.getText().toString();
+                    }
+
+                    getSupportActionBar().setTitle(title);
+                    newsgroupNameState = title;
+                }
 
             }
         }, 300);
@@ -354,11 +367,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Bundle args = new Bundle();
 
         switch (id) {
-            case Utility.DRAWER_ITEM_HOME:
-                args.putString("newsgroup_id", null);
-                args.putBoolean("only_starred", false);
-                args.putBoolean("only_sticky",false);
-                break;
             case Utility.DRAWER_ITEM_STARRED:
                 args.putString("newsgroup_id",null);
                 args.putBoolean("only_sticky",false);
