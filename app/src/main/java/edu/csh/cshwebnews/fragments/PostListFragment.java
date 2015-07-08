@@ -1,11 +1,13 @@
 package edu.csh.cshwebnews.fragments;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -22,6 +24,7 @@ import com.squareup.picasso.Picasso;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
+import edu.csh.cshwebnews.activities.NewPostActivity;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
@@ -35,6 +38,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     private SyncStatusObserver mSyncObserver;
     private Object mSyncHandle;
     private SwipeRefreshLayout swipeContainer;
+    private FloatingActionButton floatingActionButton;
     Bundle instanceState;
 
     private int visibleThreshold = 5;
@@ -50,6 +54,15 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
         mProgressBarLayout = inflater.inflate(R.layout.post_list_layout_footer,null);
+        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isAdded()) {
+                    Intent intent = new Intent(getActivity(), NewPostActivity.class);
+                }
+            }
+        });
 
         setupRefreshLayout(rootView);
 
