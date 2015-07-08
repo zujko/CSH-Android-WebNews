@@ -77,6 +77,12 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 values.put(WebNewsContract.PostEntry.ANCESTOR_IDS,postObj.getListOfAncestorIds().toString());
                 values.put(WebNewsContract.PostEntry.BODY,postObj.getBody());
 
+                if(postObj.getBody().length() > 200) {
+                    values.put(WebNewsContract.PostEntry.BODY_SUMMARY,postObj.getBody().substring(0,200));
+                } else {
+                    values.put(WebNewsContract.PostEntry.BODY_SUMMARY,postObj.getBody());
+                }
+
                 date = dateTimeFormat.parseDateTime(postObj.getCreatedAt());
                 String finalDate;
 

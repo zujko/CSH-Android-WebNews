@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                //Disabled hamburger icon animation
+                //Disables hamburger icon animation
                 if(drawerView != null){
                     super.onDrawerSlide(drawerView, 0);
                 } else {
@@ -280,6 +280,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .placeholder(R.drawable.placeholder)
                 .resize(64,64)
                 .tag(this)
+                .noFade()
                 .into(userImage);
 
 

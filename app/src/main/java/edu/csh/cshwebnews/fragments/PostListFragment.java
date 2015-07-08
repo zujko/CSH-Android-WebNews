@@ -15,7 +15,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
+
+import com.squareup.picasso.Picasso;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
@@ -24,7 +27,7 @@ import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 
-public class PostListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class PostListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AbsListView.OnScrollListener {
 
     private PostListAdapter mListAdapter;
     private ListView mListView;
@@ -89,7 +92,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(!Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
+                        if(isAdded() && !Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
                             mListView.removeFooterView(mProgressBarLayout);
                             swipeContainer.setRefreshing(false);
                         }
@@ -185,4 +188,17 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         swipeContainer.setColorSchemeResources(R.color.csh_pink,
                 R.color.csh_pink_dark, R.color.csh_purple, R.color.csh_purple_dark);
     }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        Picasso picasso = Picasso.with(getActivity());
+        if(scrollState == SCROLL_STATE_FLING) {
+            picasso.pauseTag(getActivity());
+        } else{
+            picasso.resumeTag(getActivity());
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
 }

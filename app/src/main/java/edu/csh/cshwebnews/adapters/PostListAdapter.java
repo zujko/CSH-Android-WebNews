@@ -90,7 +90,7 @@ public class PostListAdapter extends CursorAdapter {
 
         viewHolder.subjectTextView.setText(cursor.getString(WebNewsContract.COL_SUBJECT));
 
-        viewHolder.summaryTextView.setText(cursor.getString(WebNewsContract.COL_BODY));
+        viewHolder.summaryTextView.setText(cursor.getString(WebNewsContract.COL_BODY_SUMMARY));
 
         viewHolder.dateTextView.setText(cursor.getString(WebNewsContract.COL_CREATED_AT));
 
@@ -99,6 +99,7 @@ public class PostListAdapter extends CursorAdapter {
                 .placeholder(R.drawable.placeholder)
                 .resize(45,45)
                 .tag(context)
+                .noFade()
                 .into(viewHolder.authorImage);
     }
 }
