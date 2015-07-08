@@ -57,6 +57,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         mListView = (ListView) rootView.findViewById(R.id.listview);
         mListView.setFooterDividersEnabled(false);
         mListView.addFooterView(mProgressBarLayout);
+        mListView.setOnScrollListener(this);
         mListView.setAdapter(mListAdapter);
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
