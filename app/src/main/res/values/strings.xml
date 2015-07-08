@@ -17,4 +17,6 @@
 
     <!-- Preference strings -->
     <string name="pref_signed_in">signed_in</string>
+    <string name="title_activity_new_post">NewPostActivity</string>
+
 </resources>
