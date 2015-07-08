@@ -37,6 +37,12 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     private SwipeRefreshLayout swipeContainer;
     Bundle instanceState;
 
+    private int visibleThreshold = 5;
+    private int currentPage = 0;
+    private int previousTotalItemCount = 0;
+    private boolean loading = true;
+    private int startingPageIndex = 0;
+
     private static final int POST_LOADER = 0;
 
     @Nullable
@@ -47,9 +53,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
         setupRefreshLayout(rootView);
 
-        if(Utility.isNetworkConnected(getActivity())) {
-            WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
-        } else {
+        if(!Utility.isNetworkConnected(getActivity())) {
             noNetworkSnackbar(rootView);
         }
 
@@ -201,5 +205,26 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+        if(totalItemCount < previousTotalItemCount) {
+            previousTotalItemCount = totalItemCount;
+            if(totalItemCount == 0) loading = true;
+        }
+
+        if(loading && (totalItemCount > previousTotalItemCount)) {
+            loading = false;
+            previousTotalItemCount = totalItemCount;
+        }
+
+        if(!loading && (totalItemCount-visibleItemCount)<=(firstVisibleItem+visibleThreshold)){
+            if(isAdded()) {
+                Bundle args = getArguments();
+                args.putInt("offset",totalItemCount);
+                args.putBoolean("get_newsgroups",false);
+                WebNewsSyncAdapter.syncImmediately(getActivity(),args);
+                loading = true;
+            }
+        }
+    }
 }

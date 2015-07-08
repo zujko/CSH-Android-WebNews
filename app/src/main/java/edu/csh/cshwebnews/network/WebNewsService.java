@@ -68,7 +68,7 @@ public interface WebNewsService {
                   @Query("limit") String limit,
                   @Query("min_unread_level") String minUnreadLevel,
                   @Query("newsgroup_ids") String newsgroupIds,
-                  @Query("offset") String offset,
+                  @Query("offset") Integer offset,
                   @Query("only_roots") Boolean onlyRoots,
                   @Query("only_starred") Boolean onlyStarred,
                   @Query("only_sticky") Boolean onlySticky,
