@@ -57,6 +57,8 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 WebNewsContract.PostEntry.AUTHOR_NAME + " TEXT, " +
                 WebNewsContract.PostEntry.AUTHOR_EMAIL + " TEXT, " +
                 WebNewsContract.PostEntry.AUTHOR_AVATAR_URL + " TEXT, " +
+                WebNewsContract.PostEntry.RAW_DATE + " TEXT, " +
+                WebNewsContract.PostEntry.BODY_SUMMARY + " TEXT, " +
                 WebNewsContract.PostEntry.UNREAD_CLASS + " String);";
 
 

@@ -77,6 +77,12 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 values.put(WebNewsContract.PostEntry.ANCESTOR_IDS,postObj.getListOfAncestorIds().toString());
                 values.put(WebNewsContract.PostEntry.BODY,postObj.getBody());
 
+                if(postObj.getBody().length() > 200) {
+                    values.put(WebNewsContract.PostEntry.BODY_SUMMARY,postObj.getBody().substring(0,200));
+                } else {
+                    values.put(WebNewsContract.PostEntry.BODY_SUMMARY,postObj.getBody());
+                }
+
                 date = dateTimeFormat.parseDateTime(postObj.getCreatedAt());
                 String finalDate;
 
@@ -91,6 +97,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 }
 
                 values.put(WebNewsContract.PostEntry.CREATED_AT, finalDate);
+                values.put(WebNewsContract.PostEntry.RAW_DATE, postObj.getCreatedAt());
                 values.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, postObj.getFollowupNewsgroupId());
                 values.put(WebNewsContract.PostEntry.HAD_ATTACHMENTS,postObj.hadAttachments());
                 values.put(WebNewsContract.PostEntry.HEADERS,postObj.getHeaders());

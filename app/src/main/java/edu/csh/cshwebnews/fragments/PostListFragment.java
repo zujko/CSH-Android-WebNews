@@ -11,10 +11,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
+
+import com.squareup.picasso.Picasso;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
@@ -23,13 +27,14 @@ import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 
-public class PostListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class PostListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AbsListView.OnScrollListener {
 
     private PostListAdapter mListAdapter;
     private ListView mListView;
     private View mProgressBarLayout;
     private SyncStatusObserver mSyncObserver;
     private Object mSyncHandle;
+    private SwipeRefreshLayout swipeContainer;
     Bundle instanceState;
 
     private static final int POST_LOADER = 0;
@@ -39,6 +44,8 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
         mProgressBarLayout = inflater.inflate(R.layout.post_list_layout_footer,null);
+
+        setupRefreshLayout(rootView);
 
         if(Utility.isNetworkConnected(getActivity())) {
             WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
@@ -50,6 +57,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         mListView = (ListView) rootView.findViewById(R.id.listview);
         mListView.setFooterDividersEnabled(false);
         mListView.addFooterView(mProgressBarLayout);
+        mListView.setOnScrollListener(this);
         mListView.setAdapter(mListAdapter);
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
@@ -85,8 +93,9 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(!Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
+                        if(isAdded() && !Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
                             mListView.removeFooterView(mProgressBarLayout);
+                            swipeContainer.setRefreshing(false);
                         }
                     }
                 });
@@ -103,7 +112,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = WebNewsContract.PostEntry._ID + " DESC";
+        String sortOrder = WebNewsContract.PostEntry.RAW_DATE + " DESC";
 
         Uri postUri = WebNewsContract.PostEntry.CONTENT_URI;
         String selection;
@@ -160,4 +169,37 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
                 })
                 .show();
     }
+
+    /**
+     * Sets up the swipe to refresh layout
+     * @param rootView
+     */
+    private void setupRefreshLayout(final View rootView) {
+        swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(Utility.isNetworkConnected(getActivity())) {
+                    WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
+                } else {
+                    noNetworkSnackbar(rootView);
+                }
+            }
+        });
+        swipeContainer.setColorSchemeResources(R.color.csh_pink,
+                R.color.csh_pink_dark, R.color.csh_purple, R.color.csh_purple_dark);
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        Picasso picasso = Picasso.with(getActivity());
+        if(scrollState == SCROLL_STATE_FLING) {
+            picasso.pauseTag(getActivity());
+        } else{
+            picasso.resumeTag(getActivity());
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
 }
