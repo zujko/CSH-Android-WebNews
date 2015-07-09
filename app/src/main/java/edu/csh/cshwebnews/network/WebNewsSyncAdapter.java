@@ -60,7 +60,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                         extras.getBoolean("only_sticky"), //only_sticky
                         "false", //reverse_order
                         null, //since
-                        null //until
+                        extras.getString("until") //until
                 );
                 List<ContentValues> postList = new LinkedList<ContentValues>();
 

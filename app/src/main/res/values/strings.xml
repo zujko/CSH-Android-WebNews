@@ -15,6 +15,11 @@
 
     <string name="snackbar_refresh">REFRESH</string>
 
+    <!-- Home Fragment Strings -->
+    <string name="home_today">Today</string>
+    <string name="home_yesterday">Yesterday</string>
+    <string name="home_this_month">This Month</string>
+
     <!-- Preference strings -->
     <string name="pref_signed_in">signed_in</string>
 </resources>

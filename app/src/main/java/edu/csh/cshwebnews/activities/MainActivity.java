@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
                 int postId = (int) id;
 
-                if(postId == Utility.DRAWER_ITEM_HOME) {
+                if (postId == Utility.DRAWER_ITEM_HOME) {
                     Bundle args = new Bundle();
                     args.putString("newsgroup_id", null);
                     args.putBoolean("only_starred", false);
