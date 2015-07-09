@@ -15,6 +15,9 @@
 
     <string name="snackbar_refresh">REFRESH</string>
 
+    <!-- New Post strings -->
+    <string name="activity_new_post_title">New Post</string>
+
     <!-- Preference strings -->
     <string name="pref_signed_in">signed_in</string>
     <string name="title_activity_new_post">NewPostActivity</string>
