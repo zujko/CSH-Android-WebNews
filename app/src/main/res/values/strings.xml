@@ -17,6 +17,8 @@
 
     <!-- New Post strings -->
     <string name="activity_new_post_title">New Post</string>
+    <string name="menu_send">Send</string>
+    <string name="menu_save">Save</string>
 
     <!-- Preference strings -->
     <string name="pref_signed_in">signed_in</string>
