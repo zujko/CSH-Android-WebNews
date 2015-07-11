@@ -1,9 +1,12 @@
+
+
 <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:theme="@style/ToolBar"
         android:minHeight="?attr/actionBarSize"
@@ -12,4 +15,84 @@
         android:elevation="4dp">
     </android.support.v7.widget.Toolbar>
 
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/new_post_newsgroup_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/newsgroup_textview"
+                android:padding="10dp"
+                android:textSize="16sp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:layout_gravity="center_vertical"
+                android:text="@string/activity_new_post_layout_newsgroup_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:id="@+id/current_newsgroup_text"
+                android:padding="10dp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:padding="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="?attr/divider_color"/>
+    
+    <EditText
+        android:id="@+id/subject_edittext"
+        android:paddingLeft="10dp"
+        android:textSize="16sp"
+        android:hint="Subject"
+        android:singleLine="true"
+        android:background="#00000000"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:background="?attr/divider_color"/>
+
+    <EditText
+        android:id="@+id/body_edittext"
+        android:hint="Body"
+        android:paddingLeft="10dp"
+        android:textSize="16sp"
+        android:background="#00000000"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textCapSentences|textMultiLine"
+        android:maxLength="5000"
+        android:maxLines="150"/>
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
+
