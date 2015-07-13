@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.adapters.NewsgroupSpinnerAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 
@@ -26,11 +27,14 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     private Spinner mSpinner;
     private NewsgroupSpinnerAdapter mSpinnerAdapter;
     private ImageView mDownArrow;
+    private String newsgroupId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
+        newsgroupId = getIntent().getStringExtra("newsgroup_id");
+
         setUpToolbar();
 
         mSpinnerAdapter = new NewsgroupSpinnerAdapter(this,null,0);
@@ -109,6 +113,9 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mSpinnerAdapter.swapCursor(data);
+        if(newsgroupId != null) {
+            mSpinner.setSelection(Utility.cursorSearch(Integer.valueOf(newsgroupId),data));
+        }
     }
 
     @Override

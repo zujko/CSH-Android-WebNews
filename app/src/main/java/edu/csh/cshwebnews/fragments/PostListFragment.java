@@ -60,6 +60,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
             public void onClick(View v) {
                 if(isAdded()) {
                     Intent intent = new Intent(getActivity(), NewPostActivity.class);
+                    intent.putExtra("newsgroup_id",getArguments().getString("newsgroup_id"));
                     startActivity(intent);
                 }
             }

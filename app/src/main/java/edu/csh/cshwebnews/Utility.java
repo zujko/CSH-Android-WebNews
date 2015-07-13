@@ -5,8 +5,11 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncInfo;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import edu.csh.cshwebnews.database.WebNewsContract;
 
 public class Utility {
 
@@ -59,5 +62,21 @@ public class Utility {
      */
     public static Account getAccount(Context context) {
         return AccountManager.get(context).getAccountsByType(context.getString(R.string.account_type))[0];
+    }
+
+    /**
+     * Returns the position of an item given its id
+     * @param id
+     * @param cursor
+     * @return
+     */
+    public static int cursorSearch(int id, Cursor cursor) {
+        for(int x = 0, items = cursor.getCount(); x < items; x++ ) {
+            cursor.moveToPosition(x);
+            if(cursor.getInt(WebNewsContract.NEWSGROUP_COL_ID) == id) {
+                return x;
+            }
+        }
+        return 0;
     }
 }
