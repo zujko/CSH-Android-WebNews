@@ -158,6 +158,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void noNetworkSnackbar(final View rootView) {
+        swipeContainer.setRefreshing(false);
         //TODO Wait for bug fix so that snackbar will display indefinitely
         // (Currently setting a custom duration does not work)
         Snackbar.make(rootView, getString(R.string.error_no_network_simple),Snackbar.LENGTH_LONG)
