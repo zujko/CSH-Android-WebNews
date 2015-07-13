@@ -66,6 +66,7 @@
     <EditText
         android:id="@+id/subject_edittext"
         android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:textSize="16sp"
         android:hint="Subject"
         android:singleLine="true"
@@ -84,6 +85,8 @@
         android:id="@+id/body_edittext"
         android:hint="Body"
         android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
         android:textSize="16sp"
         android:background="#00000000"
         android:layout_width="match_parent"
