@@ -1,13 +1,17 @@
 package edu.csh.cshwebnews.fragments;
 
 
+import android.content.ContentResolver;
+import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
@@ -31,6 +36,9 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private PostListAdapter mYesterdayAdapter;
     private PostListAdapter mThisMonthAdapter;
     private ListView mListview;
+    private SwipeRefreshLayout swipeContainer;
+    private SyncStatusObserver mSyncObserver;
+    private Object mSyncHandle;
 
     private static final int TODAY_LOADER = 0;
     private static final int YESTERDAY_LOADER = 1;
@@ -48,6 +56,8 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
             WebNewsSyncAdapter.syncImmediately(getActivity(),args);
         }
 
+        setUpRefreshLayout(rootView);
+
         mMergeAdapter = new MergeAdapter();
         setUpMergeAdapter(inflater);
 
@@ -58,6 +68,40 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         getLoaderManager().initLoader(YESTERDAY_LOADER, getArguments(), this);
         getLoaderManager().initLoader(THIS_MONTH_LOADER, getArguments(), this);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
+        mSyncHandle = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mSyncHandle != null) {
+            ContentResolver.removeStatusChangeListener(mSyncHandle);
+            mSyncHandle = null;
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mSyncObserver = new SyncStatusObserver() {
+            @Override
+            public void onStatusChanged(int which) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(isAdded() && !Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
+                            swipeContainer.setRefreshing(false);
+                        }
+                    }
+                });
+            }
+        };
     }
 
     @Override
@@ -126,6 +170,40 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 mThisMonthAdapter.swapCursor(null);
         }
 
+    }
+
+    private void setUpRefreshLayout(final View rootView) {
+        swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(Utility.isNetworkConnected(getActivity())) {
+                    WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
+                } else {
+                    noNetworkSnackbar(rootView);
+                }
+            }
+        });
+        swipeContainer.setColorSchemeResources(R.color.csh_pink,
+                R.color.csh_pink_dark, R.color.csh_purple, R.color.csh_purple_dark);
+    }
+
+    private void noNetworkSnackbar(final View rootView) {
+        //TODO Wait for bug fix so that snackbar will display indefinitely
+        // (Currently setting a custom duration does not work)
+        swipeContainer.setRefreshing(false);
+        Snackbar.make(rootView, getString(R.string.error_no_network_simple), Snackbar.LENGTH_LONG)
+                .setAction(getString(R.string.snackbar_refresh), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (Utility.isNetworkConnected(getActivity())) {
+                            WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
+                        } else {
+                            noNetworkSnackbar(rootView);
+                        }
+                    }
+                })
+                .show();
     }
 
     private void setUpMergeAdapter(LayoutInflater inflater) {
