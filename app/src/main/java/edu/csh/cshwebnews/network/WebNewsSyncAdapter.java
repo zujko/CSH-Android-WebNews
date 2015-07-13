@@ -60,7 +60,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                         extras.getBoolean("only_sticky"), //only_sticky
                         "false", //reverse_order
                         null, //since
-                        null //until
+                        extras.getString("until") //until
                 );
                 List<ContentValues> postList = new LinkedList<ContentValues>();
 
@@ -174,8 +174,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 AccountManager.get(getContext()).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE,authToken);
             }
             Log.e("RETROFIT ERROR", "Response: " + e.getResponse()+"\n" +
-                                    "Message: " +e.getMessage() +"\n" +
-                                    "URL: "+e.getResponse().getUrl()+"\n");
+                                    "Message: " +e.getMessage() +"\n");
         }
         catch (OperationCanceledException e) {
             e.printStackTrace();
