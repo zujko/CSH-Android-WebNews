@@ -39,6 +39,9 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private SwipeRefreshLayout swipeContainer;
     private SyncStatusObserver mSyncObserver;
     private Object mSyncHandle;
+    private TextView todayText;
+    private TextView yesterdayText;
+    private TextView thisMonthTextView;
 
     private static final int TODAY_LOADER = 0;
     private static final int YESTERDAY_LOADER = 1;
@@ -57,6 +60,10 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         }
 
         setUpRefreshLayout(rootView);
+
+        todayText           = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
+        yesterdayText       = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
+        thisMonthTextView   = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
 
         mMergeAdapter = new MergeAdapter();
         setUpMergeAdapter(inflater);
@@ -146,12 +153,27 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         switch (loader.getId()) {
             case TODAY_LOADER:
                 mTodayAdapter.swapCursor(data);
+                if(data.getCount() == 0) {
+                    mMergeAdapter.setActive(todayText,false);
+                } else {
+                    mMergeAdapter.setActive(todayText,true);
+                }
                 break;
             case YESTERDAY_LOADER:
                 mYesterdayAdapter.swapCursor(data);
+                if(data.getCount() == 0) {
+                    mMergeAdapter.setActive(yesterdayText,false);
+                } else {
+                    mMergeAdapter.setActive(todayText,true);
+                }
                 break;
             case THIS_MONTH_LOADER:
                 mThisMonthAdapter.swapCursor(data);
+                if(data.getCount() == 0) {
+                    mMergeAdapter.setActive(thisMonthTextView,false);
+                } else {
+                    mMergeAdapter.setActive(thisMonthTextView,true);
+                }
                 break;
         }
 
@@ -207,19 +229,16 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private void setUpMergeAdapter(LayoutInflater inflater) {
-        TextView todayText = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
         todayText.setText(getString(R.string.home_today));
         mMergeAdapter.addView(todayText);
         mTodayAdapter = new PostListAdapter(getActivity(),null,0);
         mMergeAdapter.addAdapter(mTodayAdapter);
 
-        TextView yesterdayText = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
         yesterdayText.setText(getString(R.string.home_yesterday));
         mMergeAdapter.addView(yesterdayText);
         mYesterdayAdapter = new PostListAdapter(getActivity(),null,0);
         mMergeAdapter.addAdapter(mYesterdayAdapter);
 
-        TextView thisMonthTextView = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
         thisMonthTextView.setText(getString(R.string.home_this_month));
         mMergeAdapter.addView(thisMonthTextView);
         mThisMonthAdapter = new PostListAdapter(getActivity(),null,0);
