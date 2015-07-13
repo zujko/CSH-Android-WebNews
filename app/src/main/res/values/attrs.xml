@@ -9,6 +9,7 @@
     <attr name="stickied_icon" format="reference"/>
     <attr name="settings_icon" format="reference"/>
     <attr name="about_icon" format="reference"/>
+    <attr name="down_arrow_icon" format="reference"/>
     <attr name="divider_color" format="reference"/>
     <attr name="inactive_color" format="reference"/>
 
