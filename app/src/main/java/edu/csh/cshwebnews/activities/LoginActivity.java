@@ -191,6 +191,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
                             WebNewsService webNewsService= ServiceGenerator.createService(WebNewsService.class,
                                     WebNewsService.BASE_URL, accessToken.getAccessToken(), accessToken.getTokenType());
+                            Utility.webNewsService = webNewsService;
                             // Get user data
                             webNewsService.getUser(new Callback<User>() {
 

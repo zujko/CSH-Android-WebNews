@@ -12,7 +12,9 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.activities.LoginActivity;
+import edu.csh.cshwebnews.models.WebNewsAccount;
 import edu.csh.cshwebnews.network.ServiceGenerator;
 import edu.csh.cshwebnews.network.WebNewsService;
 import retrofit.RetrofitError;
@@ -65,6 +67,7 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, accessToken);
+            Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class,WebNewsService.BASE_URL,accessToken, WebNewsAccount.AUTHTOKEN_TYPE);
             return result;
         }
 

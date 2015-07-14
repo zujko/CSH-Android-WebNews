@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.network.WebNewsService;
 
 public class Utility {
 
@@ -30,6 +31,8 @@ public class Utility {
     public static final int DRAWER_FOOTER_ABOUT_ID = -8;
     public static final int DRAWER_FOOTER_SETTINGS = 0;
     public static final int DRAWER_FOOTER_ABOUT = 1;
+
+    public static WebNewsService webNewsService = null;
 
 
     /**
