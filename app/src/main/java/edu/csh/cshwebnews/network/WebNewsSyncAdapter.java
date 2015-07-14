@@ -2,6 +2,8 @@ package edu.csh.cshwebnews.network;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -15,6 +17,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +43,9 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         try {
+            if(Utility.webNewsService == null) {
+                setWebnewsService(account);
+            }
 
             if(extras.getBoolean("get_posts",true)) {
                 RetrievingPosts posts = Utility.webNewsService.syncGetPosts("false", //as_meta
@@ -184,5 +190,19 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(AccountManager.get(context).getAccountsByType(WebNewsAccount.ACCOUNT_TYPE)[0],
                 context.getString(R.string.content_authority), bundle);
+    }
+
+    private void setWebnewsService(Account account) {
+        try {
+            authToken = AccountManager.get(getContext()).blockingGetAuthToken(account, WebNewsAccount.AUTHTOKEN_TYPE, true);
+            Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL, authToken, WebNewsAccount.AUTHTOKEN_TYPE);
+        } catch (OperationCanceledException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (AuthenticatorException e) {
+            e.printStackTrace();
+        }
+
     }
 }

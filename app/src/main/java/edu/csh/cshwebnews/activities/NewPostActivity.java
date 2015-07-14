@@ -1,5 +1,9 @@
 package edu.csh.cshwebnews.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -12,13 +16,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.adapters.NewsgroupSpinnerAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.services.PostService;
 
 public class NewPostActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -27,7 +35,24 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     private Spinner mSpinner;
     private NewsgroupSpinnerAdapter mSpinnerAdapter;
     private ImageView mDownArrow;
-    private String newsgroupId = null;
+    private EditText mBodyText;
+    private EditText mSubjectText;
+    private static String newsgroupId = null;
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if(bundle != null) {
+                if(bundle.getBoolean(PostService.POST_SUCCESS)){
+                    Toast.makeText(getApplicationContext(),"Posted!",Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(),"Post Failed",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +60,24 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
         setContentView(R.layout.activity_new_post);
         newsgroupId = getIntent().getStringExtra("newsgroup_id");
 
+        mBodyText = (EditText) findViewById(R.id.body_edittext);
+        mSubjectText = (EditText) findViewById(R.id.subject_edittext);
+
         setUpToolbar();
 
         mSpinnerAdapter = new NewsgroupSpinnerAdapter(this,null,0);
         mSpinner = (Spinner) findViewById(R.id.spinner);
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                newsgroupId = String.valueOf(id);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         mSpinner.setAdapter(mSpinnerAdapter);
 
         mDownArrow = (ImageView) findViewById(R.id.down_arrow_image);
@@ -50,6 +89,18 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
         });
 
         getSupportLoaderManager().initLoader(NEWSGROUP_LOADER, null, this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(mBroadcastReceiver, new IntentFilter(PostService.NOTIFICATION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
@@ -66,9 +117,13 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_send:
+                post();
+                break;
+            case R.id.action_settings:
+                break;
+            case R.id.action_save:
         }
 
         return super.onOptionsItemSelected(item);
@@ -121,5 +176,14 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mSpinnerAdapter.swapCursor(null);
+    }
+
+    private void post() {
+        Intent intent = new Intent(this, PostService.class);
+        intent.putExtra(PostService.BODY,mBodyText.getText().toString());
+        intent.putExtra(PostService.NEWSGROUP_ID,newsgroupId);
+        intent.putExtra(PostService.SUBJECT,mSubjectText.getText().toString());
+        Toast.makeText(this,"Posting...",Toast.LENGTH_SHORT).show();
+        startService(intent);
     }
 }
