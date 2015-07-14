@@ -41,7 +41,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private Object mSyncHandle;
     private TextView todayText;
     private TextView yesterdayText;
-    private TextView thisMonthTextView;
+    private TextView thisMonthText;
 
     private static final int TODAY_LOADER = 0;
     private static final int YESTERDAY_LOADER = 1;
@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 
         todayText           = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
         yesterdayText       = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
-        thisMonthTextView   = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
+        thisMonthText = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
 
         mMergeAdapter = new MergeAdapter();
         setUpMergeAdapter(inflater);
@@ -164,15 +164,15 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 if(data.getCount() == 0) {
                     mMergeAdapter.setActive(yesterdayText,false);
                 } else {
-                    mMergeAdapter.setActive(todayText,true);
+                    mMergeAdapter.setActive(yesterdayText,true);
                 }
                 break;
             case THIS_MONTH_LOADER:
                 mThisMonthAdapter.swapCursor(data);
                 if(data.getCount() == 0) {
-                    mMergeAdapter.setActive(thisMonthTextView,false);
+                    mMergeAdapter.setActive(thisMonthText,false);
                 } else {
-                    mMergeAdapter.setActive(thisMonthTextView,true);
+                    mMergeAdapter.setActive(thisMonthText,true);
                 }
                 break;
         }
@@ -231,16 +231,19 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private void setUpMergeAdapter(LayoutInflater inflater) {
         todayText.setText(getString(R.string.home_today));
         mMergeAdapter.addView(todayText);
+        mMergeAdapter.setActive(todayText, false);
         mTodayAdapter = new PostListAdapter(getActivity(),null,0);
         mMergeAdapter.addAdapter(mTodayAdapter);
 
         yesterdayText.setText(getString(R.string.home_yesterday));
         mMergeAdapter.addView(yesterdayText);
-        mYesterdayAdapter = new PostListAdapter(getActivity(),null,0);
+        mMergeAdapter.setActive(yesterdayText, false);
+        mYesterdayAdapter = new PostListAdapter(getActivity(), null, 0);
         mMergeAdapter.addAdapter(mYesterdayAdapter);
 
-        thisMonthTextView.setText(getString(R.string.home_this_month));
-        mMergeAdapter.addView(thisMonthTextView);
+        thisMonthText.setText(getString(R.string.home_this_month));
+        mMergeAdapter.addView(thisMonthText);
+        mMergeAdapter.setActive(thisMonthText, false);
         mThisMonthAdapter = new PostListAdapter(getActivity(),null,0);
         mMergeAdapter.addAdapter(mThisMonthAdapter);
 
