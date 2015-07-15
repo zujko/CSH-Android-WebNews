@@ -13,6 +13,9 @@ import edu.csh.cshwebnews.models.Post;
 import edu.csh.cshwebnews.models.PostRequestBody;
 import edu.csh.cshwebnews.models.RetrievingPosts;
 import edu.csh.cshwebnews.models.User;
+import edu.csh.cshwebnews.models.requests.CancelPostRequestBody;
+import edu.csh.cshwebnews.models.requests.StickyRequestBody;
+import edu.csh.cshwebnews.models.requests.UnreadRequestBody;
 import retrofit.Callback;
 import retrofit.client.Response;
 import retrofit.http.Body;
@@ -84,16 +87,15 @@ public interface WebNewsService {
 
     @DELETE("/posts/{id}")
     void deletePost(@Path("id") String id,
-                    @Query("posting_host") String postingHost,
-                    @Query("reason") String reason,
+                    @Body CancelPostRequestBody body,
                     Callback<Response> responseCallback);
 
     @DELETE("/unreads")
-    void markPostRead(@Query("post_ids") String postIds,
+    void markPostRead(@Body UnreadRequestBody body,
                       Callback<Response> responseCallback);
 
     @POST("/unreads")
-    void markPostUnread(@Query("post_ids") String postIds,
+    void markPostUnread(@Body UnreadRequestBody body,
                         Callback<Response> responseCallback);
 
     @POST("/posts/{id}/star")
@@ -105,8 +107,8 @@ public interface WebNewsService {
                     Callback<Response> responseCallback);
 
     @PATCH("/posts/{id}/sticky")
-    void stickyPost(@Query("expires_at") String expireDate,
-                    @Path("id") String id,
+    void stickyPost(@Path("id") String id,
+                    @Body StickyRequestBody body,
                     Callback<Response> responseCallback);
 
     @POST("/oauth/token")
