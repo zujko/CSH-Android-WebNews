@@ -38,6 +38,7 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     private EditText mBodyText;
     private EditText mSubjectText;
     private static String newsgroupId = null;
+
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -48,7 +49,7 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
                     startActivity(new Intent(getApplicationContext(),MainActivity.class));
                     finish();
                 } else {
-                    Toast.makeText(getApplicationContext(),"Post Failed",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Post Failed: "+bundle.getString(PostService.ERROR_REASON),Toast.LENGTH_SHORT).show();
                 }
             }
         }

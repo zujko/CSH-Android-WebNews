@@ -49,7 +49,7 @@ public class DrawerListAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
         viewHolder.newsgroupTextView.setText(cursor.getString(WebNewsContract.NEWSGROUP_COL_NAME));
         if(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT) > 0){
-            viewHolder.unreadTextView.setText(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT));
+            //viewHolder.unreadTextView.setText(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT));
         }
     }
 }

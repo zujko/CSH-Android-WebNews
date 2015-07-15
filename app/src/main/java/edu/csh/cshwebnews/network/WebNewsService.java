@@ -10,10 +10,12 @@ package edu.csh.cshwebnews.network;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.Post;
+import edu.csh.cshwebnews.models.PostRequestBody;
 import edu.csh.cshwebnews.models.RetrievingPosts;
 import edu.csh.cshwebnews.models.User;
 import retrofit.Callback;
 import retrofit.client.Response;
+import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.PATCH;
@@ -77,12 +79,7 @@ public interface WebNewsService {
                   @Query("until") String untilDate);
 
     @POST("/posts")
-    void post(@Query("body") String body,
-              @Query("followup_newsgroup_id") Integer followUpNewsGroupId,
-              @Query("newsgroup_ids") String newsgroupIds,
-              @Query("parent_id") Integer parentId,
-              @Query("posting_host") String postingHost,
-              @Query("subject") String subject,
+    void post(@Body PostRequestBody body,
               Callback<Response> responseCallback);
 
     @DELETE("/posts/{id}")
