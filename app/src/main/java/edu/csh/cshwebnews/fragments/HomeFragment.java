@@ -123,22 +123,24 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
             case TODAY_LOADER:
                 selection = WebNewsContract.PostEntry.CREATED_AT + " LIKE ?" +
                         " AND " + WebNewsContract.PostEntry.ANCESTOR_IDS + " = ?";
-                selectionArgs = new String[]{"%"+":"+"%","[]"};
+                selectionArgs = new String[]{"%"+":"+"%","[]","%"+Utility.CANCEL_NEWSGROUP_ID+"%"};
                 break;
             case YESTERDAY_LOADER:
                 selection = WebNewsContract.PostEntry.CREATED_AT +" LIKE ?" +
                         " AND " + WebNewsContract.PostEntry.ANCESTOR_IDS + " = ?";
                 SimpleDateFormat monthDate = new SimpleDateFormat("MMM");
-                selectionArgs = new String[]{monthDate.format(c.getTime())+ " "+(c.get(Calendar.DAY_OF_MONTH)-1),"[]"};
+                selectionArgs = new String[]{monthDate.format(c.getTime())+ " "+(c.get(Calendar.DAY_OF_MONTH)-1),"[]","%"+Utility.CANCEL_NEWSGROUP_ID+"%"};
                 break;
             case THIS_MONTH_LOADER:
                 selection = WebNewsContract.PostEntry.CREATED_AT + " LIKE ? AND " +
                         WebNewsContract.PostEntry.CREATED_AT + " != ?" +
                         " AND " + WebNewsContract.PostEntry.ANCESTOR_IDS + " = ?";
                 SimpleDateFormat monthDateItem = new SimpleDateFormat("MMM");
-                selectionArgs = new String[]{monthDateItem.format(c.getTime())+"%",monthDateItem.format(c.getTime())+ " " +(c.get(Calendar.DAY_OF_MONTH)-1),"[]"};
+                selectionArgs = new String[]{monthDateItem.format(c.getTime())+"%",monthDateItem.format(c.getTime())+ " " +(c.get(Calendar.DAY_OF_MONTH)-1),"[]","%"+Utility.CANCEL_NEWSGROUP_ID+"%"};
                 break;
         }
+
+        selection += " AND " + WebNewsContract.PostEntry.NEWSGROUP_IDS + " NOT LIKE ?";
 
         return new CursorLoader(getActivity(),
                 WebNewsContract.PostEntry.CONTENT_URI,

@@ -28,6 +28,7 @@ public class Utility {
     public static final int DRAWER_FOOTER_SETTINGS = 0;
     public static final int DRAWER_FOOTER_ABOUT = 1;
 
+    public static final String CANCEL_NEWSGROUP_ID = "33";
 
     /**
      * Checks if the device is connected to a network
