@@ -58,7 +58,9 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.push_up_in, R.anim.fade_out);
         setContentView(R.layout.activity_new_post);
+
         newsgroupId = getIntent().getStringExtra("newsgroup_id");
 
         mBodyText = (EditText) findViewById(R.id.body_edittext);
@@ -102,6 +104,7 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mBroadcastReceiver);
+        overridePendingTransition(R.anim.push_down_in, R.anim.fade_out);
     }
 
     @Override
