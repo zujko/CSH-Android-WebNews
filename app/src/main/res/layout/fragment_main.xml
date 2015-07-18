@@ -11,6 +11,7 @@
         android:layout_height="match_parent">
         <ListView
             android:id="@+id/listview"
+            android:animateLayoutChanges="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:drawSelectorOnTop="true" />
