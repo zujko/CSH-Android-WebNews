@@ -80,7 +80,7 @@ public class PostListAdapter extends CursorAdapter {
 
         // If the post is starred, make the star image yellow
         if(cursor.getInt(WebNewsContract.COL_IS_STARRED) == 1) {
-            viewHolder.starImageView.setImageResource(R.drawable.ic_star_yellow_48dp);
+            viewHolder.starImageView.setImageResource(R.drawable.ic_star_yellow);
         } else {
             TypedValue typedValue = new TypedValue();
             context.getTheme().resolveAttribute(R.attr.star_color,typedValue,true);
