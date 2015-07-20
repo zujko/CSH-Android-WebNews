@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -25,7 +25,7 @@ public class PostListAdapter extends CursorAdapter {
         public final TextView authorTextView;
         public final TextView summaryTextView;
         public final TextView dateTextView;
-        public final LinearLayout rootView;
+        public final RelativeLayout rootView;
 
         public ViewHolder(View view) {
             authorImage = (ImageView) view.findViewById(R.id.list_item_author_profile_image);
@@ -34,7 +34,7 @@ public class PostListAdapter extends CursorAdapter {
             authorTextView = (TextView) view.findViewById(R.id.list_item_author);
             summaryTextView = (TextView) view.findViewById(R.id.list_item_post_summary);
             dateTextView = (TextView) view.findViewById(R.id.list_item_post_date);
-            rootView = (LinearLayout) view.findViewById(R.id.list_item_root_layout);
+            rootView = (RelativeLayout) view.findViewById(R.id.list_item_root_layout);
         }
     }
 
