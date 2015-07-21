@@ -29,7 +29,8 @@
 
         <activity
             android:name=".activities.MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:launchMode="singleTop">
         </activity>
 
         <provider
@@ -57,6 +58,18 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
+        <service android:name=".services.PostService"/>
+
+        <activity
+            android:name=".activities.NewPostActivity"
+            android:label="@string/activity_new_post_title"
+            android:parentActivityName=".activities.MainActivity"
+            android:windowSoftInputMode="stateAlwaysVisible">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.csh.cshwebnews.activities.MainActivity" />
+        </activity>
 
     </application>
 

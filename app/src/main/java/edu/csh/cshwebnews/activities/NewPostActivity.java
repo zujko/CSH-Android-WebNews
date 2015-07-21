@@ -139,12 +139,6 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     private void setUpToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setNavigationIcon(R.drawable.ic_toolbar_back_arrow);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
 
         setSupportActionBar(mToolbar);
 
