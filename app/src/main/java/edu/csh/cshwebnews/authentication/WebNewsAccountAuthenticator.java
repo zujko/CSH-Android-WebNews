@@ -32,8 +32,8 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         final Intent intent = new Intent(context, LoginActivity.class);
-        intent.putExtra(LoginActivity.ARG_ACCOUNT_TYPE, accountType);
-        intent.putExtra(LoginActivity.ARG_AUTH_TYPE, authTokenType);
+        intent.putExtra(WebNewsAccount.ARG_ACCOUNT_TYPE, accountType);
+        intent.putExtra(WebNewsAccount.ARG_AUTH_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT,intent);
@@ -75,8 +75,8 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
         //so prompt the user to sign in again.
         final Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-        intent.putExtra(LoginActivity.ARG_ACCOUNT_TYPE, account.type);
-        intent.putExtra(LoginActivity.ARG_AUTH_TYPE, authTokenType);
+        intent.putExtra(WebNewsAccount.ARG_ACCOUNT_TYPE, account.type);
+        intent.putExtra(WebNewsAccount.ARG_AUTH_TYPE, authTokenType);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(context.getString(R.string.pref_signed_in),false).commit();

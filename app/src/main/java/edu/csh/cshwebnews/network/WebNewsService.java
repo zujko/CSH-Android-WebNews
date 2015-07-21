@@ -35,6 +35,9 @@ public interface WebNewsService {
     @GET("/user")
     void getUser(Callback<User> userCallback);
 
+    @GET("/user")
+    User blockingGetUser();
+
     @GET("/newsgroups")
     void getNewsGroups(Callback<NewsGroups> newsGroupsCallback);
 
@@ -118,6 +121,12 @@ public interface WebNewsService {
                                @Query("client_id") String clientId,
                                @Query("client_secret") String clientSecret,
                                Callback<AccessToken> accessTokenCallback);
+    @POST("/oauth/token")
+    AccessToken blockingGetAccessToken(@Query("grant_type") String grantType,
+                        @Query("code") String code,
+                        @Query("redirect_uri") String redirectUri,
+                        @Query("client_id") String clientId,
+                        @Query("client_secret") String clientSecret);
 
     @POST("/oauth/token")
     void refreshAccessToken(@Query("grant_type") String grantType,
