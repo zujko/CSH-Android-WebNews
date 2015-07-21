@@ -168,6 +168,9 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
         mSpinnerAdapter.swapCursor(data);
         if(newsgroupId != null) {
             mSpinner.setSelection(Utility.cursorSearch(Integer.valueOf(newsgroupId),data));
+        } else {
+            mSpinner.setSelection(0);
+            mSpinner.performClick();
         }
     }
 
