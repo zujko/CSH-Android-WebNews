@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.User;
@@ -146,6 +147,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
                             WebNewsService webNewsService= ServiceGenerator.createService(WebNewsService.class,
                                     WebNewsService.BASE_URL, accessToken.getAccessToken(), accessToken.getTokenType());
+                            Utility.webNewsService = webNewsService;
                             // Get user data
                             webNewsService.getUser(new Callback<User>() {
 

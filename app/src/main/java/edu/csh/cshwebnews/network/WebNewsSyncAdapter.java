@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.Post;
@@ -42,11 +43,12 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         try {
-            authToken = AccountManager.get(getContext()).blockingGetAuthToken(account, WebNewsAccount.AUTHTOKEN_TYPE, true);
-            WebNewsService service = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL, authToken, WebNewsAccount.AUTHTOKEN_TYPE);
+            if(Utility.webNewsService == null) {
+                setWebnewsService(account);
+            }
 
             if(extras.getBoolean("get_posts",true)) {
-                RetrievingPosts posts = service.syncGetPosts("false", //as_meta
+                RetrievingPosts posts = Utility.webNewsService.syncGetPosts("false", //as_meta
                         extras.getBoolean("as_threads"), //as_threads
                         null, //authors
                         null, //keywords
@@ -138,7 +140,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             if(extras.getBoolean("get_newsgroups",true)) {
-                NewsGroups newsGroups = service.syncGetNewsGroups();
+                NewsGroups newsGroups = Utility.webNewsService.syncGetNewsGroups();
 
                 List<ContentValues> newsgroupList = new LinkedList<ContentValues>();
 
@@ -176,13 +178,6 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.e("RETROFIT ERROR", "Response: " + e.getResponse()+"\n" +
                                     "Message: " +e.getMessage() +"\n");
         }
-        catch (OperationCanceledException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (AuthenticatorException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -194,5 +189,19 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(AccountManager.get(context).getAccountsByType(WebNewsAccount.ACCOUNT_TYPE)[0],
                 context.getString(R.string.content_authority), bundle);
+    }
+
+    private void setWebnewsService(Account account) {
+        try {
+            authToken = AccountManager.get(getContext()).blockingGetAuthToken(account, WebNewsAccount.AUTHTOKEN_TYPE, true);
+            Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL, authToken, WebNewsAccount.AUTHTOKEN_TYPE);
+        } catch (OperationCanceledException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (AuthenticatorException e) {
+            e.printStackTrace();
+        }
+
     }
 }

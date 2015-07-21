@@ -2,10 +2,12 @@ package edu.csh.cshwebnews.fragments;
 
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -25,6 +27,7 @@ import java.util.Calendar;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
+import edu.csh.cshwebnews.activities.NewPostActivity;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
@@ -42,6 +45,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private TextView todayText;
     private TextView yesterdayText;
     private TextView thisMonthText;
+    private FloatingActionButton mFloatingActionButton;
 
     private static final int TODAY_LOADER = 0;
     private static final int YESTERDAY_LOADER = 1;
@@ -51,6 +55,16 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
+        mFloatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isAdded()) {
+                    Intent intent = new Intent(getActivity(), NewPostActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
 
         if(isAdded()) {
             Bundle args = getArguments();
