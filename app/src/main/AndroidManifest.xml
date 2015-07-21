@@ -60,8 +60,6 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <service android:name=".services.PostService"/>
-
         <activity
             android:name=".activities.NewPostActivity"
             android:label="@string/activity_new_post_title"

@@ -88,6 +88,9 @@ public interface WebNewsService {
     void post(@Body PostRequestBody body,
               Callback<Response> responseCallback);
 
+    @POST("/posts")
+    Response blockingPost(@Body PostRequestBody body);
+
     @DELETE("/posts/{id}")
     void deletePost(@Path("id") String id,
                     @Body CancelPostRequestBody body,

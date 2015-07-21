@@ -1,9 +1,6 @@
 package edu.csh.cshwebnews.activities;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -22,11 +19,14 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
+import edu.csh.cshwebnews.WebNewsApplication;
 import edu.csh.cshwebnews.adapters.NewsgroupSpinnerAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
-import edu.csh.cshwebnews.services.PostService;
+import edu.csh.cshwebnews.events.NewPostEvent;
+import edu.csh.cshwebnews.jobs.NewPostJob;
 
 public class NewPostActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -38,22 +38,6 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     private EditText mBodyText;
     private EditText mSubjectText;
     private static String newsgroupId = null;
-
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-            if(bundle != null) {
-                if(bundle.getBoolean(PostService.POST_SUCCESS)){
-                    Toast.makeText(getApplicationContext(),"Posted!",Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                    finish();
-                } else {
-                    Toast.makeText(getApplicationContext(),"Post Failed: "+bundle.getString(PostService.ERROR_REASON),Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,12 +59,10 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 newsgroupId = String.valueOf(id);
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
+
         mSpinner.setAdapter(mSpinnerAdapter);
 
         mDownArrow = (ImageView) findViewById(R.id.down_arrow_image);
@@ -95,15 +77,20 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(mBroadcastReceiver, new IntentFilter(PostService.NOTIFICATION));
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mBroadcastReceiver);
         overridePendingTransition(R.anim.push_down_in, R.anim.fade_out);
     }
 
@@ -180,11 +167,23 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     }
 
     private void post() {
-        Intent intent = new Intent(this, PostService.class);
-        intent.putExtra(PostService.BODY,mBodyText.getText().toString());
-        intent.putExtra(PostService.NEWSGROUP_ID,newsgroupId);
-        intent.putExtra(PostService.SUBJECT,mSubjectText.getText().toString());
+        Bundle args = new Bundle();
+        args.putString(NewPostJob.BODY, mBodyText.getText().toString());
+        args.putString(NewPostJob.NEWSGROUP_ID, newsgroupId);
+        args.putString(NewPostJob.SUBJECT, mSubjectText.getText().toString());
+
         Toast.makeText(this,"Posting...",Toast.LENGTH_SHORT).show();
-        startService(intent);
+
+        WebNewsApplication.getJobManager().addJobInBackground(new NewPostJob(args));
+    }
+
+    public void onEventMainThread(NewPostEvent event) {
+        if(event.success) {
+            Toast.makeText(this, getString(R.string.new_post_successful_post), Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        } else {
+            Toast.makeText(this, getString(R.string.new_post_error_post) + "\n" + event.errorMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 }
