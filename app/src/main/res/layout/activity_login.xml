@@ -25,7 +25,22 @@
         android:layout_marginTop="5dp"
         android:layout_centerInParent="true"/>
 
-
+    <TextView
+        android:id="@+id/error_textview"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+    <Button
+        android:text="REFRESH"
+        android:textSize="10sp"
+        android:id="@+id/refresh_button"
+        android:layout_below="@id/error_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
 </RelativeLayout>
 

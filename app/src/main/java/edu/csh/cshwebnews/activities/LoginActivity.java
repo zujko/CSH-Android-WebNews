@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     WebView loginWebView;
     ImageView mImageView;
     TextView mTextview;
+    TextView mErrorTextView;
+    Button mRefreshButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,17 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             loginWebView = (WebView) findViewById(R.id.web_oauth);
             mImageView = (ImageView) findViewById(R.id.csh_logo);
             mTextview = (TextView) findViewById(R.id.loading_textview);
+            mErrorTextView = (TextView) findViewById(R.id.error_textview);
+            mRefreshButton = (Button) findViewById(R.id.refresh_button);
+            mRefreshButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mErrorTextView.setVisibility(View.GONE);
+                    mRefreshButton.setVisibility(View.GONE);
+                    loginWebView.loadUrl(WebNewsService.BASE_URL + "/oauth/authorize" +
+                            "?client_id=" + clientId + "&redirect_uri=" + WebNewsService.REDIRECT_URI + "&response_type=code");
+                }
+            });
 
             mImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
             loginWebView.setVisibility(View.GONE);
@@ -98,7 +112,11 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Toast.makeText(getBaseContext(), "An error occurred, please try signing in again", Toast.LENGTH_LONG).show();
+                view.loadUrl("");
+                view.setVisibility(View.GONE);
+                mErrorTextView.setVisibility(View.VISIBLE);
+                mRefreshButton.setVisibility(View.VISIBLE);
+                mErrorTextView.setText("Error loading page...\n" + description);
             }
         });
 
