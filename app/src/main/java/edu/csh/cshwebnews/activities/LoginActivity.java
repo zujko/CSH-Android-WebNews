@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -51,6 +52,9 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             startActivity(new Intent(this,MainActivity.class));
             finish();
         } else {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(getResources().getColor(R.color.black));
+            }
             accountManager  = AccountManager.get(getBaseContext());
             loginWebView = (WebView) findViewById(R.id.web_oauth);
             mImageView = (ImageView) findViewById(R.id.csh_logo);
