@@ -9,8 +9,12 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.csh.cshwebnews.R;
@@ -36,6 +40,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
     AccountManager accountManager;
     WebView loginWebView;
+    ImageView mImageView;
+    TextView mTextview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +51,14 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             startActivity(new Intent(this,MainActivity.class));
             finish();
         } else {
-
             accountManager  = AccountManager.get(getBaseContext());
             loginWebView = (WebView) findViewById(R.id.web_oauth);
+            mImageView = (ImageView) findViewById(R.id.csh_logo);
+            mTextview = (TextView) findViewById(R.id.loading_textview);
+
+            mImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
+            loginWebView.setVisibility(View.GONE);
+
 
             createAuthWebView();
         }
@@ -61,12 +72,24 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         loginWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.setVisibility(View.GONE);
+                mImageView.setVisibility(View.VISIBLE);
+                mTextview.setVisibility(View.VISIBLE);
                 if (url != null && url.startsWith(WebNewsService.REDIRECT_URI)) {
                     getAccessToken(url);
                     return true;
                 } else {
                     return false;
                 }
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                view.setVisibility(View.VISIBLE);
+                mImageView.clearAnimation();
+                mImageView.setVisibility(View.GONE);
+                mTextview.setVisibility(View.GONE);
+                super.onPageFinished(view, url);
             }
 
             @Override
@@ -143,6 +166,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     }
 
     private void finishLogin(Intent intent) {
+        mImageView.clearAnimation();
         String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
         final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
