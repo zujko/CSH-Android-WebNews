@@ -1,75 +1,47 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
-    android:fillViewport="true"
-    android:layout_height="fill_parent"
-    android:layout_width="fill_parent">
-
-<LinearLayout
-    android:layout_height="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@drawable/background_csh_logo"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <WebView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:id="@+id/web_oauth"
-        android:visibility="gone"/>
-    
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="5dp"
+        android:id="@+id/web_oauth" />
+
+
     <ImageView
-        android:layout_marginTop="70dp"
-        android:layout_marginBottom="20dp"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:contentDescription="CSH Logo"
-        android:src="@drawable/logo_white"
-        android:id="@+id/image_logo"/>
-    <TextView
-        android:id="@+id/textview_webnews"
-        android:layout_marginBottom="50dp"
-        android:textSize="18sp"
-        android:text="@string/login_webnews"
+        android:id="@+id/csh_logo"
+        android:src="@drawable/logo_black_small"
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
-    <EditText
-        android:singleLine="true"
-        android:layout_margin="20dp"
-        android:hint="@string/login_username"
+    <TextView
+        android:text="Loading..."
+        android:textSize="30sp"
+        android:id="@+id/loading_textview"
+        android:layout_below="@id/csh_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/edittext_username"
-        android:ems="11" />
+        android:layout_marginTop="5dp"
+        android:layout_centerInParent="true"/>
 
-    <EditText
-        android:layout_margin="20dp"
-        android:singleLine="true"
-        android:hint="@string/login_password"
+    <TextView
+        android:id="@+id/error_textview"
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="11"
-        android:id="@+id/edittext_password"/>
-
-    <com.dd.processbutton.iml.ActionProcessButton
-        android:layout_margin="20dp"
-        android:id="@+id/btn_login"
-        android:layout_width="200dp"
+        android:visibility="gone"/>
+    <Button
+        android:text="REFRESH"
+        android:textSize="10sp"
+        android:id="@+id/refresh_button"
+        android:layout_below="@id/error_textview"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Sign in"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        custom:pb_colorComplete="@color/green_complete"
-        custom:pb_colorNormal="@color/csh_purple"
-        custom:pb_colorPressed="@color/csh_purple_dark"
-        custom:pb_colorProgress="@color/purple_progress"
-        custom:pb_textComplete="Success"
-        custom:pb_textProgress="Signing in..."
-        custom:pb_textError="Error"
-        custom:pb_colorError="@color/red_error" />
-</LinearLayout>
-</ScrollView>
+        android:layout_marginTop="5dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+</RelativeLayout>
 
 
