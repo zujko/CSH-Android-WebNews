@@ -23,9 +23,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.events.FinishLoadingEvent;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.Post;
 import edu.csh.cshwebnews.models.RetrievingPosts;
@@ -169,9 +171,10 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                     getContext().getContentResolver().bulkInsert(WebNewsContract.NewsGroupEntry.CONTENT_URI,nGArray);
                 }
             }
-
+            EventBus.getDefault().post(new FinishLoadingEvent(true,null));
         }
         catch (RetrofitError e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,e.getResponse().getReason()));
             if(e.getResponse() != null && e.getResponse().getStatus() == 401){
                 AccountManager.get(getContext()).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE,authToken);
             }

@@ -1,8 +1,6 @@
 package edu.csh.cshwebnews.fragments;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,8 +37,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     private PostListAdapter mListAdapter;
     private ListView mListView;
     private View mProgressBarLayout;
-    private SyncStatusObserver mSyncObserver;
-    private Object mSyncHandle;
     private SwipeRefreshLayout swipeContainer;
     private FloatingActionButton floatingActionButton;
     Bundle instanceState;
@@ -88,42 +84,11 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
-        mSyncHandle = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if(mSyncHandle != null) {
-            ContentResolver.removeStatusChangeListener(mSyncHandle);
-            mSyncHandle = null;
-        }
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState != null) {
             instanceState = savedInstanceState;
         }
-
-        mSyncObserver = new SyncStatusObserver() {
-            @Override
-            public void onStatusChanged(int which) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(isAdded() && !Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
-                            swipeContainer.setRefreshing(false);
-                        }
-                    }
-                });
-            }
-        };
-
     }
 
     @Override
@@ -259,5 +224,8 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     public void onEventMainThread(FinishLoadingEvent event) {
         mListView.removeFooterView(mProgressBarLayout);
+        if(swipeContainer.isRefreshing()) {
+            swipeContainer.setRefreshing(false);
+        }
     }
 }

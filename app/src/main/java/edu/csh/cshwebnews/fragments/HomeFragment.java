@@ -1,9 +1,7 @@
 package edu.csh.cshwebnews.fragments;
 
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,11 +23,13 @@ import com.commonsware.cwac.merge.MergeAdapter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.activities.NewPostActivity;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.events.FinishLoadingEvent;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 public class HomeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -40,8 +40,6 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private PostListAdapter mThisMonthAdapter;
     private ListView mListview;
     private SwipeRefreshLayout swipeContainer;
-    private SyncStatusObserver mSyncObserver;
-    private Object mSyncHandle;
     private TextView todayText;
     private TextView yesterdayText;
     private TextView thisMonthText;
@@ -92,37 +90,15 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
-        mSyncHandle = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        if(mSyncHandle != null) {
-            ContentResolver.removeStatusChangeListener(mSyncHandle);
-            mSyncHandle = null;
-        }
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mSyncObserver = new SyncStatusObserver() {
-            @Override
-            public void onStatusChanged(int which) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(isAdded() && !Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
-                            swipeContainer.setRefreshing(false);
-                        }
-                    }
-                });
-            }
-        };
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -262,6 +238,9 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         mMergeAdapter.setActive(thisMonthText, false);
         mThisMonthAdapter = new PostListAdapter(getActivity(),null,0);
         mMergeAdapter.addAdapter(mThisMonthAdapter);
+    }
 
+    public void onEventMainThread(FinishLoadingEvent event) {
+        swipeContainer.setRefreshing(false);
     }
 }
