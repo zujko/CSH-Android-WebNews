@@ -18,8 +18,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,7 +64,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                         null, //since
                         extras.getString("until") //until
                 );
-                List<ContentValues> postList = new LinkedList<ContentValues>();
+                List<ContentValues> postList = new ArrayList<ContentValues>(posts.getListOfPosts().size());
 
                 Calendar c = Calendar.getInstance();
                 DateTimeFormatter dateTimeFormat = ISODateTimeFormat.dateTimeNoMillis();
@@ -142,7 +142,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             if(extras.getBoolean("get_newsgroups",true)) {
                 NewsGroups newsGroups = Utility.webNewsService.syncGetNewsGroups();
 
-                List<ContentValues> newsgroupList = new LinkedList<ContentValues>();
+                List<ContentValues> newsgroupList = new ArrayList<ContentValues>(newsGroups.getNewsGroupList().size());
 
                 for(NewsGroups.NewsGroup newsGroup : newsGroups.getNewsGroupList()) {
                     ContentValues contentValues = new ContentValues();
