@@ -49,10 +49,9 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
         //If there is no access token try getting one!
         if(TextUtils.isEmpty(accessToken)) {
             final String refreshToken = accountManager.getPassword(account);
-            WebNewsService service = ServiceGenerator.createService(WebNewsService.class,WebNewsService.BASE_URL,null,null);
             if(refreshToken != null) {
                 try {
-                    accessToken = service.synchronousRefreshAccessToken("refresh_token",refreshToken).getAccessToken();
+                    accessToken = Utility.webNewsService.synchronousRefreshAccessToken("refresh_token",refreshToken).getAccessToken();
                 } catch (RetrofitError e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -67,7 +66,7 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, accessToken);
-            Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class,WebNewsService.BASE_URL,accessToken, WebNewsAccount.AUTHTOKEN_TYPE);
+            Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class,WebNewsService.BASE_URL, accessToken, WebNewsAccount.AUTHTOKEN_TYPE);
             return result;
         }
 
