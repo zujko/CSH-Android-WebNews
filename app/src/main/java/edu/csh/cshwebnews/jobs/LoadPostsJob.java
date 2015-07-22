@@ -65,7 +65,7 @@ public class LoadPostsJob extends Job {
             int size = posts.getListOfPosts().size();
 
             if (size > 0) {
-                ContentValues[] postList = new ContentValues[posts.getListOfPosts().size()];
+                ContentValues[] postList = new ContentValues[size];
 
                 Calendar c = Calendar.getInstance();
                 DateTimeFormatter dateTimeFormat = ISODateTimeFormat.dateTimeNoMillis();

@@ -43,10 +43,10 @@ public class GetAuthTokenJob extends Job {
             //Try getting the access token
             AccessToken token = generator.blockingGetAccessToken("authorization_code", code, WebNewsService.REDIRECT_URI, Utility.clientId, Utility.clientSecret);
 
-            generator = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL,token.getAccessToken(),token.getTokenType());
+            Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL,token.getAccessToken(),token.getTokenType());
 
             //Try getting users data
-            User user = generator.blockingGetUser();
+            User user = Utility.webNewsService.blockingGetUser();
 
             saveToDb(user);
 
