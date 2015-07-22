@@ -140,6 +140,7 @@ public class LoadPostsJob extends Job {
         } catch (RetrofitError e) {
             if(e.getResponse().getStatus() == 401) {
                 invalidateAuthToken();
+                throw e;
             }
         }
         EventBus.getDefault().post(new FinishLoadingEvent(true,null));
@@ -155,6 +156,6 @@ public class LoadPostsJob extends Job {
 
     @Override
     protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return false;
+        return throwable instanceof RetrofitError;
     }
 }

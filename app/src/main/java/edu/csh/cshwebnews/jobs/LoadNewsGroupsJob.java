@@ -66,6 +66,7 @@ public class LoadNewsGroupsJob extends Job {
         } catch (RetrofitError e) {
             if(e.getResponse().getStatus() == 401) {
                 invalidateAuthToken();
+                throw e;
             }
         }
     }
@@ -80,6 +81,6 @@ public class LoadNewsGroupsJob extends Job {
 
     @Override
     protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return false;
+        return throwable instanceof RetrofitError;
     }
 }
