@@ -36,6 +36,9 @@ public class Utility {
 
     public static WebNewsService webNewsService = null;
 
+    public static String clientId;
+    public static String clientSecret;
+
     /**
      * Checks if the device is connected to a network
      */

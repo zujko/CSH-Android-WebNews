@@ -32,8 +32,8 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         final Intent intent = new Intent(context, LoginActivity.class);
-        intent.putExtra(LoginActivity.ARG_ACCOUNT_TYPE, accountType);
-        intent.putExtra(LoginActivity.ARG_AUTH_TYPE, authTokenType);
+        intent.putExtra(WebNewsAccount.ARG_ACCOUNT_TYPE, accountType);
+        intent.putExtra(WebNewsAccount.ARG_AUTH_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT,intent);
@@ -49,10 +49,9 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
         //If there is no access token try getting one!
         if(TextUtils.isEmpty(accessToken)) {
             final String refreshToken = accountManager.getPassword(account);
-            WebNewsService service = ServiceGenerator.createService(WebNewsService.class,WebNewsService.BASE_URL,null,null);
             if(refreshToken != null) {
                 try {
-                    accessToken = service.synchronousRefreshAccessToken("refresh_token",refreshToken).getAccessToken();
+                    accessToken = Utility.webNewsService.synchronousRefreshAccessToken("refresh_token",refreshToken).getAccessToken();
                 } catch (RetrofitError e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -67,7 +66,7 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, accessToken);
-            Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class,WebNewsService.BASE_URL,accessToken, WebNewsAccount.AUTHTOKEN_TYPE);
+            Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class,WebNewsService.BASE_URL, accessToken, WebNewsAccount.AUTHTOKEN_TYPE);
             return result;
         }
 
@@ -75,8 +74,8 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
         //so prompt the user to sign in again.
         final Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-        intent.putExtra(LoginActivity.ARG_ACCOUNT_TYPE, account.type);
-        intent.putExtra(LoginActivity.ARG_AUTH_TYPE, authTokenType);
+        intent.putExtra(WebNewsAccount.ARG_ACCOUNT_TYPE, account.type);
+        intent.putExtra(WebNewsAccount.ARG_AUTH_TYPE, authTokenType);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(context.getString(R.string.pref_signed_in),false).commit();

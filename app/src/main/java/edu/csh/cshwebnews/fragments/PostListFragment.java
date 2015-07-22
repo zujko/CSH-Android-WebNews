@@ -1,8 +1,6 @@
 package edu.csh.cshwebnews.fragments;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,11 +20,15 @@ import android.widget.ListView;
 
 import com.squareup.picasso.Picasso;
 
+import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
+import edu.csh.cshwebnews.WebNewsApplication;
 import edu.csh.cshwebnews.activities.NewPostActivity;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.events.FinishLoadingEvent;
+import edu.csh.cshwebnews.jobs.LoadPostsJob;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 
@@ -35,8 +37,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     private PostListAdapter mListAdapter;
     private ListView mListView;
     private View mProgressBarLayout;
-    private SyncStatusObserver mSyncObserver;
-    private Object mSyncHandle;
     private SwipeRefreshLayout swipeContainer;
     private FloatingActionButton floatingActionButton;
     Bundle instanceState;
@@ -84,49 +84,29 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
-        mSyncHandle = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if(mSyncHandle != null) {
-            ContentResolver.removeStatusChangeListener(mSyncHandle);
-            mSyncHandle = null;
-        }
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState != null) {
             instanceState = savedInstanceState;
         }
-
-        mSyncObserver = new SyncStatusObserver() {
-            @Override
-            public void onStatusChanged(int which) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(isAdded() && !Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
-                            mListView.removeFooterView(mProgressBarLayout);
-                            swipeContainer.setRefreshing(false);
-                        }
-                    }
-                });
-            }
-        };
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable("state", mListView.onSaveInstanceState());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -222,7 +202,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
         if(totalItemCount < previousTotalItemCount) {
             previousTotalItemCount = totalItemCount;
             if(totalItemCount == 0) loading = true;
@@ -236,11 +215,17 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         if(!loading && (totalItemCount-visibleItemCount)<=(firstVisibleItem+visibleThreshold)){
             if(isAdded()) {
                 Bundle args = getArguments();
-                args.putInt("offset",totalItemCount);
-                args.putBoolean("get_newsgroups",false);
-                WebNewsSyncAdapter.syncImmediately(getActivity(),args);
+                args.putInt("offset", totalItemCount);
+                WebNewsApplication.getJobManager().addJobInBackground(new LoadPostsJob(args,getActivity().getApplicationContext()));
                 loading = true;
             }
+        }
+    }
+
+    public void onEventMainThread(FinishLoadingEvent event) {
+        mListView.removeFooterView(mProgressBarLayout);
+        if(swipeContainer.isRefreshing()) {
+            swipeContainer.setRefreshing(false);
         }
     }
 }

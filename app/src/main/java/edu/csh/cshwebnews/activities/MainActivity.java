@@ -33,6 +33,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.ScrimInsetsFrameLayout;
 import edu.csh.cshwebnews.Utility;
+import edu.csh.cshwebnews.WebNewsApplication;
 import edu.csh.cshwebnews.adapters.DrawerListAdapter;
 import edu.csh.cshwebnews.adapters.DrawerListFooterAdapter;
 import edu.csh.cshwebnews.adapters.DrawerListHeaderItemsAdapter;
@@ -40,7 +41,7 @@ import edu.csh.cshwebnews.adapters.ReadOnlyNewsgroupAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.fragments.HomeFragment;
 import edu.csh.cshwebnews.fragments.PostListFragment;
-import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
+import edu.csh.cshwebnews.jobs.LoadNewsGroupsJob;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
@@ -69,9 +70,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         createMergeAdapter();
 
-        Bundle args = new Bundle();
-        args.putBoolean("only_roots", true);
-        WebNewsSyncAdapter.syncImmediately(getApplicationContext(), args);
+        WebNewsApplication.getJobManager().addJobInBackground(new LoadNewsGroupsJob(getApplicationContext()));
 
         toolBar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolBar);
@@ -81,8 +80,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         createNavigationDrawer();
 
         getSupportLoaderManager().initLoader(NEWSGROUP_LOADER, null, this);
-        getSupportLoaderManager().initLoader(READ_ONLY_NEWSGROUP_LOADER,null,this);
-
+        getSupportLoaderManager().initLoader(READ_ONLY_NEWSGROUP_LOADER, null, this);
     }
 
     @Override

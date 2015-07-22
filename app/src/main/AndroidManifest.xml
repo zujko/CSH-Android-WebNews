@@ -14,7 +14,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/CSHThemeLight" >
+        android:theme="@style/CSHThemeLight"
+        android:name=".WebNewsApplication">
 
         <activity
             android:name=".activities.LoginActivity"
@@ -58,8 +59,6 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-
-        <service android:name=".services.PostService"/>
 
         <activity
             android:name=".activities.NewPostActivity"

@@ -20,6 +20,8 @@
     <string name="menu_send">Send</string>
     <string name="menu_save">Save</string>
     <string name="activity_new_post_layout_newsgroup_text">Newsgroup</string>
+    <string name="new_post_successful_post">Posted!</string>
+    <string name="new_post_error_post">Error! Could not make post!</string>
 
     <!-- Home Fragment Strings -->
     <string name="home_today">Today</string>
