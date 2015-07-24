@@ -28,8 +28,6 @@ import android.widget.TextView;
 import com.commonsware.cwac.merge.MergeAdapter;
 import com.squareup.picasso.Picasso;
 
-import net.danlew.android.joda.JodaTimeAndroid;
-
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.ScrimInsetsFrameLayout;
 import edu.csh.cshwebnews.Utility;
@@ -63,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        JodaTimeAndroid.init(this);
 
         mergeAdapter = new MergeAdapter();
 

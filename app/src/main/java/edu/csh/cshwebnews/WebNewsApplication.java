@@ -7,6 +7,8 @@ import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.log.CustomLogger;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 public class WebNewsApplication extends Application {
 
     public static JobManager jobManager;
@@ -14,6 +16,7 @@ public class WebNewsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        JodaTimeAndroid.init(this);
         createJobManager();
     }
 
