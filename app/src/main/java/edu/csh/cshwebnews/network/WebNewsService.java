@@ -42,7 +42,7 @@ public interface WebNewsService {
     void getNewsGroups(Callback<NewsGroups> newsGroupsCallback);
 
     @GET("/newsgroups")
-    NewsGroups syncGetNewsGroups();
+    NewsGroups blockingGetNewsGroups();
 
     @GET("/posts/{id}")
     void getSinglePost(@Path("id") String id,
@@ -68,21 +68,21 @@ public interface WebNewsService {
                   Callback<RetrievingPosts> retrievingPostsCallback);
 
     @GET("/posts")
-    RetrievingPosts syncGetPosts(@Query("as_meta") String asMeta,
-                  @Query("as_threads") Boolean asThreads,
-                  @Query("authors") String authors,
-                  @Query("keywords") String keywords,
-                  @Query("keywords_match") String keywords_match,
-                  @Query("limit") String limit,
-                  @Query("min_unread_level") String minUnreadLevel,
-                  @Query("newsgroup_ids") String newsgroupIds,
-                  @Query("offset") Integer offset,
-                  @Query("only_roots") Boolean onlyRoots,
-                  @Query("only_starred") Boolean onlyStarred,
-                  @Query("only_sticky") Boolean onlySticky,
-                  @Query("reverse_order") String reverseOrder,
-                  @Query("since") String sinceDate,
-                  @Query("until") String untilDate);
+    RetrievingPosts blockingGetPosts(@Query("as_meta") String asMeta,
+                                     @Query("as_threads") Boolean asThreads,
+                                     @Query("authors") String authors,
+                                     @Query("keywords") String keywords,
+                                     @Query("keywords_match") String keywords_match,
+                                     @Query("limit") String limit,
+                                     @Query("min_unread_level") String minUnreadLevel,
+                                     @Query("newsgroup_ids") String newsgroupIds,
+                                     @Query("offset") Integer offset,
+                                     @Query("only_roots") Boolean onlyRoots,
+                                     @Query("only_starred") Boolean onlyStarred,
+                                     @Query("only_sticky") Boolean onlySticky,
+                                     @Query("reverse_order") String reverseOrder,
+                                     @Query("since") String sinceDate,
+                                     @Query("until") String untilDate);
 
     @POST("/posts")
     void post(@Body PostRequestBody body,
@@ -137,6 +137,6 @@ public interface WebNewsService {
                             Callback<AccessToken> accessTokenCallback);
 
     @POST("/oauth/token")
-    AccessToken synchronousRefreshAccessToken(@Query("grant_type") String grantType,
-                            @Query("refresh_token") String refreshToken);
+    AccessToken blockingRefreshAccessToken(@Query("grant_type") String grantType,
+                                           @Query("refresh_token") String refreshToken);
 }

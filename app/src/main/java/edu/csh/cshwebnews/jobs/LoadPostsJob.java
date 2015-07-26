@@ -45,7 +45,7 @@ public class LoadPostsJob extends Job {
     @Override
     public void onRun() throws Throwable {
         try {
-            RetrievingPosts posts = Utility.webNewsService.syncGetPosts("false", //as_meta
+            RetrievingPosts posts = Utility.webNewsService.blockingGetPosts("false", //as_meta
                     args.getBoolean("as_threads"), //as_threads
                     null, //authors
                     null, //keywords

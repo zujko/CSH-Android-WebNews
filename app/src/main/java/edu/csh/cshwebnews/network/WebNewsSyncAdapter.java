@@ -50,7 +50,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             if(extras.getBoolean("get_posts",true)) {
-                RetrievingPosts posts = Utility.webNewsService.syncGetPosts("false", //as_meta
+                RetrievingPosts posts = Utility.webNewsService.blockingGetPosts("false", //as_meta
                         extras.getBoolean("as_threads"), //as_threads
                         null, //authors
                         null, //keywords
@@ -142,7 +142,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             if(extras.getBoolean("get_newsgroups",true)) {
-                NewsGroups newsGroups = Utility.webNewsService.syncGetNewsGroups();
+                NewsGroups newsGroups = Utility.webNewsService.blockingGetNewsGroups();
 
                 List<ContentValues> newsgroupList = new ArrayList<ContentValues>(newsGroups.getNewsGroupList().size());
 

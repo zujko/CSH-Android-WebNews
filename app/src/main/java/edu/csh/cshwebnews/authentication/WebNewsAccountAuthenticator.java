@@ -51,7 +51,7 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
             final String refreshToken = accountManager.getPassword(account);
             if(refreshToken != null) {
                 try {
-                    accessToken = Utility.webNewsService.synchronousRefreshAccessToken("refresh_token",refreshToken).getAccessToken();
+                    accessToken = Utility.webNewsService.blockingRefreshAccessToken("refresh_token", refreshToken).getAccessToken();
                 } catch (RetrofitError e) {
                     e.printStackTrace();
                 } catch (Exception e) {

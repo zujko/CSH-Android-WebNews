@@ -33,7 +33,7 @@ public class LoadNewsGroupsJob extends Job {
     @Override
     public void onRun() throws Throwable {
         try {
-            NewsGroups newsGroups = Utility.webNewsService.syncGetNewsGroups();
+            NewsGroups newsGroups = Utility.webNewsService.blockingGetNewsGroups();
 
             int size = newsGroups.getNewsGroupList().size();
 
