@@ -38,7 +38,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private PostListAdapter mTodayAdapter;
     private PostListAdapter mYesterdayAdapter;
     private PostListAdapter mThisMonthAdapter;
-    private ListView mListview;
+    private ListView mListView;
     private SwipeRefreshLayout swipeContainer;
     private TextView todayText;
     private TextView yesterdayText;
@@ -75,13 +75,13 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 
         todayText           = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
         yesterdayText       = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
-        thisMonthText = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
+        thisMonthText       = (TextView) inflater.inflate(R.layout.divider_fullbleed,null);
 
         mMergeAdapter = new MergeAdapter();
         setUpMergeAdapter(inflater);
 
-        mListview = (ListView) rootView.findViewById(R.id.listview);
-        mListview.setAdapter(mMergeAdapter);
+        mListView = (ListView) rootView.findViewById(R.id.listview);
+        mListView.setAdapter(mMergeAdapter);
 
         getLoaderManager().initLoader(TODAY_LOADER, getArguments(), this);
         getLoaderManager().initLoader(YESTERDAY_LOADER, getArguments(), this);

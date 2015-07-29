@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     /**
-     * Creates the merge adapter for the navigation drawer by combing all adapters and views
+     * Creates the merge adapter for the navigation drawer by combining all adapters and views
      */
     private void createMergeAdapter() {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

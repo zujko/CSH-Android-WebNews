@@ -46,7 +46,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         try {
             if(Utility.webNewsService == null) {
-                setWebnewsService(account);
+                setWebNewsService(account);
             }
 
             if(extras.getBoolean("get_posts",true)) {
@@ -194,7 +194,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 context.getString(R.string.content_authority), bundle);
     }
 
-    private void setWebnewsService(Account account) {
+    private void setWebNewsService(Account account) {
         try {
             authToken = AccountManager.get(getContext()).blockingGetAuthToken(account, WebNewsAccount.AUTHTOKEN_TYPE, true);
             Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL, authToken, WebNewsAccount.AUTHTOKEN_TYPE);

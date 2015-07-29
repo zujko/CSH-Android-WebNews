@@ -33,7 +33,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     private AccountManager accountManager;
     private WebView loginWebView;
     private ImageView mImageView;
-    private TextView mTextview;
+    private TextView mTextView;
     private TextView mErrorTextView;
     private Button mRefreshButton;
 
@@ -41,19 +41,23 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_signed_in),false)) {
             startActivity(new Intent(this,MainActivity.class));
             finish();
         } else {
+
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 getWindow().setStatusBarColor(getResources().getColor(R.color.black));
             }
+
             accountManager  = AccountManager.get(getBaseContext());
-            loginWebView = (WebView) findViewById(R.id.web_oauth);
-            mImageView = (ImageView) findViewById(R.id.csh_logo);
-            mTextview = (TextView) findViewById(R.id.loading_textview);
-            mErrorTextView = (TextView) findViewById(R.id.error_textview);
-            mRefreshButton = (Button) findViewById(R.id.refresh_button);
+            loginWebView    = (WebView) findViewById(R.id.web_oauth);
+            mImageView      = (ImageView) findViewById(R.id.csh_logo);
+            mTextView       = (TextView) findViewById(R.id.loading_textview);
+            mErrorTextView  = (TextView) findViewById(R.id.error_textview);
+            mRefreshButton  = (Button) findViewById(R.id.refresh_button);
+
             mRefreshButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -93,7 +97,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.setVisibility(View.GONE);
                 mImageView.setVisibility(View.VISIBLE);
-                mTextview.setVisibility(View.VISIBLE);
+                mTextView.setVisibility(View.VISIBLE);
                 if (url != null && url.startsWith(WebNewsService.REDIRECT_URI)) {
                     getAccessToken(url);
                     return true;
@@ -107,7 +111,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 view.setVisibility(View.VISIBLE);
                 mImageView.clearAnimation();
                 mImageView.setVisibility(View.GONE);
-                mTextview.setVisibility(View.GONE);
+                mTextView.setVisibility(View.GONE);
                 super.onPageFinished(view, url);
             }
 
@@ -125,6 +129,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 "?client_id=" + Utility.clientId + "&redirect_uri=" + WebNewsService.REDIRECT_URI + "&response_type=code");
     }
 
+    /**
+     * Helper function to run a GetAuthTokenJob
+     * @param url
+     */
     private void getAccessToken(String url) {
         String code = Uri.parse(url).getQueryParameter("code");
         if(code != null) {
@@ -134,6 +142,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         }
     }
 
+    /**
+     * Adds account and starts the main activity
+     * @param intent
+     */
     private void finishLogin(Intent intent) {
         mImageView.clearAnimation();
         String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
@@ -158,5 +170,4 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             Toast.makeText(this,"Error!\n"+event.reason,Toast.LENGTH_SHORT).show();
         }
     }
-
 }

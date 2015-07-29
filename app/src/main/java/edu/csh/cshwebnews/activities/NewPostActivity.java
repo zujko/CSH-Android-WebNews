@@ -154,7 +154,7 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mSpinnerAdapter.swapCursor(data);
         if(newsgroupId != null) {
-            mSpinner.setSelection(Utility.cursorSearch(Integer.valueOf(newsgroupId),data));
+            mSpinner.setSelection(Utility.getPosition(Integer.valueOf(newsgroupId), data));
         } else {
             mSpinner.setSelection(0);
             mSpinner.performClick();
@@ -166,6 +166,9 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
         mSpinnerAdapter.swapCursor(null);
     }
 
+    /**
+     * Starts a NewPostJob
+     */
     private void post() {
         Bundle args = new Bundle();
         args.putString(NewPostJob.BODY, mBodyText.getText().toString());

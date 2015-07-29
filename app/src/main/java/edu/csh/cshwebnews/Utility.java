@@ -53,18 +53,6 @@ public class Utility {
     }
 
     /**
-     * Checks if there is currently a sync running with the specified authority
-     */
-    public static boolean isSyncActive(Account account, String authority) {
-        for(SyncInfo syncInfo : ContentResolver.getCurrentSyncs()) {
-            if(syncInfo.account.equals(account) && syncInfo.authority.equals(authority)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Returns account associated with the application
      */
     public static Account getAccount(Context context) {
@@ -77,7 +65,7 @@ public class Utility {
      * @param cursor
      * @return
      */
-    public static int cursorSearch(int id, Cursor cursor) {
+    public static int getPosition(int id, Cursor cursor) {
         for(int x = 0, items = cursor.getCount(); x < items; x++ ) {
             cursor.moveToPosition(x);
             if(cursor.getInt(WebNewsContract.NEWSGROUP_COL_ID) == id) {
