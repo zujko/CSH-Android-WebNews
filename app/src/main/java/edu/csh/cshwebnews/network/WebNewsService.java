@@ -10,10 +10,15 @@ package edu.csh.cshwebnews.network;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.Post;
+import edu.csh.cshwebnews.models.PostRequestBody;
 import edu.csh.cshwebnews.models.RetrievingPosts;
 import edu.csh.cshwebnews.models.User;
+import edu.csh.cshwebnews.models.requests.CancelPostRequestBody;
+import edu.csh.cshwebnews.models.requests.StickyRequestBody;
+import edu.csh.cshwebnews.models.requests.UnreadRequestBody;
 import retrofit.Callback;
 import retrofit.client.Response;
+import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.PATCH;
@@ -30,11 +35,14 @@ public interface WebNewsService {
     @GET("/user")
     void getUser(Callback<User> userCallback);
 
+    @GET("/user")
+    User blockingGetUser();
+
     @GET("/newsgroups")
     void getNewsGroups(Callback<NewsGroups> newsGroupsCallback);
 
     @GET("/newsgroups")
-    NewsGroups syncGetNewsGroups();
+    NewsGroups blockingGetNewsGroups();
 
     @GET("/posts/{id}")
     void getSinglePost(@Path("id") String id,
@@ -60,43 +68,40 @@ public interface WebNewsService {
                   Callback<RetrievingPosts> retrievingPostsCallback);
 
     @GET("/posts")
-    RetrievingPosts syncGetPosts(@Query("as_meta") String asMeta,
-                  @Query("as_threads") Boolean asThreads,
-                  @Query("authors") String authors,
-                  @Query("keywords") String keywords,
-                  @Query("keywords_match") String keywords_match,
-                  @Query("limit") String limit,
-                  @Query("min_unread_level") String minUnreadLevel,
-                  @Query("newsgroup_ids") String newsgroupIds,
-                  @Query("offset") String offset,
-                  @Query("only_roots") Boolean onlyRoots,
-                  @Query("only_starred") Boolean onlyStarred,
-                  @Query("only_sticky") Boolean onlySticky,
-                  @Query("reverse_order") String reverseOrder,
-                  @Query("since") String sinceDate,
-                  @Query("until") String untilDate);
+    RetrievingPosts blockingGetPosts(@Query("as_meta") String asMeta,
+                                     @Query("as_threads") Boolean asThreads,
+                                     @Query("authors") String authors,
+                                     @Query("keywords") String keywords,
+                                     @Query("keywords_match") String keywords_match,
+                                     @Query("limit") String limit,
+                                     @Query("min_unread_level") String minUnreadLevel,
+                                     @Query("newsgroup_ids") String newsgroupIds,
+                                     @Query("offset") Integer offset,
+                                     @Query("only_roots") Boolean onlyRoots,
+                                     @Query("only_starred") Boolean onlyStarred,
+                                     @Query("only_sticky") Boolean onlySticky,
+                                     @Query("reverse_order") String reverseOrder,
+                                     @Query("since") String sinceDate,
+                                     @Query("until") String untilDate);
 
     @POST("/posts")
-    void post(@Query("body") String body,
-              @Query("followup_newsgroup_id") Integer followUpNewsGroupId,
-              @Query("newsgroup_ids") String newsgroupIds,
-              @Query("parent_id") Integer parentId,
-              @Query("posting_host") String postingHost,
-              @Query("subject") String subject,
+    void post(@Body PostRequestBody body,
               Callback<Response> responseCallback);
+
+    @POST("/posts")
+    Response blockingPost(@Body PostRequestBody body);
 
     @DELETE("/posts/{id}")
     void deletePost(@Path("id") String id,
-                    @Query("posting_host") String postingHost,
-                    @Query("reason") String reason,
+                    @Body CancelPostRequestBody body,
                     Callback<Response> responseCallback);
 
     @DELETE("/unreads")
-    void markPostRead(@Query("post_ids") String postIds,
+    void markPostRead(@Body UnreadRequestBody body,
                       Callback<Response> responseCallback);
 
     @POST("/unreads")
-    void markPostUnread(@Query("post_ids") String postIds,
+    void markPostUnread(@Body UnreadRequestBody body,
                         Callback<Response> responseCallback);
 
     @POST("/posts/{id}/star")
@@ -108,8 +113,8 @@ public interface WebNewsService {
                     Callback<Response> responseCallback);
 
     @PATCH("/posts/{id}/sticky")
-    void stickyPost(@Query("expires_at") String expireDate,
-                    @Path("id") String id,
+    void stickyPost(@Path("id") String id,
+                    @Body StickyRequestBody body,
                     Callback<Response> responseCallback);
 
     @POST("/oauth/token")
@@ -119,6 +124,12 @@ public interface WebNewsService {
                                @Query("client_id") String clientId,
                                @Query("client_secret") String clientSecret,
                                Callback<AccessToken> accessTokenCallback);
+    @POST("/oauth/token")
+    AccessToken blockingGetAccessToken(@Query("grant_type") String grantType,
+                        @Query("code") String code,
+                        @Query("redirect_uri") String redirectUri,
+                        @Query("client_id") String clientId,
+                        @Query("client_secret") String clientSecret);
 
     @POST("/oauth/token")
     void refreshAccessToken(@Query("grant_type") String grantType,
@@ -126,6 +137,6 @@ public interface WebNewsService {
                             Callback<AccessToken> accessTokenCallback);
 
     @POST("/oauth/token")
-    AccessToken synchronousRefreshAccessToken(@Query("grant_type") String grantType,
-                            @Query("refresh_token") String refreshToken);
+    AccessToken blockingRefreshAccessToken(@Query("grant_type") String grantType,
+                                           @Query("refresh_token") String refreshToken);
 }

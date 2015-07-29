@@ -2,6 +2,7 @@ package edu.csh.cshwebnews.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +50,18 @@ public class DrawerListAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
         viewHolder.newsgroupTextView.setText(cursor.getString(WebNewsContract.NEWSGROUP_COL_NAME));
         if(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT) > 0){
-            viewHolder.unreadTextView.setText(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT));
+            if(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT) > 99) {
+                viewHolder.unreadTextView.setText("99+");
+            } else {
+                viewHolder.unreadTextView.setText(String.valueOf(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT)));
+            }
+            viewHolder.unreadTextView.setVisibility(View.VISIBLE);
+            viewHolder.newsgroupTextView.setTypeface(null, Typeface.BOLD);
+            viewHolder.unreadTextView.setTypeface(null,Typeface.BOLD);
+        } else {
+            viewHolder.unreadTextView.setVisibility(View.GONE);
+            viewHolder.newsgroupTextView.setTypeface(null, Typeface.NORMAL);
+            viewHolder.unreadTextView.setTypeface(null, Typeface.NORMAL);
         }
     }
 }

@@ -1,11 +1,11 @@
 package edu.csh.cshwebnews.fragments;
 
-import android.content.ContentResolver;
-import android.content.SyncStatusObserver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -20,10 +20,15 @@ import android.widget.ListView;
 
 import com.squareup.picasso.Picasso;
 
+import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
+import edu.csh.cshwebnews.WebNewsApplication;
+import edu.csh.cshwebnews.activities.NewPostActivity;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.events.FinishLoadingEvent;
+import edu.csh.cshwebnews.jobs.LoadPostsJob;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 
@@ -32,10 +37,15 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     private PostListAdapter mListAdapter;
     private ListView mListView;
     private View mProgressBarLayout;
-    private SyncStatusObserver mSyncObserver;
-    private Object mSyncHandle;
     private SwipeRefreshLayout swipeContainer;
+    private FloatingActionButton floatingActionButton;
     Bundle instanceState;
+
+    private int visibleThreshold = 5;
+    private int currentPage = 0;
+    private int previousTotalItemCount = 0;
+    private boolean loading = true;
+    private int startingPageIndex = 0;
 
     private static final int POST_LOADER = 0;
 
@@ -44,12 +54,21 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
         mProgressBarLayout = inflater.inflate(R.layout.post_list_layout_footer,null);
+        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isAdded()) {
+                    Intent intent = new Intent(getActivity(), NewPostActivity.class);
+                    intent.putExtra("newsgroup_id",getArguments().getString("newsgroup_id"));
+                    startActivity(intent);
+                }
+            }
+        });
 
         setupRefreshLayout(rootView);
 
-        if(Utility.isNetworkConnected(getActivity())) {
-            WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
-        } else {
+        if(!Utility.isNetworkConnected(getActivity())) {
             noNetworkSnackbar(rootView);
         }
 
@@ -65,49 +84,29 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING | ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
-        mSyncHandle = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if(mSyncHandle != null) {
-            ContentResolver.removeStatusChangeListener(mSyncHandle);
-            mSyncHandle = null;
-        }
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState != null) {
             instanceState = savedInstanceState;
         }
-
-        mSyncObserver = new SyncStatusObserver() {
-            @Override
-            public void onStatusChanged(int which) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(isAdded() && !Utility.isSyncActive(Utility.getAccount(getActivity()),getString(R.string.content_authority))) {
-                            mListView.removeFooterView(mProgressBarLayout);
-                            swipeContainer.setRefreshing(false);
-                        }
-                    }
-                });
-            }
-        };
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable("state", mListView.onSaveInstanceState());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -154,6 +153,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void noNetworkSnackbar(final View rootView) {
+        swipeContainer.setRefreshing(false);
         //TODO Wait for bug fix so that snackbar will display indefinitely
         // (Currently setting a custom duration does not work)
         Snackbar.make(rootView, getString(R.string.error_no_network_simple),Snackbar.LENGTH_LONG)
@@ -201,5 +201,31 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        if(totalItemCount < previousTotalItemCount) {
+            previousTotalItemCount = totalItemCount;
+            if(totalItemCount == 0) loading = true;
+        }
+
+        if(loading && (totalItemCount > previousTotalItemCount)) {
+            loading = false;
+            previousTotalItemCount = totalItemCount;
+        }
+
+        if(!loading && (totalItemCount-visibleItemCount)<=(firstVisibleItem+visibleThreshold)){
+            if(isAdded()) {
+                Bundle args = getArguments();
+                args.putInt("offset", totalItemCount);
+                WebNewsApplication.getJobManager().addJobInBackground(new LoadPostsJob(args,getActivity().getApplicationContext()));
+                loading = true;
+            }
+        }
+    }
+
+    public void onEventMainThread(FinishLoadingEvent event) {
+        mListView.removeFooterView(mProgressBarLayout);
+        if(swipeContainer.isRefreshing()) {
+            swipeContainer.setRefreshing(false);
+        }
+    }
 }
