@@ -38,4 +38,5 @@ dependencies {
     compile 'com.commonsware.cwac:merge:1.1.1'
     compile 'com.path:android-priority-jobqueue:1.1.2'
     compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
 }

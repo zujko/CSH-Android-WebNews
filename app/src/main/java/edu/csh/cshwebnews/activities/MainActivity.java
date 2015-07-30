@@ -28,6 +28,8 @@ import android.widget.TextView;
 import com.commonsware.cwac.merge.MergeAdapter;
 import com.squareup.picasso.Picasso;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.ScrimInsetsFrameLayout;
 import edu.csh.cshwebnews.Utility;
@@ -44,23 +46,25 @@ import edu.csh.cshwebnews.jobs.LoadNewsGroupsJob;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
-    final int NEWSGROUP_LOADER = 0;
-    final int READ_ONLY_NEWSGROUP_LOADER = 1;
+    @Bind(R.id.tool_bar) Toolbar toolBar;
+    @Bind(R.id.DrawerLayout) DrawerLayout drawer;
+    @Bind(R.id.drawer_listview) ListView drawerListView;
     DrawerListAdapter mListAdapter;
     ReadOnlyNewsgroupAdapter mReadOnlyAdapter;
     ScrimInsetsFrameLayout mInsetsFrameLayout;
-    ListView drawerListView;
     ActionBarDrawerToggle drawerToggle;
-    Toolbar toolBar;
-    DrawerLayout drawer;
     String newsgroupNameState;
     Fragment currentFragment;
     MergeAdapter mergeAdapter;
+    final int NEWSGROUP_LOADER = 0;
+    final int READ_ONLY_NEWSGROUP_LOADER = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ButterKnife.bind(this);
 
         mergeAdapter = new MergeAdapter();
 
@@ -68,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         WebNewsApplication.getJobManager().addJobInBackground(new LoadNewsGroupsJob(getApplicationContext()));
 
-        toolBar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolBar);
 
         createFragment(savedInstanceState);
@@ -222,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         drawerListView.setAdapter(mergeAdapter);
 
-        drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);
         drawer.setStatusBarBackground(R.color.csh_pink_dark);
 
         drawerToggle = new ActionBarDrawerToggle(this,drawer,toolBar,R.string.app_name,R.string.app_name) {
@@ -256,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     private void createHeader() {
         mInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(R.id.scrimInsetsFrameLayout);
-        drawerListView = (ListView) findViewById(R.id.drawer_listview);
+
         ViewGroup header = (ViewGroup) getLayoutInflater().inflate(R.layout.drawer_header, drawerListView, false);
 
         TextView username = (TextView) header.findViewById(R.id.drawer_header_name_textview);

@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
@@ -30,12 +32,12 @@ import edu.csh.cshwebnews.network.WebNewsService;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
 
+    @Bind(R.id.web_oauth) WebView loginWebView;
+    @Bind(R.id.csh_logo) ImageView mImageView;
+    @Bind(R.id.loading_textview) TextView mTextView;
+    @Bind(R.id.error_textview) TextView mErrorTextView;
+    @Bind(R.id.refresh_button) Button mRefreshButton;
     private AccountManager accountManager;
-    private WebView loginWebView;
-    private ImageView mImageView;
-    private TextView mTextView;
-    private TextView mErrorTextView;
-    private Button mRefreshButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +54,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             }
 
             accountManager  = AccountManager.get(getBaseContext());
-            loginWebView    = (WebView) findViewById(R.id.web_oauth);
-            mImageView      = (ImageView) findViewById(R.id.csh_logo);
-            mTextView       = (TextView) findViewById(R.id.loading_textview);
-            mErrorTextView  = (TextView) findViewById(R.id.error_textview);
-            mRefreshButton  = (Button) findViewById(R.id.refresh_button);
+
+            ButterKnife.bind(this);
 
             mRefreshButton.setOnClickListener(new View.OnClickListener() {
                 @Override

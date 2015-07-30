@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
@@ -30,14 +32,15 @@ import edu.csh.cshwebnews.jobs.NewPostJob;
 
 public class NewPostActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
-    private static final int NEWSGROUP_LOADER = 0;
-    private Toolbar mToolbar;
-    private Spinner mSpinner;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(R.id.spinner) Spinner mSpinner;
+    @Bind(R.id.down_arrow_image) ImageView mDownArrow;
+    @Bind(R.id.body_edittext) EditText mBodyText;
+    @Bind(R.id.subject_edittext) EditText mSubjectText;
+
     private NewsgroupSpinnerAdapter mSpinnerAdapter;
-    private ImageView mDownArrow;
-    private EditText mBodyText;
-    private EditText mSubjectText;
     private static String newsgroupId = null;
+    private static final int NEWSGROUP_LOADER = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,25 +50,24 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
 
         newsgroupId = getIntent().getStringExtra("newsgroup_id");
 
-        mBodyText = (EditText) findViewById(R.id.body_edittext);
-        mSubjectText = (EditText) findViewById(R.id.subject_edittext);
+        ButterKnife.bind(this);
 
         setUpToolbar();
 
         mSpinnerAdapter = new NewsgroupSpinnerAdapter(this,null,0);
-        mSpinner = (Spinner) findViewById(R.id.spinner);
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 newsgroupId = String.valueOf(id);
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
         mSpinner.setAdapter(mSpinnerAdapter);
 
-        mDownArrow = (ImageView) findViewById(R.id.down_arrow_image);
         mDownArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,7 +126,6 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
      * Helper method to setup the toolbar
      */
     private void setUpToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setNavigationIcon(R.drawable.ic_toolbar_back_arrow);
 
         setSupportActionBar(mToolbar);
