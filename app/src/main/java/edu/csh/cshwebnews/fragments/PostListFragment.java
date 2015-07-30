@@ -63,9 +63,9 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isAdded()) {
+                if (isAdded()) {
                     Intent intent = new Intent(getActivity(), NewPostActivity.class);
-                    intent.putExtra("newsgroup_id",getArguments().getString("newsgroup_id"));
+                    intent.putExtra("newsgroup_id", getArguments().getString("newsgroup_id"));
                     startActivity(intent);
                 }
             }
@@ -229,6 +229,12 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
                 loading = true;
             }
         }
+        if(loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
+            if(mListView.getFooterViewsCount() == 0) {
+                mListView.addFooterView(mProgressBarLayout);
+            }
+        }
+
     }
 
     public void onEventMainThread(FinishLoadingEvent event) {
