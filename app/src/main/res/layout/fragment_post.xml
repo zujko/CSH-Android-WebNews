@@ -5,6 +5,36 @@
     android:orientation="vertical"
     tools:context="edu.csh.cshwebnews.fragments.PostFragment">
 
+    <RelativeLayout
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="?listPreferredItemHeightLarge">
+        <ImageView
+            android:id="@+id/post_head_star_image"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+        <TextView
+            android:id="@+id/post_head_subject_text"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/post_head_star_image"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/post_head_newsgroup_text"
+        android:background="@color/gray_light"
+        android:textColor="@color/gray_dark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"/>
+
     <ExpandableListView
         android:id="@+id/expandableList"
         android:groupIndicator="@null"
