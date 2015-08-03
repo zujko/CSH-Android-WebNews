@@ -63,6 +63,13 @@ public class PostListAdapter extends CursorAdapter {
     }
 
     @Override
+    public long getItemId(int position) {
+        Cursor cur = getCursor();
+        cur.moveToPosition(position);
+        return (long) cur.getInt(WebNewsContract.COL_ID);
+    }
+
+    @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 

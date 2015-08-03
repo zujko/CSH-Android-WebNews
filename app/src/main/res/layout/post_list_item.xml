@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/post_author_image"
-        android:layout_toLeftOf="@id/post_date_text"
+        android:layout_toLeftOf="@+id/post_date_text"
         android:layout_alignTop="@id/post_author_image"/>
 
     <TextView

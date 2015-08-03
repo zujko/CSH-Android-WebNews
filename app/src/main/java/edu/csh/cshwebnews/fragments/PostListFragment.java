@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.squareup.picasso.Picasso;
@@ -34,7 +36,7 @@ import edu.csh.cshwebnews.jobs.LoadPostsJob;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 
-public class PostListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AbsListView.OnScrollListener {
+public class PostListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AbsListView.OnScrollListener, AdapterView.OnItemClickListener {
 
     @Bind(R.id.fab) FloatingActionButton floatingActionButton;
     @Bind(R.id.listview) ListView mListView;
@@ -63,9 +65,9 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isAdded()) {
+                if (isAdded()) {
                     Intent intent = new Intent(getActivity(), NewPostActivity.class);
-                    intent.putExtra("newsgroup_id",getArguments().getString("newsgroup_id"));
+                    intent.putExtra("newsgroup_id", getArguments().getString("newsgroup_id"));
                     startActivity(intent);
                 }
             }
@@ -82,6 +84,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         mListView.addFooterView(mProgressBarLayout);
         mListView.setOnScrollListener(this);
         mListView.setAdapter(mListAdapter);
+        mListView.setOnItemClickListener(this);
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
         return rootView;
@@ -236,5 +239,22 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         if(swipeContainer.isRefreshing()) {
             swipeContainer.setRefreshing(false);
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        PostFragment newFragment = new PostFragment();
+
+        //TODO Start background job to get data about the post and mark the post as unread
+
+        //Send post id to the PostFragment
+        Bundle bundle = new Bundle();
+        bundle.putLong("id",id);
+        newFragment.setArguments(bundle);
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.frag_container, newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
