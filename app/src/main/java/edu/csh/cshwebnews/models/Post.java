@@ -12,9 +12,9 @@ import java.util.List;
 
 public class Post {
 
-    private Integer id;
+    private String id;
 
-    private List<Integer> ancestor_ids;
+    private List<String> ancestor_ids;
 
     private Author author;
 
@@ -22,7 +22,7 @@ public class Post {
 
     private String created_at;
 
-    private Integer followup_newsgroup_id;
+    private String followup_newsgroup_id;
 
     private Boolean had_attachments;
 
@@ -34,7 +34,7 @@ public class Post {
 
     private String message_id;
 
-    private List<Integer> newsgroup_ids;
+    private List<String> newsgroup_ids;
 
     private Integer personal_level;
 
@@ -46,14 +46,14 @@ public class Post {
 
     private String unread_class;
 
-    private List<Integer> child_ids;
+    private List<String> child_ids;
 
-    private List<Integer> descendant_ids;
+    private List<String> descendant_ids;
 
     /**
      * @return The unique ID of the post on WebNews.
      */
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
@@ -63,7 +63,7 @@ public class Post {
      * that this post is a direct reply to. The array may be empty,
      * indicating this post is the "root" of its thread.
      */
-    public List<Integer> getListOfAncestorIds() {
+    public List<String> getListOfAncestorIds() {
         return ancestor_ids;
     }
 
@@ -92,7 +92,7 @@ public class Post {
      * @return The ID of the newsgroup that replies to this post should go in,
      * or null if the author did not specify one. Usually only set for multi-newsgroup posts.
      */
-    public Integer getFollowupNewsgroupId() {
+    public String getFollowupNewsgroupId() {
         return followup_newsgroup_id;
     }
 
@@ -137,7 +137,7 @@ public class Post {
     /**
      * @return List of newsgroup IDs indicating which newsgroups this post exists in.
      */
-    public List<Integer> getListOfNewsgroupIds() {
+    public List<String> getListOfNewsgroupIds() {
         return newsgroup_ids;
     }
 
@@ -166,11 +166,11 @@ public class Post {
         return total_stars;
     }
 
-    public List<Integer> getChildIds() {
+    public List<String> getChildIds() {
         return child_ids;
     }
 
-    public List<Integer> getDescendantIds() {
+    public List<String> getDescendantIds() {
         return descendant_ids;
     }
 
