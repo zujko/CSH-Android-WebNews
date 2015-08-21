@@ -27,10 +27,9 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 WebNewsContract.UserEntry.IS_ADMIN + " TEXT);";
 
         final String SQL_CREATE_NEWSGROUP_TABLE = "CREATE TABLE " + WebNewsContract.NewsGroupEntry.TABLE_NAME
-                + " ("+ WebNewsContract.NewsGroupEntry._ID + " INTEGER PRIMARY KEY ON CONFLICT REPLACE," +
+                + " ("+ WebNewsContract.NewsGroupEntry._ID + " TEXT PRIMARY KEY ON CONFLICT REPLACE," +
                 WebNewsContract.NewsGroupEntry.DESCRIPTION + " TEXT, " +
                 WebNewsContract.NewsGroupEntry.MAX_UNREAD_LEVEL + " INTEGER, " +
-                WebNewsContract.NewsGroupEntry.NAME + " TEXT, " +
                 WebNewsContract.NewsGroupEntry.NEWEST_POST_AT + " TEXT, " +
                 WebNewsContract.NewsGroupEntry.OLDEST_POST_AT + " TEXT, " +
                 WebNewsContract.NewsGroupEntry.POSTING_ALLOWED + " INTEGER, " +
