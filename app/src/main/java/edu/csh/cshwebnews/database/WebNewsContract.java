@@ -19,28 +19,28 @@ public class WebNewsContract {
     public static final String PATH_USER = "user";
 
     public static final String[] POST_COLUMNS = {
-            WebNewsContract.PostEntry.TABLE_NAME + "." + WebNewsContract.PostEntry._ID,
-            WebNewsContract.PostEntry.BODY,
-            WebNewsContract.PostEntry.CREATED_AT,
-            WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID,
-            WebNewsContract.PostEntry.HAD_ATTACHMENTS,
-            WebNewsContract.PostEntry.HEADERS,
-            WebNewsContract.PostEntry.IS_DETHREADED,
-            WebNewsContract.PostEntry.IS_STARRED,
-            WebNewsContract.PostEntry.MESSAGE_ID,
-            WebNewsContract.PostEntry.PERSONAL_LEVEL,
-            WebNewsContract.PostEntry.IS_STICKIED,
-            WebNewsContract.PostEntry.SUBJECT,
-            WebNewsContract.PostEntry.NEWSGROUP_IDS,
-            WebNewsContract.PostEntry.TOTAL_STARS,
-            WebNewsContract.PostEntry.CHILD_IDS,
-            WebNewsContract.PostEntry.DESCENDANT_IDS,
-            WebNewsContract.PostEntry.AUTHOR_NAME,
-            WebNewsContract.PostEntry.AUTHOR_EMAIL,
+            PostEntry.TABLE_NAME + "." + PostEntry._ID,
+            PostEntry.BODY,
+            PostEntry.CREATED_AT,
+            PostEntry.FOLLOWUP_NEWSGROUP_ID,
+            PostEntry.HAD_ATTACHMENTS,
+            PostEntry.HEADERS,
+            PostEntry.IS_DETHREADED,
+            PostEntry.IS_STARRED,
+            PostEntry.MESSAGE_ID,
+            PostEntry.PERSONAL_LEVEL,
+            PostEntry.IS_STICKIED,
+            PostEntry.SUBJECT,
+            PostEntry.NEWSGROUP_IDS,
+            PostEntry.TOTAL_STARS,
+            PostEntry.CHILD_IDS,
+            PostEntry.DESCENDANT_IDS,
+            PostEntry.AUTHOR_NAME,
+            PostEntry.AUTHOR_EMAIL,
             PostEntry.AUTHOR_AVATAR_URL,
             PostEntry.RAW_DATE,
             PostEntry.BODY_SUMMARY,
-            WebNewsContract.PostEntry.UNREAD_CLASS
+            PostEntry.UNREAD_CLASS
     };
     public static final int COL_ID = 0;
     public static final int COL_BODY = 1;

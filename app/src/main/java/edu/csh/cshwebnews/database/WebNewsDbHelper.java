@@ -37,11 +37,11 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 WebNewsContract.NewsGroupEntry.UNREAD_COUNT + " INTEGER);";
 
         final String SQL_CREATE_POST_TABLE = "CREATE TABLE " + WebNewsContract.PostEntry.TABLE_NAME + "(" +
-                WebNewsContract.PostEntry._ID + " INTEGER PRIMARY KEY ON CONFLICT REPLACE," +
+                WebNewsContract.PostEntry._ID + " TEXT PRIMARY KEY ON CONFLICT REPLACE," +
                 WebNewsContract.PostEntry.ANCESTOR_IDS + " TEXT, " +
-                WebNewsContract.PostEntry.BODY + " TEXT NOT NULL, " +
+                WebNewsContract.PostEntry.BODY + " TEXT, " +
                 WebNewsContract.PostEntry.CREATED_AT + " TEXT NOT NULL, " +
-                WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID + " INTEGER, " +
+                WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID + " TEXT, " +
                 WebNewsContract.PostEntry.HAD_ATTACHMENTS + " TEXT NOT NULL, " +
                 WebNewsContract.PostEntry.HEADERS + " TEXT NOT NULL, " +
                 WebNewsContract.PostEntry.IS_DETHREADED + " TEXT NOT NULL, " +
