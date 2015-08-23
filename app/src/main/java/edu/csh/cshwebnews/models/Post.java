@@ -32,8 +32,6 @@ public class Post {
 
     private Boolean is_starred;
 
-    private String message_id;
-
     private List<String> newsgroup_ids;
 
     private Integer personal_level;
@@ -124,14 +122,6 @@ public class Post {
      */
     public Boolean isStarred() {
         return is_starred;
-    }
-
-    /**
-     * @return The unique ID of the post on the news server. WebNews does not store the angle brackets,
-     * so this will look like foo@bar.baz rather than <foo@bar.baz>.
-     */
-    public String getMessageId() {
-        return message_id;
     }
 
     /**

@@ -30,13 +30,6 @@ public class ReadOnlyNewsgroupAdapter extends CursorAdapter {
     }
 
     @Override
-    public long getItemId(int position) {
-        Cursor cur = getCursor();
-        cur.moveToPosition(position);
-        return (long) cur.getInt(WebNewsContract.NEWSGROUP_COL_ID);
-    }
-
-    @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.drawer_list_item,parent,false);
 
@@ -52,7 +45,7 @@ public class ReadOnlyNewsgroupAdapter extends CursorAdapter {
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.inactive_color,typedValue,true);
 
-        viewHolder.newsgroupTextView.setText(cursor.getString(WebNewsContract.NEWSGROUP_COL_NAME));
+        viewHolder.newsgroupTextView.setText(cursor.getString(WebNewsContract.NEWSGROUP_COL_ID));
         if(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT) > 0){
             viewHolder.unreadTextView.setText(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT));
         }

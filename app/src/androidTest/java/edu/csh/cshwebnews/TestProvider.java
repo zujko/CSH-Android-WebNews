@@ -482,7 +482,6 @@ public class TestProvider extends AndroidTestCase {
             testValues.put(WebNewsContract.PostEntry.IS_DETHREADED, "false");
             testValues.put(WebNewsContract.PostEntry.IS_STARRED, "false");
             testValues.put(WebNewsContract.PostEntry.HAD_ATTACHMENTS, "false");
-            testValues.put(WebNewsContract.PostEntry.MESSAGE_ID, UUID.randomUUID().toString());
             testValues.put(WebNewsContract.PostEntry.NEWSGROUP_IDS, "[" + UUID.randomUUID().toString()+  "]");
             testValues.put(WebNewsContract.PostEntry.PERSONAL_LEVEL, 0);
             testValues.put(WebNewsContract.PostEntry.IS_STICKIED, 1);
@@ -504,7 +503,6 @@ public class TestProvider extends AndroidTestCase {
         for(int i = 0; i < BULK_INSERT_NEWSGROUPS_TO_INSERT; i++) {
             ContentValues testValues = new ContentValues();
             testValues.put(WebNewsContract.NewsGroupEntry._ID, i);
-            testValues.put(WebNewsContract.NewsGroupEntry.NAME, "csh."+UUID.randomUUID().toString());
             testValues.put(WebNewsContract.NewsGroupEntry.DESCRIPTION, UUID.randomUUID().toString());
             testValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED, "true");
             testValues.put(WebNewsContract.NewsGroupEntry.UNREAD_COUNT, 2);

@@ -27,7 +27,6 @@ public class WebNewsContract {
             PostEntry.HEADERS,
             PostEntry.IS_DETHREADED,
             PostEntry.IS_STARRED,
-            PostEntry.MESSAGE_ID,
             PostEntry.PERSONAL_LEVEL,
             PostEntry.IS_STICKIED,
             PostEntry.SUBJECT,
@@ -50,20 +49,19 @@ public class WebNewsContract {
     public static final int COL_HEADERS = 5;
     public static final int COL_IS_DETHREADED = 6;
     public static final int COL_IS_STARRED = 7;
-    public static final int COL_MESSAGE_ID = 8;
-    public static final int COL_PERSONAL_LEVEL = 9;
-    public static final int COL_IS_STICKIED = 10;
-    public static final int COL_SUBJECT  = 11;
-    public static final int COL_NEWSGROUP_IDS =12;
-    public static final int COL_TOTAL_STARS = 13;
-    public static final int COL_CHILD_IDS = 14;
-    public static final int COL_DESCENDANT_IDS =15;
-    public static final int COL_AUTHOR_NAME = 16;
-    public static final int COL_AUTHOR_EMAIL = 17;
-    public static final int COL_AUTHOR_AVATAR_URL = 18;
-    public static final int COL_RAW_DATE = 19;
-    public static final int COL_BODY_SUMMARY = 20;
-    public static final int COL_UNREAD_CLASS = 21;
+    public static final int COL_PERSONAL_LEVEL = 8;
+    public static final int COL_IS_STICKIED = 9;
+    public static final int COL_SUBJECT  = 10;
+    public static final int COL_NEWSGROUP_IDS =11;
+    public static final int COL_TOTAL_STARS = 12;
+    public static final int COL_CHILD_IDS = 13;
+    public static final int COL_DESCENDANT_IDS =14;
+    public static final int COL_AUTHOR_NAME = 15;
+    public static final int COL_AUTHOR_EMAIL = 16;
+    public static final int COL_AUTHOR_AVATAR_URL = 17;
+    public static final int COL_RAW_DATE = 18;
+    public static final int COL_BODY_SUMMARY = 19;
+    public static final int COL_UNREAD_CLASS = 20;
 
     public static final int USER_COL_ID = 0;
     public static final int USER_COL_USERNAME = 1;
@@ -153,8 +151,6 @@ public class WebNewsContract {
         public static final String IS_DETHREADED    = "is_dethreaded";
 
         public static final String IS_STARRED       = "is_starred";
-
-        public static final String MESSAGE_ID       = "message_id";
 
         public static final String PERSONAL_LEVEL   = "personal_level";
 

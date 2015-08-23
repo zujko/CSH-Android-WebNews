@@ -139,7 +139,7 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = WebNewsContract.NewsGroupEntry.NAME;
+        String sortOrder = WebNewsContract.NewsGroupEntry._ID;
         Uri newsgroupUri = WebNewsContract.NewsGroupEntry.CONTENT_URI;
 
         return new CursorLoader(this,

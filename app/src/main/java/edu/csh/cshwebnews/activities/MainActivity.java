@@ -110,8 +110,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        String sortOrder = WebNewsContract.NewsGroupEntry.NAME;
+        String sortOrder = WebNewsContract.NewsGroupEntry._ID;
         Uri newsgroupUri = WebNewsContract.NewsGroupEntry.CONTENT_URI;
         String[] selectionArgs = null;
         switch (id) {
@@ -278,7 +277,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .noFade()
                 .into(userImage);
 
-
         header.setEnabled(false);
         header.setOnClickListener(null);
 
@@ -314,8 +312,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                //*********************************************
+                // FIX THIS TO WORK WITH THE NEW API
+                //**********************************************
                 getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
                 int postId = (int) id;
+                //getContentResolver()
 
                 if (postId == Utility.DRAWER_ITEM_HOME) {
                     Bundle args = new Bundle();

@@ -41,7 +41,6 @@ public class TestUtilities extends AndroidTestCase {
     static ContentValues createNewsgroupValues() {
         ContentValues testValues = new ContentValues();
         testValues.put(WebNewsContract.NewsGroupEntry._ID, 1);
-        testValues.put(WebNewsContract.NewsGroupEntry.NAME, "csh.foo");
         testValues.put(WebNewsContract.NewsGroupEntry.DESCRIPTION, "Foo Discussion");
         testValues.put(WebNewsContract.NewsGroupEntry.POSTING_ALLOWED, "true");
         testValues.put(WebNewsContract.NewsGroupEntry.UNREAD_COUNT, 2);
@@ -98,7 +97,6 @@ public class TestUtilities extends AndroidTestCase {
         testValues.put(WebNewsContract.PostEntry.IS_DETHREADED, "false");
         testValues.put(WebNewsContract.PostEntry.IS_STARRED, "false");
         testValues.put(WebNewsContract.PostEntry.HAD_ATTACHMENTS, "false");
-        testValues.put(WebNewsContract.PostEntry.MESSAGE_ID, "somethingsomething@asdf.net");
         testValues.put(WebNewsContract.PostEntry.NEWSGROUP_IDS, "[ 1 ]");
         testValues.put(WebNewsContract.PostEntry.PERSONAL_LEVEL, 0);
         testValues.put(WebNewsContract.PostEntry.IS_STICKIED, 1);
