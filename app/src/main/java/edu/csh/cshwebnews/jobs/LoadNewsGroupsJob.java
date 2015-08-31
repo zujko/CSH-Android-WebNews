@@ -46,7 +46,6 @@ public class LoadNewsGroupsJob extends Job {
                     values.put(WebNewsContract.NewsGroupEntry._ID,newsGroup.getId());
                     values.put(WebNewsContract.NewsGroupEntry.DESCRIPTION,newsGroup.getDescription());
                     values.put(WebNewsContract.NewsGroupEntry.MAX_UNREAD_LEVEL,newsGroup.getMaxUnreadLevel());
-                    values.put(WebNewsContract.NewsGroupEntry.NAME,newsGroup.getName());
                     values.put(WebNewsContract.NewsGroupEntry.NEWEST_POST_AT,newsGroup.getNewestPostAt());
                     values.put(WebNewsContract.NewsGroupEntry.OLDEST_POST_AT,newsGroup.getOldestPostAt());
 

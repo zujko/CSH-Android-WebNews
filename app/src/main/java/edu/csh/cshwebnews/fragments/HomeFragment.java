@@ -23,6 +23,8 @@ import com.commonsware.cwac.merge.MergeAdapter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
@@ -34,16 +36,16 @@ import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 public class HomeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    @Bind(R.id.fab) FloatingActionButton mFloatingActionButton;
+    @Bind(R.id.listview) ListView mListView;
+    @Bind(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
     private MergeAdapter mMergeAdapter;
     private PostListAdapter mTodayAdapter;
     private PostListAdapter mYesterdayAdapter;
     private PostListAdapter mThisMonthAdapter;
-    private ListView mListView;
-    private SwipeRefreshLayout swipeContainer;
     private TextView todayText;
     private TextView yesterdayText;
     private TextView thisMonthText;
-    private FloatingActionButton mFloatingActionButton;
 
     private static final int TODAY_LOADER = 0;
     private static final int YESTERDAY_LOADER = 1;
@@ -53,11 +55,13 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
-        mFloatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
+
+        ButterKnife.bind(this, rootView);
+
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isAdded()) {
+                if (isAdded()) {
                     Intent intent = new Intent(getActivity(), NewPostActivity.class);
                     startActivity(intent);
                 }
@@ -80,13 +84,18 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         mMergeAdapter = new MergeAdapter();
         setUpMergeAdapter(inflater);
 
-        mListView = (ListView) rootView.findViewById(R.id.listview);
         mListView.setAdapter(mMergeAdapter);
 
         getLoaderManager().initLoader(TODAY_LOADER, getArguments(), this);
         getLoaderManager().initLoader(YESTERDAY_LOADER, getArguments(), this);
         getLoaderManager().initLoader(THIS_MONTH_LOADER, getArguments(), this);
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override
@@ -187,7 +196,6 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private void setUpRefreshLayout(final View rootView) {
-        swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -203,10 +211,9 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private void noNetworkSnackbar(final View rootView) {
-        //TODO Wait for bug fix so that snackbar will display indefinitely
-        // (Currently setting a custom duration does not work)
         swipeContainer.setRefreshing(false);
-        Snackbar.make(rootView, getString(R.string.error_no_network_simple), Snackbar.LENGTH_LONG)
+
+        Snackbar.make(rootView, getString(R.string.error_no_network_simple), Snackbar.LENGTH_INDEFINITE)
                 .setAction(getString(R.string.snackbar_refresh), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

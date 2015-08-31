@@ -110,7 +110,6 @@ public class LoadPostsJob extends Job {
                         values.put(WebNewsContract.PostEntry.IS_STARRED, 0);
                     }
 
-                    values.put(WebNewsContract.PostEntry.MESSAGE_ID, postObj.getMessageId());
                     values.put(WebNewsContract.PostEntry.PERSONAL_LEVEL, postObj.getPersonalLevel());
 
                     if (postObj.getSticky().getDisplayName() == null) {

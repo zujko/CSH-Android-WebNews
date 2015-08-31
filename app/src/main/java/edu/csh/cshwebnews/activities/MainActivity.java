@@ -28,6 +28,8 @@ import android.widget.TextView;
 import com.commonsware.cwac.merge.MergeAdapter;
 import com.squareup.picasso.Picasso;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.ScrimInsetsFrameLayout;
 import edu.csh.cshwebnews.Utility;
@@ -44,23 +46,25 @@ import edu.csh.cshwebnews.jobs.LoadNewsGroupsJob;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
-    final int NEWSGROUP_LOADER = 0;
-    final int READ_ONLY_NEWSGROUP_LOADER = 1;
+    @Bind(R.id.tool_bar) Toolbar toolBar;
+    @Bind(R.id.DrawerLayout) DrawerLayout drawer;
+    @Bind(R.id.drawer_listview) ListView drawerListView;
     DrawerListAdapter mListAdapter;
     ReadOnlyNewsgroupAdapter mReadOnlyAdapter;
     ScrimInsetsFrameLayout mInsetsFrameLayout;
-    ListView drawerListView;
     ActionBarDrawerToggle drawerToggle;
-    Toolbar toolBar;
-    DrawerLayout drawer;
     String newsgroupNameState;
     Fragment currentFragment;
     MergeAdapter mergeAdapter;
+    final int NEWSGROUP_LOADER = 0;
+    final int READ_ONLY_NEWSGROUP_LOADER = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ButterKnife.bind(this);
 
         mergeAdapter = new MergeAdapter();
 
@@ -68,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         WebNewsApplication.getJobManager().addJobInBackground(new LoadNewsGroupsJob(getApplicationContext()));
 
-        toolBar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolBar);
 
         createFragment(savedInstanceState);
@@ -110,8 +113,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        String sortOrder = WebNewsContract.NewsGroupEntry.NAME;
+        String sortOrder = WebNewsContract.NewsGroupEntry._ID;
         Uri newsgroupUri = WebNewsContract.NewsGroupEntry.CONTENT_URI;
         String[] selectionArgs = null;
         switch (id) {
@@ -222,7 +224,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         drawerListView.setAdapter(mergeAdapter);
 
-        drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);
         drawer.setStatusBarBackground(R.color.csh_pink_dark);
 
         drawerToggle = new ActionBarDrawerToggle(this,drawer,toolBar,R.string.app_name,R.string.app_name) {
@@ -256,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     private void createHeader() {
         mInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(R.id.scrimInsetsFrameLayout);
-        drawerListView = (ListView) findViewById(R.id.drawer_listview);
+
         ViewGroup header = (ViewGroup) getLayoutInflater().inflate(R.layout.drawer_header, drawerListView, false);
 
         TextView username = (TextView) header.findViewById(R.id.drawer_header_name_textview);
@@ -278,7 +279,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .noFade()
                 .into(userImage);
 
-
         header.setEnabled(false);
         header.setOnClickListener(null);
 
@@ -298,26 +298,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             default:
                 drawerListView.setItemChecked(position, true);
                 drawer.closeDrawer(mInsetsFrameLayout);
-                selectNewsgroup(id, position, view);
+                selectNewsgroup(view);
         }
 
     }
 
     /**
      * Starts a newsgroup fragment when one is selected from the navigation drawer
-     * @param id
-     * @param position
-     * @param view
      */
-    private void selectNewsgroup(final long id, int position, final View view) {
+    private void selectNewsgroup(final View view) {
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                //*********************************************
+                // FIX THIS TO WORK WITH THE NEW API
+                //**********************************************
                 getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
-                int postId = (int) id;
 
-                if (postId == Utility.DRAWER_ITEM_HOME) {
+                TextView newsgroup = (TextView) view.findViewById(R.id.drawer_list_newsgroup_textview);
+                String title = newsgroup.getText().toString();
+                getSupportActionBar().setTitle(title);
+
+                if (title.equals("Home")) {
                     Bundle args = new Bundle();
                     args.putString("newsgroup_id", null);
                     args.putBoolean("only_starred", false);
@@ -327,26 +330,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     currentFragment = new HomeFragment();
                     currentFragment.setArguments(args);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
-                    getSupportActionBar().setTitle("Home");
-                    newsgroupNameState = "Home";
                 } else {
                     currentFragment = new PostListFragment();
-                    Bundle args = createFragmentBundle(postId);
+                    Bundle args = createFragmentBundle(title);
                     currentFragment.setArguments(args);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
-
-                    String title;
-
-                    if (postId == Utility.DRAWER_ITEM_STARRED || postId == Utility.DRAWER_ITEM_STICKIED) {
-                        title = Utility.DRAWER_HEADER_ITEMS[postId];
-                    } else {
-                        TextView newsgroup = (TextView) view.findViewById(R.id.drawer_list_newsgroup_textview);
-                        title = newsgroup.getText().toString();
-                    }
-
-                    getSupportActionBar().setTitle(title);
-                    newsgroupNameState = title;
                 }
+                newsgroupNameState = title;
 
             }
         }, 300);
@@ -357,22 +347,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * @param id
      * @return
      */
-    private Bundle createFragmentBundle(int id) {
+    private Bundle createFragmentBundle(String id) {
         Bundle args = new Bundle();
-
         switch (id) {
-            case Utility.DRAWER_ITEM_STARRED:
+            case "Starred":
                 args.putString("newsgroup_id",null);
                 args.putBoolean("only_sticky",false);
                 args.putBoolean("only_starred",true);
                 break;
-            case Utility.DRAWER_ITEM_STICKIED:
+            case "Stickied":
                 args.putString("newsgroup_id",null);
                 args.putBoolean("only_starred", false);
                 args.putBoolean("only_sticky",true);
                 break;
             default:
-                args.putString("newsgroup_id", String.valueOf(id));
+                args.putString("newsgroup_id", id);
                 args.putBoolean("only_starred", false);
                 args.putBoolean("only_sticky",false);
                 break;

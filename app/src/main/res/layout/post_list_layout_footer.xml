@@ -8,6 +8,6 @@
     <ProgressBar
         android:id="@+id/post_list_footer_progressbar"
         android:indeterminate="true"
-        android:layout_width="30dp"
-        android:layout_height="30dp" />
+        android:layout_width="20dp"
+        android:layout_height="20dp" />
 </LinearLayout>

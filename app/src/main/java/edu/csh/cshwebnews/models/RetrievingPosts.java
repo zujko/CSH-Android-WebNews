@@ -21,7 +21,7 @@ public class RetrievingPosts {
     /**
      * @return The IDs of the posts that matched the query.
      */
-    public List<Integer> getListOfMatchedIds(){
+    public List<String> getListOfMatchedIds(){
         return meta.getMatchedIds();
     }
 
@@ -40,11 +40,11 @@ public class RetrievingPosts {
 
     private class Meta {
 
-        private List<Integer> matched_ids;
+        private List<String> matched_ids;
 
         private Integer total;
 
-        public List<Integer> getMatchedIds() {
+        public List<String> getMatchedIds() {
             return matched_ids;
         }
 

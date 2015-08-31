@@ -20,6 +20,8 @@ import android.widget.ListView;
 
 import com.squareup.picasso.Picasso;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
@@ -34,11 +36,11 @@ import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 public class PostListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AbsListView.OnScrollListener {
 
+    @Bind(R.id.fab) FloatingActionButton floatingActionButton;
+    @Bind(R.id.listview) ListView mListView;
+    @Bind(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
     private PostListAdapter mListAdapter;
-    private ListView mListView;
     private View mProgressBarLayout;
-    private SwipeRefreshLayout swipeContainer;
-    private FloatingActionButton floatingActionButton;
     Bundle instanceState;
 
     private int visibleThreshold = 5;
@@ -53,14 +55,17 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
+
+        ButterKnife.bind(this,rootView);
+
         mProgressBarLayout = inflater.inflate(R.layout.post_list_layout_footer,null);
-        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
+
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isAdded()) {
+                if (isAdded()) {
                     Intent intent = new Intent(getActivity(), NewPostActivity.class);
-                    intent.putExtra("newsgroup_id",getArguments().getString("newsgroup_id"));
+                    intent.putExtra("newsgroup_id", getArguments().getString("newsgroup_id"));
                     startActivity(intent);
                 }
             }
@@ -73,7 +78,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         }
 
         mListAdapter = new PostListAdapter(getActivity(),null,0);
-        mListView = (ListView) rootView.findViewById(R.id.listview);
         mListView.setFooterDividersEnabled(false);
         mListView.addFooterView(mProgressBarLayout);
         mListView.setOnScrollListener(this);
@@ -81,6 +85,12 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override
@@ -154,9 +164,8 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     private void noNetworkSnackbar(final View rootView) {
         swipeContainer.setRefreshing(false);
-        //TODO Wait for bug fix so that snackbar will display indefinitely
-        // (Currently setting a custom duration does not work)
-        Snackbar.make(rootView, getString(R.string.error_no_network_simple),Snackbar.LENGTH_LONG)
+
+        Snackbar.make(rootView, getString(R.string.error_no_network_simple),Snackbar.LENGTH_INDEFINITE)
                 .setAction(getString(R.string.snackbar_refresh), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -175,7 +184,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
      * @param rootView
      */
     private void setupRefreshLayout(final View rootView) {
-        swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -220,6 +228,12 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
                 loading = true;
             }
         }
+        if(loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
+            if(mListView.getFooterViewsCount() == 0) {
+                mListView.addFooterView(mProgressBarLayout);
+            }
+        }
+
     }
 
     public void onEventMainThread(FinishLoadingEvent event) {
