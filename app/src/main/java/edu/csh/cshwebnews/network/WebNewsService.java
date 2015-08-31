@@ -10,7 +10,7 @@ package edu.csh.cshwebnews.network;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.Post;
-import edu.csh.cshwebnews.models.PostRequestBody;
+import edu.csh.cshwebnews.models.requests.PostRequestBody;
 import edu.csh.cshwebnews.models.RetrievingPosts;
 import edu.csh.cshwebnews.models.User;
 import edu.csh.cshwebnews.models.requests.CancelPostRequestBody;

@@ -27,13 +27,6 @@ public class NewsgroupSpinnerAdapter extends CursorAdapter {
     }
 
     @Override
-    public long getItemId(int position) {
-        Cursor cur = getCursor();
-        cur.moveToPosition(position);
-        return (long) cur.getInt(WebNewsContract.NEWSGROUP_COL_ID);
-    }
-
-    @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.newsgroup_spinner_item,parent,false);
 
@@ -46,6 +39,6 @@ public class NewsgroupSpinnerAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
-        viewHolder.newsgroupTextView.setText(cursor.getString(WebNewsContract.NEWSGROUP_COL_NAME));
+        viewHolder.newsgroupTextView.setText(cursor.getString(WebNewsContract.NEWSGROUP_COL_ID));
     }
 }

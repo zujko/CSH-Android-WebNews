@@ -48,7 +48,7 @@ public class DrawerListAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
-        viewHolder.newsgroupTextView.setText(cursor.getString(WebNewsContract.NEWSGROUP_COL_NAME));
+        viewHolder.newsgroupTextView.setText(cursor.getString(WebNewsContract.NEWSGROUP_COL_ID));
         if(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT) > 0){
             if(cursor.getInt(WebNewsContract.NEWSGROUP_COL_UNREAD_COUNT) > 99) {
                 viewHolder.unreadTextView.setText("99+");

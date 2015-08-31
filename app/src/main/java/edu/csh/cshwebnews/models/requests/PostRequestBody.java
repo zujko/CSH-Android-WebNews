@@ -1,4 +1,4 @@
-package edu.csh.cshwebnews.models;
+package edu.csh.cshwebnews.models.requests;
 
 
 public class PostRequestBody {

@@ -65,10 +65,10 @@ public class Utility {
      * @param cursor
      * @return
      */
-    public static int getPosition(int id, Cursor cursor) {
+    public static int getPosition(String id, Cursor cursor) {
         for(int x = 0, items = cursor.getCount(); x < items; x++ ) {
             cursor.moveToPosition(x);
-            if(cursor.getInt(WebNewsContract.NEWSGROUP_COL_ID) == id) {
+            if(cursor.getString(WebNewsContract.NEWSGROUP_COL_ID).equals(id)) {
                 return x;
             }
         }

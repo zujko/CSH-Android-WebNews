@@ -28,13 +28,11 @@ public class NewsGroups {
 
     public class NewsGroup {
 
-        private Integer id;
+        private String id;
 
         private String description;
 
         private Integer max_unread_level;
-
-        private String name;
 
         private String newest_post_at;
 
@@ -47,7 +45,7 @@ public class NewsGroups {
         /**
          * @return The unique ID of the newsgroup on WebNews.
          */
-        public Integer getId() {
+        public String getId() {
             return id;
         }
 
@@ -65,13 +63,6 @@ public class NewsGroups {
          */
         public Integer getMaxUnreadLevel() {
             return max_unread_level;
-        }
-
-        /**
-         * @return The name of the newsgroup.
-         */
-        public String getName() {
-            return name;
         }
 
         /**

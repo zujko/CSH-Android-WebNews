@@ -140,7 +140,7 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = WebNewsContract.NewsGroupEntry.NAME;
+        String sortOrder = WebNewsContract.NewsGroupEntry._ID;
         Uri newsgroupUri = WebNewsContract.NewsGroupEntry.CONTENT_URI;
 
         return new CursorLoader(this,
@@ -154,11 +154,13 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mSpinnerAdapter.swapCursor(data);
-        if(newsgroupId != null) {
-            mSpinner.setSelection(Utility.getPosition(Integer.valueOf(newsgroupId), data));
-        } else {
-            mSpinner.setSelection(0);
-            mSpinner.performClick();
+        if (newsgroupId != null) {
+            try {
+                mSpinner.setSelection(Utility.getPosition(newsgroupId, data));
+            } catch (Exception e) {
+                mSpinner.setSelection(0);
+                mSpinner.performClick();
+            }
         }
     }
 
