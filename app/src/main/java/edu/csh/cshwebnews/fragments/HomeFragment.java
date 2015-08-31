@@ -214,10 +214,9 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private void noNetworkSnackbar(final View rootView) {
-        //TODO Wait for bug fix so that snackbar will display indefinitely
-        // (Currently setting a custom duration does not work)
         swipeContainer.setRefreshing(false);
-        Snackbar.make(rootView, getString(R.string.error_no_network_simple), Snackbar.LENGTH_LONG)
+
+        Snackbar.make(rootView, getString(R.string.error_no_network_simple), Snackbar.LENGTH_INDEFINITE)
                 .setAction(getString(R.string.snackbar_refresh), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

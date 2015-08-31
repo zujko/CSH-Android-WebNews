@@ -110,7 +110,6 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                         values.put(WebNewsContract.PostEntry.IS_STARRED,0);
                     }
 
-                    values.put(WebNewsContract.PostEntry.MESSAGE_ID,postObj.getMessageId());
                     values.put(WebNewsContract.PostEntry.PERSONAL_LEVEL,postObj.getPersonalLevel());
 
                     if(postObj.getSticky().getDisplayName() == null){
@@ -151,7 +150,6 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                     contentValues.put(WebNewsContract.NewsGroupEntry._ID,newsGroup.getId());
                     contentValues.put(WebNewsContract.NewsGroupEntry.DESCRIPTION,newsGroup.getDescription());
                     contentValues.put(WebNewsContract.NewsGroupEntry.MAX_UNREAD_LEVEL,newsGroup.getMaxUnreadLevel());
-                    contentValues.put(WebNewsContract.NewsGroupEntry.NAME,newsGroup.getName());
                     contentValues.put(WebNewsContract.NewsGroupEntry.NEWEST_POST_AT,newsGroup.getNewestPostAt());
                     contentValues.put(WebNewsContract.NewsGroupEntry.OLDEST_POST_AT,newsGroup.getOldestPostAt());
 

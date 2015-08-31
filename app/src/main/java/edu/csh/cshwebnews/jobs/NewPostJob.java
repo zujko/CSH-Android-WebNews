@@ -9,7 +9,7 @@ import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.events.NewPostEvent;
 import edu.csh.cshwebnews.models.JobPriority;
-import edu.csh.cshwebnews.models.PostRequestBody;
+import edu.csh.cshwebnews.models.requests.PostRequestBody;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
