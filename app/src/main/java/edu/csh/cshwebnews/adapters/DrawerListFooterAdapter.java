@@ -35,7 +35,7 @@ public class DrawerListFooterAdapter extends ArrayAdapter<String> {
 
             rowView = inflater.inflate(R.layout.drawer_static_items_layout,parent,false);
             holder = new ViewHolder();
-            holder.itemName = (TextView) rowView.findViewById(R.id.drawer_list_item);
+            holder.itemName = (TextView) rowView.findViewById(R.id.drawer_list_newsgroup_textview);
             holder.itemIcon = (ImageView) rowView.findViewById(R.id.item_icon);
 
             rowView.setTag(holder);

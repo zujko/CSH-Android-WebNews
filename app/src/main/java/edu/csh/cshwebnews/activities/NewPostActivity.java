@@ -153,11 +153,13 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mSpinnerAdapter.swapCursor(data);
-        if(newsgroupId != null) {
-            mSpinner.setSelection(Utility.getPosition(Integer.valueOf(newsgroupId), data));
-        } else {
-            mSpinner.setSelection(0);
-            mSpinner.performClick();
+        if (newsgroupId != null) {
+            try {
+                mSpinner.setSelection(Utility.getPosition(newsgroupId, data));
+            } catch (Exception e) {
+                mSpinner.setSelection(0);
+                mSpinner.performClick();
+            }
         }
     }
 

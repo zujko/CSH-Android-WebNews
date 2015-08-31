@@ -296,18 +296,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             default:
                 drawerListView.setItemChecked(position, true);
                 drawer.closeDrawer(mInsetsFrameLayout);
-                selectNewsgroup(id, position, view);
+                selectNewsgroup(view);
         }
 
     }
 
     /**
      * Starts a newsgroup fragment when one is selected from the navigation drawer
-     * @param id
-     * @param position
-     * @param view
      */
-    private void selectNewsgroup(final long id, int position, final View view) {
+    private void selectNewsgroup(final View view) {
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -316,10 +313,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 // FIX THIS TO WORK WITH THE NEW API
                 //**********************************************
                 getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
-                int postId = (int) id;
-                //getContentResolver()
 
-                if (postId == Utility.DRAWER_ITEM_HOME) {
+                TextView newsgroup = (TextView) view.findViewById(R.id.drawer_list_newsgroup_textview);
+                String title = newsgroup.getText().toString();
+                getSupportActionBar().setTitle(title);
+
+                if (title.equals("Home")) {
                     Bundle args = new Bundle();
                     args.putString("newsgroup_id", null);
                     args.putBoolean("only_starred", false);
@@ -329,26 +328,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     currentFragment = new HomeFragment();
                     currentFragment.setArguments(args);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
-                    getSupportActionBar().setTitle("Home");
-                    newsgroupNameState = "Home";
                 } else {
                     currentFragment = new PostListFragment();
-                    Bundle args = createFragmentBundle(postId);
+                    Bundle args = createFragmentBundle(title);
                     currentFragment.setArguments(args);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
-
-                    String title;
-
-                    if (postId == Utility.DRAWER_ITEM_STARRED || postId == Utility.DRAWER_ITEM_STICKIED) {
-                        title = Utility.DRAWER_HEADER_ITEMS[postId];
-                    } else {
-                        TextView newsgroup = (TextView) view.findViewById(R.id.drawer_list_newsgroup_textview);
-                        title = newsgroup.getText().toString();
-                    }
-
-                    getSupportActionBar().setTitle(title);
-                    newsgroupNameState = title;
                 }
+                newsgroupNameState = title;
 
             }
         }, 300);
@@ -359,22 +345,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * @param id
      * @return
      */
-    private Bundle createFragmentBundle(int id) {
+    private Bundle createFragmentBundle(String id) {
         Bundle args = new Bundle();
-
         switch (id) {
-            case Utility.DRAWER_ITEM_STARRED:
+            case "Starred":
                 args.putString("newsgroup_id",null);
                 args.putBoolean("only_sticky",false);
                 args.putBoolean("only_starred",true);
                 break;
-            case Utility.DRAWER_ITEM_STICKIED:
+            case "Stickied":
                 args.putString("newsgroup_id",null);
                 args.putBoolean("only_starred", false);
                 args.putBoolean("only_sticky",true);
                 break;
             default:
-                args.putString("newsgroup_id", String.valueOf(id));
+                args.putString("newsgroup_id", id);
                 args.putBoolean("only_starred", false);
                 args.putBoolean("only_sticky",false);
                 break;
