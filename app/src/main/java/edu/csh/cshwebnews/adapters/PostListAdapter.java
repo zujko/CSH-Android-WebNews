@@ -47,7 +47,7 @@ public class PostListAdapter extends CursorAdapter {
         View view = LayoutInflater.from(context).inflate(R.layout.list_item_post_layout,parent,false);
 
         ViewHolder viewHolder = new ViewHolder(view);
-        view.setTag(viewHolder);
+        view.setTag(R.string.viewholder_tag,viewHolder);
 
         return view;
     }
@@ -71,7 +71,8 @@ public class PostListAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
+        ViewHolder viewHolder = (ViewHolder) view.getTag(R.string.viewholder_tag);
+        view.setTag(R.string.postid_tag,cursor.getString(WebNewsContract.COL_ID));
 
         //TODO use a tint for the color change
         if(cursor.getInt(WebNewsContract.COL_PERSONAL_LEVEL) == 3) {
