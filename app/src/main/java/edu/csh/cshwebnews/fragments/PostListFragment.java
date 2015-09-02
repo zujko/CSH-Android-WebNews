@@ -254,7 +254,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
         //Send post id to the PostFragment
         Bundle bundle = new Bundle();
-        bundle.putLong("id",id);
+        bundle.putString("id", (String) view.getTag(R.string.postid_tag));
         newFragment.setArguments(bundle);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
