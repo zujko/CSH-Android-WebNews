@@ -52,7 +52,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String sortOrder = WebNewsContract.PostEntry.RAW_DATE + " DESC";
-        String[] selectionArgs = new String[]{"%"+args.getString("id"+"%")};
+        String[] selectionArgs = new String[]{"%"+args.getString("id")+"%"};
         String selection = WebNewsContract.PostEntry.ANCESTOR_IDS + " LIKE ?";
 
         return new CursorLoader(getActivity(),
