@@ -190,7 +190,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(Utility.isNetworkConnected(getActivity())) {
+                if (Utility.isNetworkConnected(getActivity())) {
                     WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
                 } else {
                     noNetworkSnackbar(rootView);
@@ -250,12 +250,13 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         PostFragment newFragment = new PostFragment();
 
-        //TODO Start background job to get data about the post and mark the post as unread
-
         //Send post id to the PostFragment
         Bundle bundle = new Bundle();
         bundle.putString("id", (String) view.getTag(R.string.postid_tag));
         newFragment.setArguments(bundle);
+        bundle.putBoolean("as_threads",true);
+
+        WebNewsApplication.getJobManager().addJobInBackground(new LoadPostsJob(bundle, getActivity()));
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.frag_container, newFragment);
