@@ -30,6 +30,7 @@ public class PostAdapter extends CursorAdapter {
         @Bind(R.id.post_head_full_date_text) TextView mFullDateText;
         @Bind(R.id.post_head_view_headers_text) TextView mViewHeadersClickableText;
         @Bind(R.id.post_head_headers_text) TextView mHeadersText;
+        @Bind(R.id.post_body_text) TextView mBodyText;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -73,5 +74,6 @@ public class PostAdapter extends CursorAdapter {
         //TODO Fix this date to be more readable
         viewHolder.mFullDateText.setText(cursor.getString(WebNewsContract.COL_RAW_DATE));
         viewHolder.mHeadersText.setText(cursor.getString(WebNewsContract.COL_HEADERS));
+        viewHolder.mBodyText.setText(cursor.getString(WebNewsContract.COL_BODY));
     }
 }
