@@ -15,6 +15,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -45,24 +46,50 @@ public class LoadPostsJob extends Job {
     @Override
     public void onRun() throws Throwable {
         try {
-            RetrievingPosts posts = Utility.webNewsService.blockingGetPosts("false", //as_meta
-                    args.getBoolean("as_threads"), //as_threads
-                    null, //authors
-                    null, //keywords
-                    null, //keywords_match
-                    "20", //limit
-                    null, //min_unread_level
-                    args.getString("newsgroup_id"), //newsGroupId
-                    args.getInt("offset"), //offset
-                    args.getBoolean("only_roots"), //only_roots
-                    args.getBoolean("only_starred"), //only_starred
-                    args.getBoolean("only_sticky"), //only_sticky
-                    "false", //reverse_order
-                    null, //since
-                    args.getString("until") //until
-            );
+            RetrievingPosts posts;
+            if(args.getBoolean("load_with_id")) {
+                posts = Utility.webNewsService.blockingIdGetPosts(args.getString("id"),
+                        "false", //as_meta
+                        args.getBoolean("as_threads"), //as_threads
+                        null, //authors
+                        null, //keywords
+                        null, //keywords_match
+                        "20", //limit
+                        null, //min_unread_level
+                        args.getString("newsgroup_id"), //newsGroupId
+                        args.getInt("offset"), //offset
+                        args.getBoolean("only_roots"), //only_roots
+                        args.getBoolean("only_starred"), //only_starred
+                        args.getBoolean("only_sticky"), //only_sticky
+                        "false", //reverse_order
+                        null, //since
+                        args.getString("until") //until
+                );
+            } else {
+                posts = Utility.webNewsService.blockingGetPosts("false", //as_meta
+                        args.getBoolean("as_threads"), //as_threads
+                        null, //authors
+                        null, //keywords
+                        null, //keywords_match
+                        "20", //limit
+                        null, //min_unread_level
+                        args.getString("newsgroup_id"), //newsGroupId
+                        args.getInt("offset"), //offset
+                        args.getBoolean("only_roots"), //only_roots
+                        args.getBoolean("only_starred"), //only_starred
+                        args.getBoolean("only_sticky"), //only_sticky
+                        "false", //reverse_order
+                        null, //since
+                        args.getString("until") //until
+                );
+            }
 
-            int size = posts.getListOfPosts().size();
+            ArrayList<Post> postArrayList = new ArrayList<>(posts.getListOfPosts());
+            if(args.getBoolean("as_threads")) {
+                postArrayList.addAll(posts.getListOfDescendants());
+            }
+
+            int size = postArrayList.size();
 
             if (size > 0) {
                 ContentValues[] postList = new ContentValues[size];
@@ -73,7 +100,7 @@ public class LoadPostsJob extends Job {
 
                 for (int i = 0; i < size; i++) {
                     ContentValues values = new ContentValues();
-                    Post postObj = posts.getListOfPosts().get(i);
+                    Post postObj = postArrayList.get(i);
                     values.put(WebNewsContract.PostEntry._ID, postObj.getId());
                     values.put(WebNewsContract.PostEntry.ANCESTOR_IDS, postObj.getListOfAncestorIds().toString());
                     values.put(WebNewsContract.PostEntry.BODY, postObj.getBody());

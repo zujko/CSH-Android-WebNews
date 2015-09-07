@@ -10,10 +10,10 @@ package edu.csh.cshwebnews.network;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.Post;
-import edu.csh.cshwebnews.models.requests.PostRequestBody;
 import edu.csh.cshwebnews.models.RetrievingPosts;
 import edu.csh.cshwebnews.models.User;
 import edu.csh.cshwebnews.models.requests.CancelPostRequestBody;
+import edu.csh.cshwebnews.models.requests.PostRequestBody;
 import edu.csh.cshwebnews.models.requests.StickyRequestBody;
 import edu.csh.cshwebnews.models.requests.UnreadRequestBody;
 import retrofit.Callback;
@@ -69,6 +69,24 @@ public interface WebNewsService {
 
     @GET("/posts")
     RetrievingPosts blockingGetPosts(@Query("as_meta") String asMeta,
+                                     @Query("as_threads") Boolean asThreads,
+                                     @Query("authors") String authors,
+                                     @Query("keywords") String keywords,
+                                     @Query("keywords_match") String keywords_match,
+                                     @Query("limit") String limit,
+                                     @Query("min_unread_level") String minUnreadLevel,
+                                     @Query("newsgroup_ids") String newsgroupIds,
+                                     @Query("offset") Integer offset,
+                                     @Query("only_roots") Boolean onlyRoots,
+                                     @Query("only_starred") Boolean onlyStarred,
+                                     @Query("only_sticky") Boolean onlySticky,
+                                     @Query("reverse_order") String reverseOrder,
+                                     @Query("since") String sinceDate,
+                                     @Query("until") String untilDate);
+
+    @GET("/posts/{id}")
+    RetrievingPosts blockingIdGetPosts(@Path("id") String id,
+                                       @Query("as_meta") String asMeta,
                                      @Query("as_threads") Boolean asThreads,
                                      @Query("authors") String authors,
                                      @Query("keywords") String keywords,

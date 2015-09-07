@@ -255,6 +255,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         bundle.putString("id", (String) view.getTag(R.string.postid_tag));
         newFragment.setArguments(bundle);
         bundle.putBoolean("as_threads",true);
+        bundle.putBoolean("load_with_id",true);
 
         WebNewsApplication.getJobManager().addJobInBackground(new LoadPostsJob(bundle, getActivity()));
 
