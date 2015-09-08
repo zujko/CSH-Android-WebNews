@@ -107,7 +107,9 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("state", mListView.onSaveInstanceState());
+        if(mListView != null) {
+            outState.putParcelable("state", mListView.onSaveInstanceState());
+        }
     }
 
     @Override

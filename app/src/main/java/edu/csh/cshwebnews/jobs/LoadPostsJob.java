@@ -17,6 +17,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import de.greenrobot.event.EventBus;
@@ -84,12 +85,12 @@ public class LoadPostsJob extends Job {
                 );
             }
 
-            ArrayList<Post> postArrayList = new ArrayList<>(posts.getListOfPosts());
+            List<Post> listOfPosts = posts.getListOfPosts();
             if(args.getBoolean("as_threads")) {
-                postArrayList.addAll(posts.getListOfDescendants());
+                listOfPosts.addAll(posts.getListOfDescendants());
             }
 
-            int size = postArrayList.size();
+            int size = listOfPosts.size();
 
             if (size > 0) {
                 ContentValues[] postList = new ContentValues[size];
@@ -100,7 +101,7 @@ public class LoadPostsJob extends Job {
 
                 for (int i = 0; i < size; i++) {
                     ContentValues values = new ContentValues();
-                    Post postObj = postArrayList.get(i);
+                    Post postObj = listOfPosts.get(i);
                     values.put(WebNewsContract.PostEntry._ID, postObj.getId());
                     values.put(WebNewsContract.PostEntry.ANCESTOR_IDS, postObj.getListOfAncestorIds().toString());
                     values.put(WebNewsContract.PostEntry.BODY, postObj.getBody());

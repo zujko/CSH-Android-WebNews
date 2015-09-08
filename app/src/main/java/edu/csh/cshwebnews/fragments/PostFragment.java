@@ -36,6 +36,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
 
         mPostAdapter = new PostAdapter(getActivity(),null,0);
         mPostListView.setAdapter(mPostAdapter);
+        mPostListView.setOnItemClickListener(this);
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
 
