@@ -47,13 +47,13 @@ public class PostAdapter extends CursorAdapter {
         View view = LayoutInflater.from(context).inflate(R.layout.post_list_item,parent,false);
 
         ViewHolder viewHolder = new ViewHolder(view);
-        view.setTag(viewHolder);
+        view.setTag(R.string.viewholder_tag,viewHolder);
         return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
+        ViewHolder viewHolder = (ViewHolder) view.getTag(R.string.viewholder_tag);
 
         Picasso.with(context)
                 .load(cursor.getString(WebNewsContract.COL_AUTHOR_AVATAR_URL))

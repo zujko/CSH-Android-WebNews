@@ -15,7 +15,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -55,7 +54,7 @@ public class LoadPostsJob extends Job {
                         null, //authors
                         null, //keywords
                         null, //keywords_match
-                        "20", //limit
+                        "10", //limit
                         null, //min_unread_level
                         args.getString("newsgroup_id"), //newsGroupId
                         args.getInt("offset"), //offset
@@ -72,7 +71,7 @@ public class LoadPostsJob extends Job {
                         null, //authors
                         null, //keywords
                         null, //keywords_match
-                        "20", //limit
+                        "10", //limit
                         null, //min_unread_level
                         args.getString("newsgroup_id"), //newsGroupId
                         args.getInt("offset"), //offset
@@ -87,7 +86,11 @@ public class LoadPostsJob extends Job {
 
             List<Post> listOfPosts = posts.getListOfPosts();
             if(args.getBoolean("as_threads")) {
-                listOfPosts.addAll(posts.getListOfDescendants());
+                if(listOfPosts == null) {
+                    listOfPosts = posts.getListOfDescendants();
+                } else {
+                    listOfPosts.addAll(posts.getListOfDescendants());
+                }
             }
 
             int size = listOfPosts.size();
@@ -151,8 +154,10 @@ public class LoadPostsJob extends Job {
                     values.put(WebNewsContract.PostEntry.TOTAL_STARS, postObj.getStarsTotal());
 
                     if (args.getBoolean("as_threads")) {
-                        values.put(WebNewsContract.PostEntry.CHILD_IDS, postObj.getChildIds().toString());
-                        values.put(WebNewsContract.PostEntry.DESCENDANT_IDS, postObj.getDescendantIds().toString());
+                        if(postObj.getChildIds() != null && postObj.getDescendantIds() != null) {
+                            values.put(WebNewsContract.PostEntry.CHILD_IDS, postObj.getChildIds().toString());
+                            values.put(WebNewsContract.PostEntry.DESCENDANT_IDS, postObj.getDescendantIds().toString());
+                        }
                     }
 
                     values.put(WebNewsContract.PostEntry.AUTHOR_NAME, postObj.getAuthor().getName());

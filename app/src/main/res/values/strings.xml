@@ -5,6 +5,7 @@
 
     <string name="viewholder_tag">viewholder_tag</string>
     <string name="postid_tag">postid_tag</string>
+    <string name="subjecttext_tag">subjecttext_tag</string>
 
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>

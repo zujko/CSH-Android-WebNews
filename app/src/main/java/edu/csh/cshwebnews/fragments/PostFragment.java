@@ -11,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -23,6 +25,8 @@ import edu.csh.cshwebnews.database.WebNewsContract;
 public class PostFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     @Bind(R.id.post_list) ListView mPostListView;
+    @Bind(R.id.post_head_star_image) ImageView mStarImage;
+    @Bind(R.id.post_head_subject_text) TextView mSubjectText;
     private PostAdapter mPostAdapter;
 
     public static final int POST_LOADER = 6;
@@ -33,6 +37,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post,container,false);
         ButterKnife.bind(this,rootView);
+        mSubjectText.setText(getArguments().getString("subject"));
 
         mPostAdapter = new PostAdapter(getActivity(),null,0);
         mPostListView.setAdapter(mPostAdapter);
