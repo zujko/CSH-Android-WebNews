@@ -156,7 +156,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mListAdapter.swapCursor(data);
-        if(instanceState != null) {
+        if(instanceState != null && instanceState.getParcelable("state") != null) {
             mListView.onRestoreInstanceState(instanceState.getParcelable("state"));
         }
         instanceState = null;
