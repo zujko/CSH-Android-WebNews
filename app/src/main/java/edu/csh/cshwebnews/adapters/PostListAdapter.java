@@ -98,6 +98,7 @@ public class PostListAdapter extends CursorAdapter {
 
         viewHolder.subjectTextView.setText(cursor.getString(WebNewsContract.COL_SUBJECT));
         view.setTag(R.string.subjecttext_tag, cursor.getString(WebNewsContract.COL_SUBJECT));
+        view.setTag(R.string.bodytext_tag,cursor.getString(WebNewsContract.COL_BODY));
 
         viewHolder.summaryTextView.setText(cursor.getString(WebNewsContract.COL_BODY_SUMMARY));
 

@@ -27,6 +27,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     @Bind(R.id.post_list) ListView mPostListView;
     @Bind(R.id.post_head_star_image) ImageView mStarImage;
     @Bind(R.id.post_head_subject_text) TextView mSubjectText;
+    @Bind(R.id.post_head_body_text) TextView mBodyText;
     private PostAdapter mPostAdapter;
 
     public static final int POST_LOADER = 6;
@@ -38,6 +39,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
         View rootView = inflater.inflate(R.layout.fragment_post,container,false);
         ButterKnife.bind(this,rootView);
         mSubjectText.setText(getArguments().getString("subject"));
+        mBodyText.setText(getArguments().getString("body"));
 
         mPostAdapter = new PostAdapter(getActivity(),null,0);
         mPostListView.setAdapter(mPostAdapter);
