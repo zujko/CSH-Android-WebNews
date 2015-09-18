@@ -7,6 +7,10 @@
     <string name="postid_tag">postid_tag</string>
     <string name="subjecttext_tag">subjecttext_tag</string>
     <string name="bodytext_tag">bodytext_tag</string>
+    <string name="authorurl_tag">authortag_tag</string>
+    <string name="simpledate_tag">simpledate_tag</string>
+    <string name="newsgroup_tag">newsgroup_tag</string>
+    <string name="authorname_tag">authorname_tag</string>
 
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
@@ -35,4 +39,8 @@
 
     <!-- Preference strings -->
     <string name="pref_signed_in">signed_in</string>
+
+    <string name="test_body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam viverra sollicitudin elit sit amet tincidunt. Cras eleifend imperdiet magna, nec vehicula sapien molestie id. Sed augue sem, lobortis id felis vel, interdum scelerisque nibh. Phasellus id nisl magna. Suspendisse ut semper mauris, ac commodo magna. Fusce pulvinar gravida scelerisque. Quisque massa odio, ullamcorper viverra neque convallis, efficitur vestibulum metus. Aenean porta convallis felis, finibus vehicula eros consequat quis. Vivamus posuere, erat vel pellentesque pellentesque, lacus lacus blandit metus, et suscipit nisl velit ut ante. Integer sed dapibus lorem. Praesent euismod iaculis neque, nec mollis ipsum hendrerit nec. Etiam a aliquet elit. Phasellus molestie laoreet dolor vitae gravida. Morbi et nibh accumsan, facilisis odio non, imperdiet nibh.</string>
+    <string name="test_subject">Lorem ipsum dolor sit amet.</string>
+
 </resources>

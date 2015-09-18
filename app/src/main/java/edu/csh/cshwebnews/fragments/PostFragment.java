@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.csh.cshwebnews.R;
@@ -26,8 +28,12 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Bind(R.id.post_list) ListView mPostListView;
     @Bind(R.id.post_head_star_image) ImageView mStarImage;
+    @Bind(R.id.post_head_author_image) ImageView mAuthorImage;
     @Bind(R.id.post_head_subject_text) TextView mSubjectText;
     @Bind(R.id.post_head_body_text) TextView mBodyText;
+    @Bind(R.id.post_head_date_text) TextView mDateText;
+    @Bind(R.id.post_head_newsgroup_text) TextView mNewsgroupText;
+    @Bind(R.id.post_head_author_text) TextView mAuthorNameText;
     private PostAdapter mPostAdapter;
 
     public static final int POST_LOADER = 6;
@@ -37,16 +43,25 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post,container,false);
-        ButterKnife.bind(this,rootView);
+        ButterKnife.bind(this, rootView);
         mSubjectText.setText(getArguments().getString("subject"));
         mBodyText.setText(getArguments().getString("body"));
+        mDateText.setText(getArguments().getString("simple_date"));
+        mNewsgroupText.setText(getArguments().getString("newsgroup"));
+        mAuthorNameText.setText(getArguments().getString("author_name"));
+
+        Picasso.with(getActivity())
+                .load(getArguments().getString("image_url"))
+                .resize(45,45)
+                .noFade()
+                .placeholder(R.drawable.placeholder)
+                .into(mAuthorImage);
 
         mPostAdapter = new PostAdapter(getActivity(),null,0);
         mPostListView.setAdapter(mPostAdapter);
         mPostListView.setOnItemClickListener(this);
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
-
         return rootView;
     }
 
@@ -55,7 +70,6 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

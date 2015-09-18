@@ -97,8 +97,6 @@ public class PostListAdapter extends CursorAdapter {
         }
 
         viewHolder.subjectTextView.setText(cursor.getString(WebNewsContract.COL_SUBJECT));
-        view.setTag(R.string.subjecttext_tag, cursor.getString(WebNewsContract.COL_SUBJECT));
-        view.setTag(R.string.bodytext_tag,cursor.getString(WebNewsContract.COL_BODY));
 
         viewHolder.summaryTextView.setText(cursor.getString(WebNewsContract.COL_BODY_SUMMARY));
 
@@ -111,5 +109,11 @@ public class PostListAdapter extends CursorAdapter {
                 .tag(context)
                 .noFade()
                 .into(viewHolder.authorImage);
+
+        view.setTag(R.string.subjecttext_tag, cursor.getString(WebNewsContract.COL_SUBJECT));
+        view.setTag(R.string.bodytext_tag, cursor.getString(WebNewsContract.COL_BODY));
+        view.setTag(R.string.authorurl_tag, cursor.getString(WebNewsContract.COL_AUTHOR_AVATAR_URL));
+        view.setTag(R.string.simpledate_tag, cursor.getString(WebNewsContract.COL_CREATED_AT));
+        view.setTag(R.string.authorname_tag, cursor.getString(WebNewsContract.COL_AUTHOR_NAME));
     }
 }

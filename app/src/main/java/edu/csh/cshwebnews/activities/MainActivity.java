@@ -1,6 +1,5 @@
 package edu.csh.cshwebnews.activities;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -161,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * Creates the merge adapter for the navigation drawer by combining all adapters and views
      */
     private void createMergeAdapter() {
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = getLayoutInflater();
 
         //Adds space between static items and the header
         mergeAdapter.addView(inflater.inflate(R.layout.space_layout, null));
@@ -333,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 } else {
                     currentFragment = new PostListFragment();
                     Bundle args = createFragmentBundle(title);
+                    args.putString("newsgroup",title);
                     currentFragment.setArguments(args);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
                 }

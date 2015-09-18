@@ -257,6 +257,10 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         bundle.putString("id", (String) view.getTag(R.string.postid_tag));
         bundle.putString("subject",(String)view.getTag(R.string.subjecttext_tag));
         bundle.putString("body",(String)view.getTag(R.string.bodytext_tag));
+        bundle.putString("image_url",(String)view.getTag(R.string.authorurl_tag));
+        bundle.putString("simple_date",(String)view.getTag(R.string.simpledate_tag));
+        bundle.putString("newsgroup",getArguments().getString("newsgroup"));
+        bundle.putString("author_name",(String) view.getTag(R.string.authorname_tag));
         newFragment.setArguments(bundle);
         bundle.putBoolean("as_threads",true);
         bundle.putBoolean("load_with_id",true);
