@@ -56,7 +56,7 @@ public class PostAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag(R.string.viewholder_tag);
 
         Picasso.with(context)
-                .load(cursor.getString(WebNewsContract.COL_AUTHOR_AVATAR_URL))
+                .load(cursor.getString(WebNewsContract.COL_AUTHOR_AVATAR_URL)+"&d=mm")
                 .placeholder(R.drawable.placeholder)
                 .resize(45,45)
                 .tag(context)
