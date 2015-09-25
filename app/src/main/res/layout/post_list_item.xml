@@ -78,6 +78,7 @@
         android:layout_toRightOf="@id/post_author_image"
         android:visibility="gone"/>
     <TextView
+        android:text="View headers"
         android:textColor="@color/blue"
         android:clickable="true"
         android:id="@+id/post_head_view_headers_text"

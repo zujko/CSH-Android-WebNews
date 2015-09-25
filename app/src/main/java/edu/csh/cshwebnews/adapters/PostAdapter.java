@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 
 public class PostAdapter extends CursorAdapter {
@@ -54,7 +55,23 @@ public class PostAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag(R.string.viewholder_tag);
+        view.setTag(R.string.postid_tag, cursor.getString(WebNewsContract.COL_ID));
 
+        if(Utility.expandedStates.get(cursor.getString(WebNewsContract.COL_ID))) {
+            viewHolder.mSummaryText.setVisibility(View.GONE);
+            viewHolder.mDateText.setVisibility(View.GONE);
+            viewHolder.mNewsgroupText.setVisibility(View.VISIBLE);
+            viewHolder.mFullDateText.setVisibility(View.VISIBLE);
+            viewHolder.mViewHeadersClickableText.setVisibility(View.VISIBLE);
+            viewHolder.mBodyText.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.mSummaryText.setVisibility(View.VISIBLE);
+            viewHolder.mDateText.setVisibility(View.VISIBLE);
+            viewHolder.mNewsgroupText.setVisibility(View.GONE);
+            viewHolder.mFullDateText.setVisibility(View.GONE);
+            viewHolder.mViewHeadersClickableText.setVisibility(View.GONE);
+            viewHolder.mBodyText.setVisibility(View.GONE);
+        }
         Picasso.with(context)
                 .load(cursor.getString(WebNewsContract.COL_AUTHOR_AVATAR_URL)+"&d=mm")
                 .placeholder(R.drawable.placeholder)

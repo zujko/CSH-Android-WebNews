@@ -2,12 +2,12 @@ package edu.csh.cshwebnews;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SyncInfo;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import java.util.HashMap;
 
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.network.WebNewsService;
@@ -38,6 +38,8 @@ public class Utility {
 
     public static String clientId;
     public static String clientSecret;
+
+    public static HashMap<String,Boolean> expandedStates;
 
     /**
      * Checks if the device is connected to a network
