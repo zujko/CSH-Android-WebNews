@@ -1,5 +1,6 @@
 package edu.csh.cshwebnews.activities;
 
+import android.animation.ValueAnimator;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,6 +31,7 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.ScrimInsetsFrameLayout;
 import edu.csh.cshwebnews.Utility;
@@ -38,7 +41,9 @@ import edu.csh.cshwebnews.adapters.DrawerListFooterAdapter;
 import edu.csh.cshwebnews.adapters.DrawerListHeaderItemsAdapter;
 import edu.csh.cshwebnews.adapters.ReadOnlyNewsgroupAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.events.AnimateToolbarEvent;
 import edu.csh.cshwebnews.fragments.HomeFragment;
+import edu.csh.cshwebnews.fragments.PostFragment;
 import edu.csh.cshwebnews.fragments.PostListFragment;
 import edu.csh.cshwebnews.jobs.LoadNewsGroupsJob;
 
@@ -52,9 +57,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     ReadOnlyNewsgroupAdapter mReadOnlyAdapter;
     ScrimInsetsFrameLayout mInsetsFrameLayout;
     ActionBarDrawerToggle drawerToggle;
-    String newsgroupNameState;
+    private static String newsgroupNameState;
     Fragment currentFragment;
     MergeAdapter mergeAdapter;
+    private int iconState = 0;
     final int NEWSGROUP_LOADER = 0;
     final int READ_ONLY_NEWSGROUP_LOADER = 1;
 
@@ -76,6 +82,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         createFragment(savedInstanceState);
 
         createNavigationDrawer();
+
+        if(savedInstanceState != null) {
+            if(savedInstanceState.getString("icon","0").equals("1")) {
+                onEventMainThread(new AnimateToolbarEvent(true));
+            }
+        }
 
         getSupportLoaderManager().initLoader(NEWSGROUP_LOADER, null, this);
         getSupportLoaderManager().initLoader(READ_ONLY_NEWSGROUP_LOADER, null, this);
@@ -104,11 +116,28 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("name",newsgroupNameState);
+        outState.putString("name", newsgroupNameState);
+        outState.putString("icon", String.valueOf(iconState));
         getSupportFragmentManager().putFragment(outState, "currentFragment", currentFragment);
     }
+
+
+
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -225,28 +254,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         drawer.setStatusBarBackground(R.color.csh_pink_dark);
 
-        drawerToggle = new ActionBarDrawerToggle(this,drawer,toolBar,R.string.app_name,R.string.app_name) {
-
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                //Disables hamburger icon animation
-                if(drawerView != null){
-                    super.onDrawerSlide(drawerView, 0);
-                } else {
-                    super.onDrawerSlide(drawerView, slideOffset);
-                }
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-        };
+        drawerToggle = new ActionBarDrawerToggle(this,drawer,toolBar,R.string.app_name,R.string.app_name);
         drawer.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
     }
@@ -332,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 } else {
                     currentFragment = new PostListFragment();
                     Bundle args = createFragmentBundle(title);
-                    args.putString("newsgroup",title);
+                    args.putString("newsgroup", title);
                     currentFragment.setArguments(args);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
                 }
@@ -340,6 +348,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             }
         }, 300);
+    }
+
+    @Override
+    public void onBackPressed() {
+        for(Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if(fragment instanceof PostFragment) {
+                onEventMainThread(new AnimateToolbarEvent(false));
+            }
+        }
+        super.onBackPressed();
     }
 
     /**
@@ -372,4 +390,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return args;
     }
 
+    public void onEventMainThread(AnimateToolbarEvent event) {
+        ValueAnimator anim;
+        if(event.ANIM_TO_ARROW) {
+            iconState = 1;
+            anim = ValueAnimator.ofFloat(0, 1);
+            getSupportActionBar().setTitle("");
+        } else {
+            iconState = 0;
+            anim = ValueAnimator.ofFloat(1,0);
+            getSupportActionBar().setTitle(newsgroupNameState);
+        }
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float slideOffset = (Float) valueAnimator.getAnimatedValue();
+                drawerToggle.onDrawerSlide(drawer, slideOffset);
+            }
+        });
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.setDuration(300);
+        anim.start();
+    }
 }

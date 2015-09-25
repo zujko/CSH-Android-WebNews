@@ -31,6 +31,7 @@ import edu.csh.cshwebnews.WebNewsApplication;
 import edu.csh.cshwebnews.activities.NewPostActivity;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.events.AnimateToolbarEvent;
 import edu.csh.cshwebnews.events.FinishLoadingEvent;
 import edu.csh.cshwebnews.jobs.LoadPostsJob;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
@@ -252,6 +253,8 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         PostFragment newFragment = new PostFragment();
 
+        EventBus.getDefault().post(new AnimateToolbarEvent(true));
+
         //Send post id to the PostFragment
         Bundle bundle = new Bundle();
         bundle.putString("id", (String) view.getTag(R.string.postid_tag));
@@ -267,9 +270,11 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
         WebNewsApplication.getJobManager().addJobInBackground(new LoadPostsJob(bundle, getActivity()));
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frag_container, newFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
+
 }
