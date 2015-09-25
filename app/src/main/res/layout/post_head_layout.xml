@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/post_head_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:id="@+id/post_head_top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:gravity="center"
+            android:padding="16dp"
+            android:id="@+id/post_head_subject_text"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/post_head_star_image"
+            android:padding="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/post_head_top_border"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/post_head_top_layout"
+        android:background="?attr/divider_color"/>
+
+    <RelativeLayout
+        android:id="@+id/post_head_info_layout"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_head_top_border">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/post_head_author_image"
+            android:layout_width="45dp"
+            android:layout_height="45dp"/>
+        <TextView
+            android:textColor="@color/black"
+            android:id="@+id/post_head_author_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/post_head_author_image"/>
+
+        <TextView
+            android:id="@+id/post_head_newsgroup_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/post_head_author_text"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/post_head_author_image"/>
+        <TextView
+            android:id="@+id/post_head_date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/post_head_newsgroup_text"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/post_head_author_image"/>
+        <ImageView
+            android:padding="8dp"
+            android:id="@+id/post_head_reply_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:padding="8dp"
+        android:textColor="@color/black"
+        android:id="@+id/post_head_body_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_head_info_layout"/>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/post_head_body_text"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="?attr/divider_color"/>
+</RelativeLayout>

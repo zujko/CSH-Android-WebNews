@@ -13,8 +13,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.commonsware.cwac.merge.MergeAdapter;
 import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
@@ -26,7 +28,7 @@ import edu.csh.cshwebnews.database.WebNewsContract;
 
 public class PostFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
-    @Bind(R.id.post_list) ListView mPostListView;
+    private ListView mPostListView;
     @Bind(R.id.post_head_star_image) ImageView mStarImage;
     @Bind(R.id.post_head_author_image) ImageView mAuthorImage;
     @Bind(R.id.post_head_subject_text) TextView mSubjectText;
@@ -35,6 +37,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     @Bind(R.id.post_head_newsgroup_text) TextView mNewsgroupText;
     @Bind(R.id.post_head_author_text) TextView mAuthorNameText;
     private PostAdapter mPostAdapter;
+    private MergeAdapter mMergeAdapter;
 
     public static final int POST_LOADER = 6;
 
@@ -43,23 +46,16 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post,container,false);
-        ButterKnife.bind(this, rootView);
-        mSubjectText.setText(getArguments().getString("subject"));
-        mBodyText.setText(getArguments().getString("body"));
-        mDateText.setText(getArguments().getString("simple_date"));
-        mNewsgroupText.setText(getArguments().getString("newsgroup"));
-        mAuthorNameText.setText(getArguments().getString("author_name"));
+        mPostListView = (ListView) rootView.findViewById(R.id.post_list);
 
-        Picasso.with(getActivity())
-                .load(getArguments().getString("image_url"))
-                .resize(45,45)
-                .noFade()
-                .placeholder(R.drawable.placeholder)
-                .into(mAuthorImage);
+        mMergeAdapter = new MergeAdapter();
+
+        createHeader(savedInstanceState);
 
         mPostAdapter = new PostAdapter(getActivity(),null,0);
-        mPostListView.setAdapter(mPostAdapter);
+        mMergeAdapter.addAdapter(mPostAdapter);
         mPostListView.setOnItemClickListener(this);
+        mPostListView.setAdapter(mMergeAdapter);
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
         return rootView;
@@ -83,6 +79,27 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
                 selection,
                 selectionArgs,
                 sortOrder);
+    }
+
+    private void createHeader(Bundle savedInstanceState) {
+        LayoutInflater inflater = getLayoutInflater(savedInstanceState);
+        RelativeLayout rootLayout = (RelativeLayout) inflater.inflate(R.layout.post_head_layout,null);
+        ButterKnife.bind(this, rootLayout);
+
+        mSubjectText.setText(getArguments().getString("subject"));
+        mBodyText.setText(getArguments().getString("body"));
+        mDateText.setText(getArguments().getString("simple_date"));
+        mNewsgroupText.setText(getArguments().getString("newsgroup"));
+        mAuthorNameText.setText(getArguments().getString("author_name"));
+
+        Picasso.with(getActivity())
+                .load(getArguments().getString("image_url"))
+                .resize(45,45)
+                .noFade()
+                .placeholder(R.drawable.placeholder)
+                .into(mAuthorImage);
+
+        mMergeAdapter.addView(rootLayout);
     }
 
     @Override
