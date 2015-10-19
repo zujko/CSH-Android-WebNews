@@ -2,9 +2,7 @@ package edu.csh.cshwebnews;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SyncInfo;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -32,7 +30,7 @@ public class Utility {
     public static final int DRAWER_FOOTER_SETTINGS = 0;
     public static final int DRAWER_FOOTER_ABOUT = 1;
 
-    public static final String CANCEL_NEWSGROUP_ID = "33";
+    public static final String CANCEL_NEWSGROUP_ID = "control.cancel";
 
     public static WebNewsService webNewsService = null;
 
