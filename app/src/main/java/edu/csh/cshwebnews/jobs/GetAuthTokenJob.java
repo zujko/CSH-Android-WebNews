@@ -18,7 +18,7 @@ import edu.csh.cshwebnews.models.User;
 import edu.csh.cshwebnews.models.WebNewsAccount;
 import edu.csh.cshwebnews.network.ServiceGenerator;
 import edu.csh.cshwebnews.network.WebNewsService;
-import retrofit.RetrofitError;
+import retrofit.Response;
 
 public class GetAuthTokenJob extends Job {
 
@@ -41,12 +41,21 @@ public class GetAuthTokenJob extends Job {
                 WebNewsService.BASE_URL, null, null);
         try {
             //Try getting the access token
-            AccessToken token = generator.blockingGetAccessToken("authorization_code", code, WebNewsService.REDIRECT_URI, Utility.clientId, Utility.clientSecret);
+            Response<AccessToken> response = generator.getAccessToken("authorization_code", code, WebNewsService.REDIRECT_URI, Utility.clientId, Utility.clientSecret).execute();
+            if(!response.isSuccess()) {
+                throw new Exception();
+            }
 
+            AccessToken token = response.body();
             Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL,token.getAccessToken(),token.getTokenType());
 
             //Try getting users data
-            User user = Utility.webNewsService.blockingGetUser();
+            Response<User> userResponse = Utility.webNewsService.getUser().execute();
+            if(!userResponse.isSuccess()) {
+                throw new Exception();
+            }
+
+            User user = userResponse.body();
 
             saveToDb(user);
 
@@ -57,9 +66,7 @@ public class GetAuthTokenJob extends Job {
             args.putExtra(AccountManager.KEY_ACCOUNT_TYPE, WebNewsAccount.ACCOUNT_TYPE);
 
             EventBus.getDefault().post(new FinishLoginEvent(true,null,args));
-        } catch (RetrofitError e){
-            EventBus.getDefault().post(new FinishLoginEvent(false,e.getResponse().getReason(),null));
-        } catch (Exception e) {
+        }catch (Exception e) {
             EventBus.getDefault().post(new FinishLoginEvent(false,e.getMessage(),null));
         }
 

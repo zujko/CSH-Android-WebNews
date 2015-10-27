@@ -16,7 +16,7 @@ import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.WebNewsAccount;
-import retrofit.RetrofitError;
+import retrofit.Response;
 
 public class LoadNewsGroupsJob extends Job {
 
@@ -33,7 +33,16 @@ public class LoadNewsGroupsJob extends Job {
     @Override
     public void onRun() throws Throwable {
         try {
-            NewsGroups newsGroups = Utility.webNewsService.blockingGetNewsGroups();
+            Response<NewsGroups> newsGroupsResponse = Utility.webNewsService.getNewsGroups().execute();
+            if(!newsGroupsResponse.isSuccess()) {
+                if(newsGroupsResponse.code() == 401) {
+                    invalidateAuthToken();
+                    throw new Exception("401");
+                }
+                throw new Exception();
+            }
+
+            NewsGroups newsGroups = newsGroupsResponse.body();
 
             int size = newsGroups.getNewsGroupList().size();
 
@@ -62,11 +71,8 @@ public class LoadNewsGroupsJob extends Job {
 
                 context.getContentResolver().bulkInsert(WebNewsContract.NewsGroupEntry.CONTENT_URI,contentValues);
             }
-        } catch (RetrofitError e) {
-            if(e.getResponse().getStatus() == 401) {
-                invalidateAuthToken();
-                throw e;
-            }
+        } catch (Exception e) {
+            throw e;
         }
     }
 
@@ -80,6 +86,6 @@ public class LoadNewsGroupsJob extends Job {
 
     @Override
     protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return throwable instanceof RetrofitError;
+        return throwable.getMessage().equals("401");
     }
 }
