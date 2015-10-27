@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.Bind;
@@ -58,7 +59,7 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                newsgroupId = String.valueOf(id);
+                newsgroupId = ((TextView)view).getText().toString();
             }
 
             @Override
@@ -175,7 +176,7 @@ public class NewPostActivity extends AppCompatActivity implements LoaderManager.
     private void post() {
         Bundle args = new Bundle();
         args.putString(NewPostJob.BODY, mBodyText.getText().toString());
-        args.putString(NewPostJob.NEWSGROUP_ID, newsgroupId);
+        args.putString(NewPostJob.NEWSGROUP_ID, newsgroupId.trim());
         args.putString(NewPostJob.SUBJECT, mSubjectText.getText().toString());
 
         Toast.makeText(this,"Posting...",Toast.LENGTH_SHORT).show();

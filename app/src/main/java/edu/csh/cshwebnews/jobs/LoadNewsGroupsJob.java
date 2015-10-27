@@ -5,6 +5,7 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
@@ -13,10 +14,11 @@ import java.io.IOException;
 
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.exceptions.ResponseException;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.WebNewsAccount;
-import retrofit.RetrofitError;
+import retrofit.Response;
 
 public class LoadNewsGroupsJob extends Job {
 
@@ -33,7 +35,15 @@ public class LoadNewsGroupsJob extends Job {
     @Override
     public void onRun() throws Throwable {
         try {
-            NewsGroups newsGroups = Utility.webNewsService.blockingGetNewsGroups();
+            Response<NewsGroups> newsGroupsResponse = Utility.webNewsService.getNewsGroups().execute();
+            if(!newsGroupsResponse.isSuccess()) {
+                if(newsGroupsResponse.code() == 401) {
+                    invalidateAuthToken();
+                }
+                throw new ResponseException(newsGroupsResponse.errorBody().string());
+            }
+
+            NewsGroups newsGroups = newsGroupsResponse.body();
 
             int size = newsGroups.getNewsGroupList().size();
 
@@ -62,11 +72,10 @@ public class LoadNewsGroupsJob extends Job {
 
                 context.getContentResolver().bulkInsert(WebNewsContract.NewsGroupEntry.CONTENT_URI,contentValues);
             }
-        } catch (RetrofitError e) {
-            if(e.getResponse().getStatus() == 401) {
-                invalidateAuthToken();
-                throw e;
-            }
+        } catch (ResponseException e) {
+            Log.e("LoadNewsGroups",e.getMessage());
+        } catch (Exception e) {
+            Log.e("LoadNewsGroups",e.getMessage());
         }
     }
 
@@ -80,6 +89,6 @@ public class LoadNewsGroupsJob extends Job {
 
     @Override
     protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return throwable instanceof RetrofitError;
+        return false;
     }
 }

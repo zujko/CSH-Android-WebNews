@@ -1,11 +1,14 @@
 package edu.csh.cshwebnews.network;
 
-import com.facebook.stetho.okhttp.StethoInterceptor;
+import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
+import java.io.IOException;
+
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
 
 public class ServiceGenerator {
 
@@ -14,25 +17,31 @@ public class ServiceGenerator {
 
         /* Add a StethoInterceptor for debugging */
         OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.networkInterceptors().add(new StethoInterceptor());
-
-        RestAdapter.Builder builder = new RestAdapter.Builder()
-                .setEndpoint(baseUrl)
-                .setClient(new OkClient(okHttpClient));
 
         //Non OAuth request, add headers
         if (accessToken != null && tokenType != null) {
-            builder.setRequestInterceptor(new RequestInterceptor() {
+            okHttpClient.networkInterceptors().add(new Interceptor() {
                 @Override
-                public void intercept(RequestFacade request) {
-                    request.addHeader("Content-Type", "application/json");
-                    request.addHeader("Accept", "application/vnd.csh.webnews.v1+json");
-                    request.addHeader("Authorization", tokenType + " " +
-                            accessToken);
+                public Response intercept(Chain chain) throws IOException {
+                    Request request = chain.request();
+                    Request newRequest = request.newBuilder()
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Accept", "application/vnd.csh.webnews.v1+json")
+                            .addHeader("Authorization", tokenType + " " + accessToken)
+                            .build();
+
+                    return chain.proceed(newRequest);
                 }
             });
         }
 
-        return builder.build().create(serviceClass);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .build();
+
+
+        return retrofit.create(serviceClass);
     }
 }
