@@ -12,19 +12,19 @@ import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.FinishLoginEvent;
+import edu.csh.cshwebnews.exceptions.ResponseException;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.User;
 import edu.csh.cshwebnews.models.WebNewsAccount;
 import edu.csh.cshwebnews.network.ServiceGenerator;
 import edu.csh.cshwebnews.network.WebNewsService;
-import retrofit.RetrofitError;
+import retrofit.Response;
 
 public class GetAuthTokenJob extends Job {
 
     private String code;
     private ContentResolver mContentResolver;
-
 
     public GetAuthTokenJob(String code, ContentResolver contentResolver) {
         super(new Params(JobPriority.VERY_HIGH).requireNetwork());
@@ -41,12 +41,21 @@ public class GetAuthTokenJob extends Job {
                 WebNewsService.BASE_URL, null, null);
         try {
             //Try getting the access token
-            AccessToken token = generator.blockingGetAccessToken("authorization_code", code, WebNewsService.REDIRECT_URI, Utility.clientId, Utility.clientSecret);
+            Response<AccessToken> response = generator.getAccessToken("authorization_code", code, WebNewsService.REDIRECT_URI, Utility.clientId, Utility.clientSecret).execute();
+            if(!response.isSuccess()) {
+                throw new ResponseException(response.errorBody().string());
+            }
 
+            AccessToken token = response.body();
             Utility.webNewsService = ServiceGenerator.createService(WebNewsService.class, WebNewsService.BASE_URL,token.getAccessToken(),token.getTokenType());
 
             //Try getting users data
-            User user = Utility.webNewsService.blockingGetUser();
+            Response<User> userResponse = Utility.webNewsService.getUser().execute();
+            if(!userResponse.isSuccess()) {
+                throw new ResponseException(userResponse.errorBody().string());
+            }
+
+            User user = userResponse.body();
 
             saveToDb(user);
 
@@ -57,9 +66,7 @@ public class GetAuthTokenJob extends Job {
             args.putExtra(AccountManager.KEY_ACCOUNT_TYPE, WebNewsAccount.ACCOUNT_TYPE);
 
             EventBus.getDefault().post(new FinishLoginEvent(true,null,args));
-        } catch (RetrofitError e){
-            EventBus.getDefault().post(new FinishLoginEvent(false,e.getResponse().getReason(),null));
-        } catch (Exception e) {
+        } catch (ResponseException e) {
             EventBus.getDefault().post(new FinishLoginEvent(false,e.getMessage(),null));
         }
 

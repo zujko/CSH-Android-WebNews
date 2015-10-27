@@ -1,6 +1,7 @@
 package edu.csh.cshwebnews.jobs;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
@@ -10,8 +11,7 @@ import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.events.NewPostEvent;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.requests.PostRequestBody;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
 
 public class NewPostJob extends Job {
 
@@ -37,28 +37,18 @@ public class NewPostJob extends Job {
         String postingHost = arguments.getString(POSTING_HOST);
         String subject = arguments.getString(SUBJECT);
         String newsgroupId = arguments.getString(NEWSGROUP_ID);
-        Integer followupId = null;
-        Integer parentId = null;
+        String followupId = arguments.getString(FOLLOWUP_ID, null);
+        String parentId = arguments.getString(PARENT_ID, null);
 
-        if(arguments.getInt(FOLLOWUP_ID, -10) != -10) followupId = arguments.getInt(FOLLOWUP_ID, 0);
+        Log.d("NEWSGROUP",newsgroupId);
 
-        if(arguments.getInt(PARENT_ID, -10) != -10) parentId = arguments.getInt(PARENT_ID, 0);
+        Response<com.squareup.okhttp.Response> response = Utility.webNewsService.post(new PostRequestBody(subject, newsgroupId, body, parentId, followupId, postingHost)).execute();
 
-        try {
-            Response response = Utility.webNewsService.blockingPost(new PostRequestBody(subject, newsgroupId, body, parentId, followupId, postingHost));
-
-            if(response.getStatus() == 201 || response.getStatus() == 202) {
-                EventBus.getDefault().post(new NewPostEvent(true,null));
-            } else {
-                EventBus.getDefault().post(new NewPostEvent(false,response.getReason()));
-            }
-
-        } catch (RetrofitError e) {
-            EventBus.getDefault().post(new NewPostEvent(false,e.getResponse().getReason()));
-        } catch (Exception e) {
-            EventBus.getDefault().post(new NewPostEvent(false,e.getMessage()));
+        if(response.code() == 201 || response.code() == 202) {
+            EventBus.getDefault().post(new NewPostEvent(true,null));
+        } else {
+            EventBus.getDefault().post(new NewPostEvent(false,response.errorBody().string()));
         }
-
     }
 
     @Override

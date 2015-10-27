@@ -6,6 +6,7 @@ import android.accounts.OperationCanceledException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
@@ -23,16 +24,18 @@ import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.FinishLoadingEvent;
+import edu.csh.cshwebnews.exceptions.ResponseException;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.Post;
 import edu.csh.cshwebnews.models.RetrievingPosts;
 import edu.csh.cshwebnews.models.WebNewsAccount;
-import retrofit.RetrofitError;
+import retrofit.Response;
 
 public class LoadPostsJob extends Job {
 
     private Bundle args;
     private Context context;
+    private static final String TAG = "LOAD POSTS JOB";
 
     public LoadPostsJob(Bundle args, Context context) {
         super(new Params(JobPriority.VERY_HIGH).requireNetwork());
@@ -46,44 +49,33 @@ public class LoadPostsJob extends Job {
     @Override
     public void onRun() throws Throwable {
         try {
-            RetrievingPosts posts;
-            if(args.getBoolean("load_with_id")) {
-                posts = Utility.webNewsService.blockingIdGetPosts(args.getString("id"),
-                        "false", //as_meta
-                        args.getBoolean("as_threads"), //as_threads
-                        null, //authors
-                        null, //keywords
-                        null, //keywords_match
-                        "10", //limit
-                        null, //min_unread_level
-                        args.getString("newsgroup_id"), //newsGroupId
-                        args.getInt("offset"), //offset
-                        args.getBoolean("only_roots"), //only_roots
-                        args.getBoolean("only_starred"), //only_starred
-                        args.getBoolean("only_sticky"), //only_sticky
-                        "false", //reverse_order
-                        null, //since
-                        args.getString("until") //until
-                );
-            } else {
-                posts = Utility.webNewsService.blockingGetPosts("false", //as_meta
-                        args.getBoolean("as_threads"), //as_threads
-                        null, //authors
-                        null, //keywords
-                        null, //keywords_match
-                        "10", //limit
-                        null, //min_unread_level
-                        args.getString("newsgroup_id"), //newsGroupId
-                        args.getInt("offset"), //offset
-                        args.getBoolean("only_roots"), //only_roots
-                        args.getBoolean("only_starred"), //only_starred
-                        args.getBoolean("only_sticky"), //only_sticky
-                        "false", //reverse_order
-                        null, //since
-                        args.getString("until") //until
-                );
+            Response<RetrievingPosts> postsResponse = Utility.webNewsService.getPosts("false", //as_meta
+                    args.getBoolean("as_threads"), //as_threads
+                    null, //authors
+                    null, //keywords
+                    null, //keywords_match
+                    "20", //limit
+                    null, //min_unread_level
+                    args.getString("newsgroup_id"), //newsGroupId
+                    args.getInt("offset"), //offset
+                    args.getBoolean("only_roots"), //only_roots
+                    args.getBoolean("only_starred"), //only_starred
+                    args.getBoolean("only_sticky"), //only_sticky
+                    "false", //reverse_order
+                    null, //since
+                    args.getString("until") //until
+            ).execute();
+
+            if(!postsResponse.isSuccess()) {
+                if(postsResponse.code() == 401) {
+                    invalidateAuthToken();
+                    throw new ResponseException(postsResponse.errorBody().string());
+                }
             }
 
+            RetrievingPosts posts = postsResponse.body();
+
+            int size = posts.getListOfPosts().size();
             List<Post> listOfPosts = posts.getListOfPosts();
             if(args.getBoolean("as_threads")) {
                 if(listOfPosts == null) {
@@ -92,8 +84,6 @@ public class LoadPostsJob extends Job {
                     listOfPosts.addAll(posts.getListOfDescendants());
                 }
             }
-
-            int size = listOfPosts.size();
 
             if (size > 0) {
                 ContentValues[] postList = new ContentValues[size];
@@ -154,10 +144,8 @@ public class LoadPostsJob extends Job {
                     values.put(WebNewsContract.PostEntry.TOTAL_STARS, postObj.getStarsTotal());
 
                     if (args.getBoolean("as_threads")) {
-                        if(postObj.getChildIds() != null && postObj.getDescendantIds() != null) {
-                            values.put(WebNewsContract.PostEntry.CHILD_IDS, postObj.getChildIds().toString());
-                            values.put(WebNewsContract.PostEntry.DESCENDANT_IDS, postObj.getDescendantIds().toString());
-                        }
+                        values.put(WebNewsContract.PostEntry.CHILD_IDS, postObj.getChildIds().toString());
+                        values.put(WebNewsContract.PostEntry.DESCENDANT_IDS, postObj.getDescendantIds().toString());
                     }
 
                     values.put(WebNewsContract.PostEntry.AUTHOR_NAME, postObj.getAuthor().getName());
@@ -169,18 +157,21 @@ public class LoadPostsJob extends Job {
                 context.getContentResolver().bulkInsert(WebNewsContract.PostEntry.CONTENT_URI, postList);
                 EventBus.getDefault().post(new FinishLoadingEvent(true, null));
             }
-        } catch (RetrofitError e) {
-            if(e.getResponse().getStatus() == 401) {
-                invalidateAuthToken();
-                throw e;
-            }
+        } catch (ResponseException e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,null));
+            Log.e(TAG,e.getMessage());
+        } catch (IOException e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,null));
+            Log.e(TAG,e.getMessage());
+        } catch (Exception e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,null));
+            Log.e(TAG,e.getMessage());
         }
-        EventBus.getDefault().post(new FinishLoadingEvent(true,null));
     }
 
     private void invalidateAuthToken() throws AuthenticatorException, OperationCanceledException, IOException {
         String authToken = AccountManager.get(context).blockingGetAuthToken(Utility.getAccount(context),WebNewsAccount.AUTHTOKEN_TYPE,false);
-        AccountManager.get(context).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE,authToken);
+        AccountManager.get(context).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE, authToken);
     }
 
     @Override
@@ -188,6 +179,6 @@ public class LoadPostsJob extends Job {
 
     @Override
     protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return throwable instanceof RetrofitError;
+        return false;
     }
 }

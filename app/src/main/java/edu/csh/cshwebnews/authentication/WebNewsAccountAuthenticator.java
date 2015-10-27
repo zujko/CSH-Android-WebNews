@@ -10,18 +10,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
+
+import java.io.IOException;
 
 import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.activities.LoginActivity;
+import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.WebNewsAccount;
 import edu.csh.cshwebnews.network.ServiceGenerator;
 import edu.csh.cshwebnews.network.WebNewsService;
-import retrofit.RetrofitError;
+import retrofit.Response;
 
 public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
 
     private final Context context;
+    private static final String TAG = "ACCOUNT AUTHENTICATOR";
 
     public WebNewsAccountAuthenticator(Context context) {
         super(context);
@@ -50,12 +55,16 @@ public class WebNewsAccountAuthenticator extends AbstractAccountAuthenticator {
         if(TextUtils.isEmpty(accessToken)) {
             final String refreshToken = accountManager.getPassword(account);
             if(refreshToken != null) {
+                Response<AccessToken> tokenResponse = null;
                 try {
-                    accessToken = Utility.webNewsService.blockingRefreshAccessToken("refresh_token", refreshToken).getAccessToken();
-                } catch (RetrofitError e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    tokenResponse = Utility.webNewsService.refreshAccessToken("refresh_token",refreshToken).execute();
+                } catch (IOException e) {
+                    Log.e(TAG,e.getMessage());
+                }
+                if(tokenResponse.isSuccess()) {
+                    accessToken = tokenResponse.body().getAccessToken();
+                } else {
+                    Log.e(TAG,tokenResponse.message());
                 }
             }
         }
