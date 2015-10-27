@@ -23,6 +23,7 @@ import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.FinishLoadingEvent;
+import edu.csh.cshwebnews.exceptions.ResponseException;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.Post;
 import edu.csh.cshwebnews.models.RetrievingPosts;
@@ -67,12 +68,11 @@ public class LoadPostsJob extends Job {
             if(!postsResponse.isSuccess()) {
                 if(postsResponse.code() == 401) {
                     invalidateAuthToken();
-                    throw new Throwable();
+                    throw new ResponseException(postsResponse.errorBody().string());
                 }
             }
 
             RetrievingPosts posts = postsResponse.body();
-
 
             int size = posts.getListOfPosts().size();
 
@@ -148,11 +148,16 @@ public class LoadPostsJob extends Job {
                 context.getContentResolver().bulkInsert(WebNewsContract.PostEntry.CONTENT_URI, postList);
                 EventBus.getDefault().post(new FinishLoadingEvent(true, null));
             }
-        } catch (IOException e) {
+        } catch (ResponseException e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,null));
             Log.e(TAG,e.getMessage());
-            throw e;
+        } catch (IOException e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,null));
+            Log.e(TAG,e.getMessage());
+        } catch (Exception e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,null));
+            Log.e(TAG,e.getMessage());
         }
-        EventBus.getDefault().post(new FinishLoadingEvent(true,null));
     }
 
     private void invalidateAuthToken() throws AuthenticatorException, OperationCanceledException, IOException {
@@ -165,6 +170,6 @@ public class LoadPostsJob extends Job {
 
     @Override
     protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return !(throwable instanceof IOException);
+        return false;
     }
 }

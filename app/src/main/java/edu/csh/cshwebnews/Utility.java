@@ -2,9 +2,7 @@ package edu.csh.cshwebnews;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SyncInfo;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -36,8 +34,8 @@ public class Utility {
 
     public static WebNewsService webNewsService = null;
 
-    public static String clientId;
-    public static String clientSecret;
+    public static String clientId = "bfe0a6ad79a3cbdce9074000a4e58553c0e1bdf01354edf3eee6f70f1a5f8b35";
+    public static String clientSecret = "94f2e89e9e43c52a43d40ac7d8b74cb2e9a6f8d59dcd6706bc1236a3378652a2";
 
     /**
      * Checks if the device is connected to a network

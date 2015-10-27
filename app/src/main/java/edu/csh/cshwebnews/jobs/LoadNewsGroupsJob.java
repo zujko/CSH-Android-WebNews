@@ -5,6 +5,7 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
@@ -13,6 +14,7 @@ import java.io.IOException;
 
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.exceptions.ResponseException;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.WebNewsAccount;
@@ -37,9 +39,8 @@ public class LoadNewsGroupsJob extends Job {
             if(!newsGroupsResponse.isSuccess()) {
                 if(newsGroupsResponse.code() == 401) {
                     invalidateAuthToken();
-                    throw new Exception("401");
                 }
-                throw new Exception();
+                throw new ResponseException(newsGroupsResponse.errorBody().string());
             }
 
             NewsGroups newsGroups = newsGroupsResponse.body();
@@ -71,8 +72,10 @@ public class LoadNewsGroupsJob extends Job {
 
                 context.getContentResolver().bulkInsert(WebNewsContract.NewsGroupEntry.CONTENT_URI,contentValues);
             }
+        } catch (ResponseException e) {
+            Log.e("LoadNewsGroups",e.getMessage());
         } catch (Exception e) {
-            throw e;
+            Log.e("LoadNewsGroups",e.getMessage());
         }
     }
 
@@ -86,6 +89,6 @@ public class LoadNewsGroupsJob extends Job {
 
     @Override
     protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return throwable.getMessage().equals("401");
+        return false;
     }
 }

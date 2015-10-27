@@ -12,6 +12,7 @@ import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.FinishLoginEvent;
+import edu.csh.cshwebnews.exceptions.ResponseException;
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.User;
@@ -24,7 +25,6 @@ public class GetAuthTokenJob extends Job {
 
     private String code;
     private ContentResolver mContentResolver;
-
 
     public GetAuthTokenJob(String code, ContentResolver contentResolver) {
         super(new Params(JobPriority.VERY_HIGH).requireNetwork());
@@ -43,7 +43,7 @@ public class GetAuthTokenJob extends Job {
             //Try getting the access token
             Response<AccessToken> response = generator.getAccessToken("authorization_code", code, WebNewsService.REDIRECT_URI, Utility.clientId, Utility.clientSecret).execute();
             if(!response.isSuccess()) {
-                throw new Exception();
+                throw new ResponseException(response.errorBody().string());
             }
 
             AccessToken token = response.body();
@@ -52,7 +52,7 @@ public class GetAuthTokenJob extends Job {
             //Try getting users data
             Response<User> userResponse = Utility.webNewsService.getUser().execute();
             if(!userResponse.isSuccess()) {
-                throw new Exception();
+                throw new ResponseException(userResponse.errorBody().string());
             }
 
             User user = userResponse.body();
@@ -66,7 +66,7 @@ public class GetAuthTokenJob extends Job {
             args.putExtra(AccountManager.KEY_ACCOUNT_TYPE, WebNewsAccount.ACCOUNT_TYPE);
 
             EventBus.getDefault().post(new FinishLoginEvent(true,null,args));
-        }catch (Exception e) {
+        } catch (ResponseException e) {
             EventBus.getDefault().post(new FinishLoginEvent(false,e.getMessage(),null));
         }
 

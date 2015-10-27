@@ -48,7 +48,7 @@ public class NewPostJob extends Job {
         if(response.code() == 201 || response.code() == 202) {
             EventBus.getDefault().post(new NewPostEvent(true,null));
         } else {
-            EventBus.getDefault().post(new NewPostEvent(false,response.errorBody().toString()));
+            EventBus.getDefault().post(new NewPostEvent(false,response.errorBody().string()));
         }
     }
 
