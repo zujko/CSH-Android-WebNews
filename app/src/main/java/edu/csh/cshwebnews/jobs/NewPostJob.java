@@ -1,6 +1,7 @@
 package edu.csh.cshwebnews.jobs;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
@@ -36,12 +37,10 @@ public class NewPostJob extends Job {
         String postingHost = arguments.getString(POSTING_HOST);
         String subject = arguments.getString(SUBJECT);
         String newsgroupId = arguments.getString(NEWSGROUP_ID);
-        Integer followupId = null;
-        Integer parentId = null;
+        String followupId = arguments.getString(FOLLOWUP_ID, null);
+        String parentId = arguments.getString(PARENT_ID, null);
 
-        if(arguments.getInt(FOLLOWUP_ID, -10) != -10) followupId = arguments.getInt(FOLLOWUP_ID, 0);
-
-        if(arguments.getInt(PARENT_ID, -10) != -10) parentId = arguments.getInt(PARENT_ID, 0);
+        Log.d("NEWSGROUP",newsgroupId);
 
         Response<com.squareup.okhttp.Response> response = Utility.webNewsService.post(new PostRequestBody(subject, newsgroupId, body, parentId, followupId, postingHost)).execute();
 
