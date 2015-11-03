@@ -3,6 +3,7 @@ package edu.csh.cshwebnews.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v4.widget.CursorAdapter;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -11,13 +12,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.klinker.android.link_builder.Link;
+import com.klinker.android.link_builder.LinkBuilder;
+import com.klinker.android.link_builder.LinkConsumableTextView;
 import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Regex;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.events.LoadUrlEvent;
 
 public class PostAdapter extends CursorAdapter {
 
@@ -31,7 +38,7 @@ public class PostAdapter extends CursorAdapter {
         @Bind(R.id.post_head_full_date_text) TextView mFullDateText;
         @Bind(R.id.post_head_view_headers_text) TextView mViewHeadersClickableText;
         @Bind(R.id.post_head_headers_text) TextView mHeadersText;
-        @Bind(R.id.post_body_text) TextView mBodyText;
+        @Bind(R.id.post_body_text) LinkConsumableTextView mBodyText;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -84,7 +91,7 @@ public class PostAdapter extends CursorAdapter {
         viewHolder.mSummaryText.setText(cursor.getString(WebNewsContract.COL_BODY_SUMMARY));
         viewHolder.mDateText.setText(cursor.getString(WebNewsContract.COL_CREATED_AT));
         TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.more_icon,typedValue,true);
+        context.getTheme().resolveAttribute(R.attr.more_icon, typedValue, true);
         viewHolder.mMoreImage.setImageResource(typedValue.resourceId);
 
         viewHolder.mNewsgroupText.setText(cursor.getString(WebNewsContract.COL_NEWSGROUP_IDS));
@@ -92,5 +99,17 @@ public class PostAdapter extends CursorAdapter {
         viewHolder.mFullDateText.setText(cursor.getString(WebNewsContract.COL_RAW_DATE));
         viewHolder.mHeadersText.setText(cursor.getString(WebNewsContract.COL_HEADERS));
         viewHolder.mBodyText.setText(cursor.getString(WebNewsContract.COL_BODY));
+        Link urlLink = new Link(Regex.WEB_URL_PATTERN)
+                .setTextColor(Color.parseColor("#E11C52"))
+                .setOnClickListener(new Link.OnClickListener() {
+                    @Override
+                    public void onClick(String clickedText) {
+                        EventBus.getDefault().post(new LoadUrlEvent(clickedText));
+                    }
+                });
+
+        LinkBuilder.on(viewHolder.mBodyText)
+                .addLink(urlLink)
+                .build();
     }
 }

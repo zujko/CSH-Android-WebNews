@@ -2,12 +2,19 @@ package edu.csh.cshwebnews.fragments;
 
 
 import android.database.Cursor;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.customtabs.CustomTabsCallback;
+import android.support.customtabs.CustomTabsClient;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsSession;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +24,22 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.commonsware.cwac.merge.MergeAdapter;
+import com.klinker.android.link_builder.Link;
+import com.klinker.android.link_builder.LinkBuilder;
+import com.klinker.android.link_builder.LinkConsumableTextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.R;
+import edu.csh.cshwebnews.Regex;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.adapters.PostAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
+import edu.csh.cshwebnews.events.LoadUrlEvent;
 
 
 public class PostFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
@@ -36,17 +48,26 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     @Bind(R.id.post_head_star_image) ImageView mStarImage;
     @Bind(R.id.post_head_author_image) ImageView mAuthorImage;
     @Bind(R.id.post_head_subject_text) TextView mSubjectText;
-    @Bind(R.id.post_head_body_text) TextView mBodyText;
+    @Bind(R.id.post_head_body_text) LinkConsumableTextView mBodyText;
     @Bind(R.id.post_head_date_text) TextView mDateText;
     @Bind(R.id.post_head_newsgroup_text) TextView mNewsgroupText;
     @Bind(R.id.post_head_author_text) TextView mAuthorNameText;
+    private CustomTabsSession mCustomTabsSession;
+    private CustomTabsClient mCustomTabsClient;
     private PostAdapter mPostAdapter;
-    private MergeAdapter mMergeAdapter;
 
     public static final int POST_LOADER = 6;
     private static boolean setExpandableItems;
     public static final String LIST_INSTANCE_STATE = "SAVED_STATE";
     private Parcelable mListInstanceState;
+
+    private static class NavigationCallback extends CustomTabsCallback {
+        @Override
+        public void onNavigationEvent(int navigationEvent, Bundle extras) {
+            Log.w("PostFrag", "onNavigationEvent: Code = " + navigationEvent);
+
+        }
+    }
 
     public PostFragment() {}
 
@@ -64,14 +85,11 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
         View rootView = inflater.inflate(R.layout.fragment_post,container,false);
         mPostListView = (ListView) rootView.findViewById(R.id.post_list);
 
-        mMergeAdapter = new MergeAdapter();
-
         createHeader(savedInstanceState);
 
         mPostAdapter = new PostAdapter(getActivity(),null,0);
-        mMergeAdapter.addAdapter(mPostAdapter);
         mPostListView.setOnItemClickListener(this);
-        mPostListView.setAdapter(mMergeAdapter);
+        mPostListView.setAdapter(mPostAdapter);
 
         if(mListInstanceState != null) {
             mPostListView.onRestoreInstanceState(mListInstanceState);
@@ -79,6 +97,18 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -108,6 +138,17 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
 
         mSubjectText.setText(getArguments().getString("subject"));
         mBodyText.setText(getArguments().getString("body"));
+        Link urlLink = new Link(Regex.WEB_URL_PATTERN)
+                .setTextColor(Color.parseColor("#E11C52"))
+                .setOnClickListener(new Link.OnClickListener() {
+                    @Override
+                    public void onClick(String clickedText) {
+                        handleLinkClick(clickedText);
+                    }
+                });
+        LinkBuilder.on(mBodyText)
+                .addLink(urlLink)
+                .build();
         mDateText.setText(getArguments().getString("simple_date"));
         mNewsgroupText.setText(getArguments().getString("newsgroup"));
         mAuthorNameText.setText(getArguments().getString("author_name"));
@@ -119,7 +160,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
                 .placeholder(R.drawable.placeholder)
                 .into(mAuthorImage);
 
-        mMergeAdapter.addView(rootLayout);
+        mPostListView.addHeaderView(rootLayout,null,false);
     }
 
     @Override
@@ -166,5 +207,25 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(LIST_INSTANCE_STATE, mPostListView.onSaveInstanceState());
+    }
+
+    private CustomTabsSession getSession() {
+        if (mCustomTabsClient == null) {
+            mCustomTabsSession = null;
+        } else if (mCustomTabsSession == null) {
+            mCustomTabsSession = mCustomTabsClient.newSession(new NavigationCallback());
+        }
+        return mCustomTabsSession;
+    }
+
+    private void handleLinkClick(String url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(getSession());
+        builder.setToolbarColor(Color.parseColor("#E11C52"));
+        CustomTabsIntent intent = builder.build();
+        intent.launchUrl(getActivity(), Uri.parse(url));
+    }
+
+    public void onEventMainThread(LoadUrlEvent event) {
+        handleLinkClick(event.url);
     }
 }

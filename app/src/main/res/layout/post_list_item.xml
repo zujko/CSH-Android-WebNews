@@ -93,7 +93,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/post_head_view_headers_text"
         android:visibility="gone"/>
-    <TextView
+    <com.klinker.android.link_builder.LinkConsumableTextView
         android:textColor="@color/black"
         android:id="@+id/post_body_text"
         android:layout_width="wrap_content"
