@@ -2,6 +2,7 @@ package edu.csh.cshwebnews.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,7 +73,7 @@ public class PostListAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag(R.string.viewholder_tag);
-        view.setTag(R.string.postid_tag,cursor.getString(WebNewsContract.COL_ID));
+        view.setTag(R.string.postid_tag, cursor.getString(WebNewsContract.COL_ID));
 
         //TODO use a tint for the color change
         if(cursor.getInt(WebNewsContract.COL_PERSONAL_LEVEL) == 3) {
@@ -85,6 +86,18 @@ public class PostListAdapter extends CursorAdapter {
         }
 
         viewHolder.authorTextView.setText(cursor.getString(WebNewsContract.COL_AUTHOR_NAME));
+        viewHolder.subjectTextView.setText(cursor.getString(WebNewsContract.COL_SUBJECT));
+        viewHolder.dateTextView.setText(cursor.getString(WebNewsContract.COL_CREATED_AT));
+
+        if(cursor.getString(WebNewsContract.COL_UNREAD_CLASS) != null) {
+            viewHolder.subjectTextView.setTypeface(null, Typeface.BOLD);
+            viewHolder.authorTextView.setTypeface(null,Typeface.BOLD);
+            viewHolder.dateTextView.setTypeface(null,Typeface.BOLD);
+        } else {
+            viewHolder.subjectTextView.setTypeface(null,Typeface.NORMAL);
+            viewHolder.authorTextView.setTypeface(null,Typeface.NORMAL);
+            viewHolder.dateTextView.setTypeface(null,Typeface.NORMAL);
+        }
 
         // If the post is starred, make the star image yellow
         if(cursor.getInt(WebNewsContract.COL_IS_STARRED) == 1) {
@@ -96,11 +109,7 @@ public class PostListAdapter extends CursorAdapter {
             typedValue = null;
         }
 
-        viewHolder.subjectTextView.setText(cursor.getString(WebNewsContract.COL_SUBJECT));
-
         viewHolder.summaryTextView.setText(cursor.getString(WebNewsContract.COL_BODY_SUMMARY));
-
-        viewHolder.dateTextView.setText(cursor.getString(WebNewsContract.COL_CREATED_AT));
 
         Picasso.with(context)
                 .load(cursor.getString(WebNewsContract.COL_AUTHOR_AVATAR_URL)+"&d=mm")
