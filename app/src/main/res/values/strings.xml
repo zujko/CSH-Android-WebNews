@@ -4,6 +4,7 @@
     <string name="label">CSH WebNews</string>
 
     <string name="viewholder_tag">viewholder_tag</string>
+    <string name="unreadclass_tag">unread_tag</string>
     <string name="postid_tag">postid_tag</string>
     <string name="subjecttext_tag">subjecttext_tag</string>
     <string name="bodytext_tag">bodytext_tag</string>

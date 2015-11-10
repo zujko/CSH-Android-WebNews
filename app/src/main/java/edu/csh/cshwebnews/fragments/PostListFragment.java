@@ -34,6 +34,7 @@ import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.AnimateToolbarEvent;
 import edu.csh.cshwebnews.events.FinishLoadingEvent;
 import edu.csh.cshwebnews.jobs.LoadPostsJob;
+import edu.csh.cshwebnews.jobs.ReadPostJob;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 
@@ -254,6 +255,9 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         PostFragment newFragment = new PostFragment();
 
         EventBus.getDefault().post(new AnimateToolbarEvent(true));
+        if( ((String) view.getTag(R.string.unreadclass_tag)).equals("null") ) {
+            WebNewsApplication.getJobManager().addJobInBackground(new ReadPostJob((String)view.getTag(R.string.postid_tag), getActivity()));
+        }
 
         //Send post id to the PostFragment
         Bundle bundle = new Bundle();

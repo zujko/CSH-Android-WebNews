@@ -119,6 +119,7 @@ public class PostListAdapter extends CursorAdapter {
                 .noFade()
                 .into(viewHolder.authorImage);
 
+        view.setTag(R.string.unreadclass_tag, cursor.getString(WebNewsContract.COL_UNREAD_CLASS));
         view.setTag(R.string.subjecttext_tag, cursor.getString(WebNewsContract.COL_SUBJECT));
         view.setTag(R.string.bodytext_tag, cursor.getString(WebNewsContract.COL_BODY));
         view.setTag(R.string.authorurl_tag, cursor.getString(WebNewsContract.COL_AUTHOR_AVATAR_URL));

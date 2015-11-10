@@ -88,7 +88,7 @@ public interface WebNewsService {
                     @Body CancelPostRequestBody body);
 
     @DELETE("/unreads")
-    Call<Response> markPostRead(@Body UnreadRequestBody body);
+    Call<Response> markPostRead(@Query("post_ids") String body);
 
     @POST("/unreads")
     Call<Response> markPostUnread(@Body UnreadRequestBody body);

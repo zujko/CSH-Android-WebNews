@@ -17,7 +17,6 @@ public class ServiceGenerator {
 
         /* Add a StethoInterceptor for debugging */
         OkHttpClient okHttpClient = new OkHttpClient();
-
         //Non OAuth request, add headers
         if (accessToken != null && tokenType != null) {
             okHttpClient.networkInterceptors().add(new Interceptor() {
