@@ -79,6 +79,7 @@ public class PostAdapter extends CursorAdapter {
             viewHolder.mViewHeadersClickableText.setVisibility(View.GONE);
             viewHolder.mBodyText.setVisibility(View.GONE);
         }
+
         Picasso.with(context)
                 .load(cursor.getString(WebNewsContract.COL_AUTHOR_AVATAR_URL)+"&d=mm")
                 .placeholder(R.drawable.placeholder)

@@ -30,7 +30,7 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/title_activity_main"
-            android:launchMode="singleTop"></activity>
+            android:launchMode="singleTop" />
 
         <provider
             android:name=".database.WebNewsProvider"
@@ -76,6 +76,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.csh.cshwebnews.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.ReplyActivity"
+            android:label="@string/title_activity_reply"
+            android:parentActivityName=".activities.PostActivity"
+            android:theme="@style/CSHThemeLight">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.csh.cshwebnews.activities.PostActivity" />
         </activity>
     </application>
 

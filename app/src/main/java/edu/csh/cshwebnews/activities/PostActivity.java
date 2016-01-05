@@ -1,6 +1,7 @@
 package edu.csh.cshwebnews.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -41,6 +42,7 @@ import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.adapters.PostAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.LoadUrlEvent;
+import edu.csh.cshwebnews.events.ReplyEvent;
 
 public class PostActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
@@ -52,6 +54,7 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
     @Bind(R.id.post_head_date_text) TextView mDateText;
     @Bind(R.id.post_head_newsgroup_text) TextView mNewsgroupText;
     @Bind(R.id.post_head_author_text) TextView mAuthorNameText;
+    @Bind(R.id.post_head_reply_image) ImageView mReplyImage;
     private CustomTabsSession mCustomTabsSession;
     private CustomTabsClient mCustomTabsClient;
     private PostAdapter mPostAdapter;
@@ -76,6 +79,7 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(getResources().getColor(R.color.csh_pink_dark));
@@ -120,7 +124,7 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onPause() {
         super.onPause();
-        overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
+        overridePendingTransition(R.anim.activity_open_scale, R.anim.activity_close_translate);
     }
 
     @Override
@@ -138,10 +142,16 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void createHeader(Bundle savedInstanceState) {
-        Bundle extras = getIntent().getBundleExtra("bundle");
+        final Bundle extras = getIntent().getBundleExtra("bundle");
         LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         RelativeLayout rootLayout = (RelativeLayout) inflater.inflate(R.layout.post_head_layout,null);
         ButterKnife.bind(this, rootLayout);
+        mReplyImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new ReplyEvent(extras.getString("id"),extras.getString("newsgroup"),extras.getString("subject")));
+            }
+        });
 
         mSubjectText.setText(extras.getString("subject"));
         mBodyText.setText(extras.getString("body"));
@@ -166,6 +176,10 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
                 .noFade()
                 .placeholder(R.drawable.placeholder)
                 .into(mAuthorImage);
+
+        Picasso.with(this)
+                .load(R.drawable.ic_reply_light)
+                .into(mReplyImage);
 
         mPostListView.addHeaderView(rootLayout,null,false);
     }
@@ -233,5 +247,13 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
 
     public void onEventMainThread(LoadUrlEvent event) {
         handleLinkClick(event.url);
+    }
+
+    public void onEventMainThread(ReplyEvent event) {
+        Intent intent = new Intent(this,ReplyActivity.class);
+        intent.putExtra("subject",event.subject);
+        intent.putExtra("newsgroup",event.newsgroup);
+        intent.putExtra("id",event.postId);
+        startActivity(intent);
     }
 }
