@@ -76,7 +76,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
         if(savedInstanceState != null) {
             mListInstanceState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
             setExpandableItems = false;
-        } else{
+        } else {
             Utility.expandedStates = new HashMap<>();
             setExpandableItems = true;
         }
@@ -174,7 +174,6 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
             data.moveToFirst();
         }
         mPostAdapter.swapCursor(data);
-
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -29,9 +28,9 @@ import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.WebNewsApplication;
 import edu.csh.cshwebnews.activities.NewPostActivity;
+import edu.csh.cshwebnews.activities.PostActivity;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
-import edu.csh.cshwebnews.events.AnimateToolbarEvent;
 import edu.csh.cshwebnews.events.FinishLoadingEvent;
 import edu.csh.cshwebnews.jobs.LoadPostsJob;
 import edu.csh.cshwebnews.jobs.ReadPostJob;
@@ -252,9 +251,9 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        PostFragment newFragment = new PostFragment();
+        //PostFragment newFragment = new PostFragment();
 
-        EventBus.getDefault().post(new AnimateToolbarEvent(true));
+        //EventBus.getDefault().post(new AnimateToolbarEvent(true));
         String unread = (String) view.getTag(R.string.unreadclass_tag);
         if( unread != null && unread.equals("null")) {
             WebNewsApplication.getJobManager().addJobInBackground(new ReadPostJob((String)view.getTag(R.string.postid_tag), getActivity()));
@@ -268,17 +267,21 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         bundle.putString("image_url",(String)view.getTag(R.string.authorurl_tag));
         bundle.putString("simple_date",(String)view.getTag(R.string.simpledate_tag));
         bundle.putString("newsgroup",getArguments().getString("newsgroup"));
-        bundle.putString("author_name",(String) view.getTag(R.string.authorname_tag));
-        newFragment.setArguments(bundle);
+        bundle.putString("author_name", (String) view.getTag(R.string.authorname_tag));
+        //newFragment.setArguments(bundle);
         bundle.putBoolean("as_threads",true);
-        bundle.putBoolean("load_with_id",true);
+        bundle.putBoolean("load_with_id", true);
 
         WebNewsApplication.getJobManager().addJobInBackground(new LoadPostsJob(bundle, getActivity()));
 
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frag_container, newFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        Intent intent = new Intent(getActivity(), PostActivity.class);
+        intent.putExtra("bundle",bundle);
+        startActivity(intent);
+
+//        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.frag_container, newFragment);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
     }
 
 
