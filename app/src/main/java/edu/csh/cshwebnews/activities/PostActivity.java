@@ -71,6 +71,7 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.activity_open_translate, R.anim.activity_close_scale);
         setContentView(R.layout.activity_post);
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
@@ -114,6 +115,12 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
     }
 
     @Override
