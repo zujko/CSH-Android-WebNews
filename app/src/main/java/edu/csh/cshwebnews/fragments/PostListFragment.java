@@ -251,15 +251,11 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //PostFragment newFragment = new PostFragment();
-
-        //EventBus.getDefault().post(new AnimateToolbarEvent(true));
         String unread = (String) view.getTag(R.string.unreadclass_tag);
         if( unread != null && unread.equals("null")) {
             WebNewsApplication.getJobManager().addJobInBackground(new ReadPostJob((String)view.getTag(R.string.postid_tag), getActivity()));
         }
 
-        //Send post id to the PostFragment
         Bundle bundle = new Bundle();
         bundle.putString("id", (String) view.getTag(R.string.postid_tag));
         bundle.putString("subject",(String)view.getTag(R.string.subjecttext_tag));
@@ -268,7 +264,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         bundle.putString("simple_date",(String)view.getTag(R.string.simpledate_tag));
         bundle.putString("newsgroup",getArguments().getString("newsgroup"));
         bundle.putString("author_name", (String) view.getTag(R.string.authorname_tag));
-        //newFragment.setArguments(bundle);
         bundle.putBoolean("as_threads",true);
         bundle.putBoolean("load_with_id", true);
 
@@ -277,11 +272,6 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         Intent intent = new Intent(getActivity(), PostActivity.class);
         intent.putExtra("bundle",bundle);
         startActivity(intent);
-
-//        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.frag_container, newFragment);
-//        transaction.addToBackStack(null);
-//        transaction.commit();
     }
 
 

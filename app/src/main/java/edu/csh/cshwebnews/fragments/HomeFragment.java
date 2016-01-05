@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -256,18 +255,18 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        PostFragment newFragment = new PostFragment();
-
-        //TODO Start background job to get data about the post and mark the post as unread
-
-        //Send post id to the PostFragment
-        Bundle bundle = new Bundle();
-        bundle.putLong("id",id);
-        newFragment.setArguments(bundle);
-
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.frag_container, newFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+//        PostFragment newFragment = new PostFragment();
+//
+//        //TODO Start background job to get data about the post and mark the post as unread
+//
+//        //Send post id to the PostFragment
+//        Bundle bundle = new Bundle();
+//        bundle.putLong("id",id);
+//        newFragment.setArguments(bundle);
+//
+//        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//        transaction.replace(R.id.frag_container, newFragment);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
     }
 }
