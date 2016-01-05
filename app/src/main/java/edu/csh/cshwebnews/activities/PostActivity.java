@@ -218,6 +218,12 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
         intent.launchUrl(this, Uri.parse(url));
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(LIST_INSTANCE_STATE, mPostListView.onSaveInstanceState());
+    }
+
     public void onEventMainThread(LoadUrlEvent event) {
         handleLinkClick(event.url);
     }
