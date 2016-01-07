@@ -9,6 +9,7 @@ import com.path.android.jobqueue.Params;
 import com.path.android.jobqueue.RetryConstraint;
 
 import edu.csh.cshwebnews.Utility;
+import edu.csh.cshwebnews.WebNewsApplication;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.requests.UnreadRequestBody;
@@ -20,7 +21,7 @@ public class ReadPostJob extends Job {
     Context context;
 
     public ReadPostJob(String post, Context context) {
-        super(new Params(JobPriority.VERY_HIGH).requireNetwork().persist());
+        super(new Params(JobPriority.VERY_HIGH).requireNetwork());
         this.post = post;
         this.context = context;
     }
@@ -36,6 +37,7 @@ public class ReadPostJob extends Job {
         if (response.isSuccess()) {
             Log.d("READ POST","SUCCESS");
             updateDB();
+            WebNewsApplication.getJobManager().addJob(new LoadNewsGroupsJob(context));
         } else {
             Log.e("READ POST",response.message());
         }
