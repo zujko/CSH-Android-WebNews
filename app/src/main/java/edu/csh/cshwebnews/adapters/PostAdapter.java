@@ -34,7 +34,7 @@ public class PostAdapter extends CursorAdapter {
         @Bind(R.id.post_author_text) TextView mAuthorText;
         @Bind(R.id.post_summary_text) TextView mSummaryText;
         @Bind(R.id.post_date_text) TextView mDateText;
-        @Bind(R.id.post_head_more_image) ImageView mMoreImage;
+        @Bind(R.id.post_head_star_image) ImageView mStarImage;
         @Bind(R.id.post_head_newsgroup_text) TextView mNewsgroupText;
         @Bind(R.id.post_head_full_date_text) TextView mFullDateText;
         @Bind(R.id.post_head_view_headers_text) TextView mViewHeadersClickableText;
@@ -74,7 +74,7 @@ public class PostAdapter extends CursorAdapter {
             viewHolder.mViewHeadersClickableText.setVisibility(View.VISIBLE);
             viewHolder.mBodyText.setVisibility(View.VISIBLE);
             viewHolder.mReplyImage.setVisibility(View.VISIBLE);
-            viewHolder.mMoreImage.setVisibility(View.VISIBLE);
+            viewHolder.mStarImage.setVisibility(View.VISIBLE);
         } else {
             viewHolder.mSummaryText.setVisibility(View.VISIBLE);
             viewHolder.mDateText.setVisibility(View.VISIBLE);
@@ -83,7 +83,7 @@ public class PostAdapter extends CursorAdapter {
             viewHolder.mViewHeadersClickableText.setVisibility(View.GONE);
             viewHolder.mBodyText.setVisibility(View.GONE);
             viewHolder.mReplyImage.setVisibility(View.GONE);
-            viewHolder.mMoreImage.setVisibility(View.GONE);
+            viewHolder.mStarImage.setVisibility(View.GONE);
         }
 
         Picasso.with(context)
@@ -98,8 +98,8 @@ public class PostAdapter extends CursorAdapter {
         viewHolder.mSummaryText.setText(cursor.getString(WebNewsContract.COL_BODY_SUMMARY));
         viewHolder.mDateText.setText(cursor.getString(WebNewsContract.COL_CREATED_AT));
         TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.more_icon, typedValue, true);
-        viewHolder.mMoreImage.setImageResource(typedValue.resourceId);
+        context.getTheme().resolveAttribute(R.attr.starred_icon, typedValue, true);
+        viewHolder.mStarImage.setImageResource(typedValue.resourceId);
 
         viewHolder.mNewsgroupText.setText(cursor.getString(WebNewsContract.COL_NEWSGROUP_IDS).replaceAll("\\[|\\]", ""));
         //TODO Fix this date to be more readable

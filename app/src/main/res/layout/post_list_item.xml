@@ -47,7 +47,8 @@
     <!-- Expanded Items -->
 
     <ImageView
-        android:id="@+id/post_head_more_image"
+        android:src="@drawable/ic_star_border_light"
+        android:id="@+id/post_head_star_image"
         android:layout_width="40dp"
         android:layout_height="35dp"
         android:layout_alignParentRight="true"
@@ -59,7 +60,7 @@
         android:id="@+id/post_head_reply_image"
         android:layout_width="40dp"
         android:layout_height="35dp"
-        android:layout_toLeftOf="@id/post_head_more_image"
+        android:layout_toLeftOf="@id/post_head_star_image"
         android:visibility="gone"/>
 
     <TextView
