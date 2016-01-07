@@ -143,13 +143,14 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void createHeader(Bundle savedInstanceState) {
         final Bundle extras = getIntent().getBundleExtra("bundle");
+        Log.d("PostActivity",extras.getString("id"));
         LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         RelativeLayout rootLayout = (RelativeLayout) inflater.inflate(R.layout.post_head_layout,null);
         ButterKnife.bind(this, rootLayout);
         mReplyImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new ReplyEvent(extras.getString("id"),extras.getString("newsgroup"),extras.getString("subject")));
+                EventBus.getDefault().post(new ReplyEvent(extras.getString("id"),extras.getString("newsgroup"),extras.getString("subject"),extras.getString("body"),extras.getString("author_name")));
             }
         });
 
@@ -253,7 +254,9 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
         Intent intent = new Intent(this,ReplyActivity.class);
         intent.putExtra("subject",event.subject);
         intent.putExtra("newsgroup",event.newsgroup);
-        intent.putExtra("id",event.postId);
+        intent.putExtra("id",event.postId.trim());
+        intent.putExtra("body",event.body);
+        intent.putExtra("author",event.author);
         startActivity(intent);
     }
 }
