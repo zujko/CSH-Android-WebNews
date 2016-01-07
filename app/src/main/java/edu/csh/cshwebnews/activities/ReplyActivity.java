@@ -47,7 +47,12 @@ public class ReplyActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(getResources().getColor(R.color.csh_pink_dark));
         }
 
-        mSubjectText.setText("Re: " + extras.getStringExtra("subject"));
+        if(extras.getStringExtra("subject").contains("Re:")) {
+            mSubjectText.setText(extras.getStringExtra("subject"));
+        } else{
+            mSubjectText.setText("Re: " + extras.getStringExtra("subject"));
+        }
+
         mNewsgroupTextView.setText(extras.getStringExtra("newsgroup"));
         mBodyText.setText(Utility.replyBody(extras.getStringExtra("author"),extras.getStringExtra("body")));
         mBodyText.setSelection(mBodyText.getText().length());

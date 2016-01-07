@@ -212,6 +212,8 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
             view.findViewById(R.id.post_head_full_date_text).setVisibility(View.GONE);
             view.findViewById(R.id.post_head_view_headers_text).setVisibility(View.GONE);
             view.findViewById(R.id.post_body_text).setVisibility(View.GONE);
+            view.findViewById(R.id.post_head_reply_image).setVisibility(View.GONE);
+            view.findViewById(R.id.post_head_more_image).setVisibility(View.GONE);
             Utility.expandedStates.put((String)view.getTag(R.string.postid_tag),false);
         } else {
             view.findViewById(R.id.post_summary_text).setVisibility(View.GONE);
@@ -220,6 +222,8 @@ public class PostActivity extends AppCompatActivity implements LoaderManager.Loa
             view.findViewById(R.id.post_head_full_date_text).setVisibility(View.VISIBLE);
             view.findViewById(R.id.post_head_view_headers_text).setVisibility(View.VISIBLE);
             view.findViewById(R.id.post_body_text).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.post_head_reply_image).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.post_head_more_image).setVisibility(View.VISIBLE);
             Utility.expandedStates.put((String)view.getTag(R.string.postid_tag),true);
         }
     }

@@ -25,6 +25,7 @@ import edu.csh.cshwebnews.Regex;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.LoadUrlEvent;
+import edu.csh.cshwebnews.events.ReplyEvent;
 
 public class PostAdapter extends CursorAdapter {
 
@@ -39,6 +40,7 @@ public class PostAdapter extends CursorAdapter {
         @Bind(R.id.post_head_view_headers_text) TextView mViewHeadersClickableText;
         @Bind(R.id.post_head_headers_text) TextView mHeadersText;
         @Bind(R.id.post_body_text) LinkConsumableTextView mBodyText;
+        @Bind(R.id.post_head_reply_image) ImageView mReplyImage;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -60,7 +62,7 @@ public class PostAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag(R.string.viewholder_tag);
         view.setTag(R.string.postid_tag, cursor.getString(WebNewsContract.COL_ID));
 
@@ -71,6 +73,8 @@ public class PostAdapter extends CursorAdapter {
             viewHolder.mFullDateText.setVisibility(View.VISIBLE);
             viewHolder.mViewHeadersClickableText.setVisibility(View.VISIBLE);
             viewHolder.mBodyText.setVisibility(View.VISIBLE);
+            viewHolder.mReplyImage.setVisibility(View.VISIBLE);
+            viewHolder.mMoreImage.setVisibility(View.VISIBLE);
         } else {
             viewHolder.mSummaryText.setVisibility(View.VISIBLE);
             viewHolder.mDateText.setVisibility(View.VISIBLE);
@@ -78,6 +82,8 @@ public class PostAdapter extends CursorAdapter {
             viewHolder.mFullDateText.setVisibility(View.GONE);
             viewHolder.mViewHeadersClickableText.setVisibility(View.GONE);
             viewHolder.mBodyText.setVisibility(View.GONE);
+            viewHolder.mReplyImage.setVisibility(View.GONE);
+            viewHolder.mMoreImage.setVisibility(View.GONE);
         }
 
         Picasso.with(context)
@@ -100,6 +106,15 @@ public class PostAdapter extends CursorAdapter {
         viewHolder.mFullDateText.setText(cursor.getString(WebNewsContract.COL_RAW_DATE));
         viewHolder.mHeadersText.setText(cursor.getString(WebNewsContract.COL_HEADERS));
         viewHolder.mBodyText.setText(cursor.getString(WebNewsContract.COL_BODY));
+
+        viewHolder.mReplyImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newsgroup = cursor.getString(WebNewsContract.COL_NEWSGROUP_IDS).replaceAll("\\[|\\]", "");
+                EventBus.getDefault().post(new ReplyEvent(cursor.getString(WebNewsContract.COL_ID),newsgroup,cursor.getString(WebNewsContract.COL_SUBJECT),cursor.getString(WebNewsContract.COL_BODY),cursor.getString(WebNewsContract.COL_AUTHOR_NAME)));
+            }
+        });
+
         Link urlLink = new Link(Regex.WEB_URL_PATTERN)
                 .setTextColor(Color.parseColor("#E11C52"))
                 .setOnClickListener(new Link.OnClickListener() {
