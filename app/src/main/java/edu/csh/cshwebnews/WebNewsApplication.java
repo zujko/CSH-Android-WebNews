@@ -3,6 +3,7 @@ package edu.csh.cshwebnews;
 import android.app.Application;
 import android.util.Log;
 
+import com.facebook.stetho.Stetho;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.log.CustomLogger;
@@ -16,6 +17,7 @@ public class WebNewsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Stetho.initializeWithDefaults(this);
         JodaTimeAndroid.init(this);
         createJobManager();
     }

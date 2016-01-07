@@ -15,6 +15,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -34,7 +35,7 @@ import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.FinishLoadingEvent;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
-public class HomeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class HomeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     @Bind(R.id.fab) FloatingActionButton mFloatingActionButton;
     @Bind(R.id.listview) ListView mListView;
@@ -85,6 +86,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         setUpMergeAdapter(inflater);
 
         mListView.setAdapter(mMergeAdapter);
+        mListView.setOnItemClickListener(this);
 
         getLoaderManager().initLoader(TODAY_LOADER, getArguments(), this);
         getLoaderManager().initLoader(YESTERDAY_LOADER, getArguments(), this);
@@ -249,5 +251,22 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 
     public void onEventMainThread(FinishLoadingEvent event) {
         swipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//        PostFragment newFragment = new PostFragment();
+//
+//        //TODO Start background job to get data about the post and mark the post as unread
+//
+//        //Send post id to the PostFragment
+//        Bundle bundle = new Bundle();
+//        bundle.putLong("id",id);
+//        newFragment.setArguments(bundle);
+//
+//        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//        transaction.replace(R.id.frag_container, newFragment);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
     }
 }

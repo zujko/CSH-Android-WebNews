@@ -57,7 +57,8 @@ public class WebNewsDbHelper extends SQLiteOpenHelper {
                 WebNewsContract.PostEntry.AUTHOR_AVATAR_URL + " TEXT, " +
                 WebNewsContract.PostEntry.RAW_DATE + " TEXT, " +
                 WebNewsContract.PostEntry.BODY_SUMMARY + " TEXT, " +
-                WebNewsContract.PostEntry.UNREAD_CLASS + " String);";
+                WebNewsContract.PostEntry.UNREAD_CLASS + " TEXT, " +
+                WebNewsContract.PostEntry.DATE_VERBOSE + " TEXT);";
 
 
         db.execSQL(SQL_CREATE_USER_TABLE);

@@ -6,6 +6,7 @@ import android.accounts.OperationCanceledException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
@@ -16,22 +17,25 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.FinishLoadingEvent;
+import edu.csh.cshwebnews.exceptions.ResponseException;
 import edu.csh.cshwebnews.models.JobPriority;
 import edu.csh.cshwebnews.models.Post;
 import edu.csh.cshwebnews.models.RetrievingPosts;
 import edu.csh.cshwebnews.models.WebNewsAccount;
-import retrofit.RetrofitError;
+import retrofit.Response;
 
 public class LoadPostsJob extends Job {
 
     private Bundle args;
     private Context context;
+    private static final String TAG = "LOAD POSTS JOB";
 
     public LoadPostsJob(Bundle args, Context context) {
         super(new Params(JobPriority.VERY_HIGH).requireNetwork());
@@ -45,7 +49,7 @@ public class LoadPostsJob extends Job {
     @Override
     public void onRun() throws Throwable {
         try {
-            RetrievingPosts posts = Utility.webNewsService.blockingGetPosts("false", //as_meta
+            Response<RetrievingPosts> postsResponse = Utility.webNewsService.getPosts("false", //as_meta
                     args.getBoolean("as_threads"), //as_threads
                     null, //authors
                     null, //keywords
@@ -60,9 +64,26 @@ public class LoadPostsJob extends Job {
                     "false", //reverse_order
                     null, //since
                     args.getString("until") //until
-            );
+            ).execute();
+
+            if(!postsResponse.isSuccess()) {
+                if(postsResponse.code() == 401) {
+                    invalidateAuthToken();
+                    throw new ResponseException(postsResponse.errorBody().string());
+                }
+            }
+
+            RetrievingPosts posts = postsResponse.body();
 
             int size = posts.getListOfPosts().size();
+            List<Post> listOfPosts = posts.getListOfPosts();
+            if(args.getBoolean("as_threads")) {
+                if(listOfPosts == null) {
+                    listOfPosts = posts.getListOfDescendants();
+                } else {
+                    listOfPosts.addAll(posts.getListOfDescendants());
+                }
+            }
 
             if (size > 0) {
                 ContentValues[] postList = new ContentValues[size];
@@ -73,7 +94,7 @@ public class LoadPostsJob extends Job {
 
                 for (int i = 0; i < size; i++) {
                     ContentValues values = new ContentValues();
-                    Post postObj = posts.getListOfPosts().get(i);
+                    Post postObj = listOfPosts.get(i);
                     values.put(WebNewsContract.PostEntry._ID, postObj.getId());
                     values.put(WebNewsContract.PostEntry.ANCESTOR_IDS, postObj.getListOfAncestorIds().toString());
                     values.put(WebNewsContract.PostEntry.BODY, postObj.getBody());
@@ -86,6 +107,7 @@ public class LoadPostsJob extends Job {
 
                     date = dateTimeFormat.parseDateTime(postObj.getCreatedAt());
                     String finalDate;
+                    String verboseDate;
 
                     if (date.getYear() == c.get(Calendar.YEAR)) {
                         if (date.getDayOfYear() == c.get(Calendar.DAY_OF_YEAR)) {
@@ -96,7 +118,9 @@ public class LoadPostsJob extends Job {
                     } else {
                         finalDate = date.toString("MM/dd/yyyy", Locale.US);
                     }
+                    verboseDate = date.toString("MM/dd/yyyy", Locale.US) + " " + date.toString("HH:mm", Locale.US);
 
+                    values.put(WebNewsContract.PostEntry.DATE_VERBOSE,verboseDate);
                     values.put(WebNewsContract.PostEntry.CREATED_AT, finalDate);
                     values.put(WebNewsContract.PostEntry.RAW_DATE, postObj.getCreatedAt());
                     values.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, postObj.getFollowupNewsgroupId());
@@ -136,18 +160,21 @@ public class LoadPostsJob extends Job {
                 context.getContentResolver().bulkInsert(WebNewsContract.PostEntry.CONTENT_URI, postList);
                 EventBus.getDefault().post(new FinishLoadingEvent(true, null));
             }
-        } catch (RetrofitError e) {
-            if(e.getResponse().getStatus() == 401) {
-                invalidateAuthToken();
-                throw e;
-            }
+        } catch (ResponseException e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,null));
+            Log.e(TAG,e.getMessage());
+        } catch (IOException e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,null));
+            Log.e(TAG,e.getMessage());
+        } catch (Exception e) {
+            EventBus.getDefault().post(new FinishLoadingEvent(false,null));
+            Log.e(TAG,e.getMessage());
         }
-        EventBus.getDefault().post(new FinishLoadingEvent(true,null));
     }
 
     private void invalidateAuthToken() throws AuthenticatorException, OperationCanceledException, IOException {
         String authToken = AccountManager.get(context).blockingGetAuthToken(Utility.getAccount(context),WebNewsAccount.AUTHTOKEN_TYPE,false);
-        AccountManager.get(context).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE,authToken);
+        AccountManager.get(context).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE, authToken);
     }
 
     @Override
@@ -155,6 +182,6 @@ public class LoadPostsJob extends Job {
 
     @Override
     protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return throwable instanceof RetrofitError;
+        return false;
     }
 }

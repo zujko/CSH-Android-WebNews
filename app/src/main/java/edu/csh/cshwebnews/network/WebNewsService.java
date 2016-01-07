@@ -7,17 +7,18 @@
 
 package edu.csh.cshwebnews.network;
 
+import com.squareup.okhttp.Response;
+
 import edu.csh.cshwebnews.models.AccessToken;
 import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.Post;
-import edu.csh.cshwebnews.models.requests.PostRequestBody;
 import edu.csh.cshwebnews.models.RetrievingPosts;
 import edu.csh.cshwebnews.models.User;
 import edu.csh.cshwebnews.models.requests.CancelPostRequestBody;
+import edu.csh.cshwebnews.models.requests.PostRequestBody;
 import edu.csh.cshwebnews.models.requests.StickyRequestBody;
 import edu.csh.cshwebnews.models.requests.UnreadRequestBody;
-import retrofit.Callback;
-import retrofit.client.Response;
+import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
@@ -33,42 +34,36 @@ public interface WebNewsService {
 
 
     @GET("/user")
-    void getUser(Callback<User> userCallback);
-
-    @GET("/user")
-    User blockingGetUser();
+    Call<User> getUser();
 
     @GET("/newsgroups")
-    void getNewsGroups(Callback<NewsGroups> newsGroupsCallback);
-
-    @GET("/newsgroups")
-    NewsGroups blockingGetNewsGroups();
+    Call<NewsGroups> getNewsGroups();
 
     @GET("/posts/{id}")
-    void getSinglePost(@Path("id") String id,
-                 @Query("as_thread") Boolean asThread,
-                       Callback<Post> postCallback);
+    Call<Post> getSinglePost(@Path("id") String id,
+                 @Query("as_thread") Boolean asThread);
 
     @GET("/posts")
-    void getPosts(@Query("as_meta") Boolean asMeta,
-                  @Query("as_threads") Boolean asThreads,
-                  @Query("authors") String authors,
-                  @Query("keywords") String keywords,
-                  @Query("keywords_match") String keywords_match,
-                  @Query("limit") Integer limit,
-                  @Query("min_unread_level") Integer minUnreadLevel,
-                  @Query("newsgroup_ids") String newsgroupIds,
-                  @Query("offset") Integer offset,
-                  @Query("only_roots") Boolean onlyRoots,
-                  @Query("only_starred") Boolean onlyStarred,
-                  @Query("only_sticky") Boolean onlySticky,
-                  @Query("reverse_order") Boolean reverseOrder,
-                  @Query("since") String sinceDate,
-                  @Query("until") String untilDate,
-                  Callback<RetrievingPosts> retrievingPostsCallback);
+    Call<RetrievingPosts> getPosts(@Query("as_meta") String asMeta,
+                                   @Query("as_threads") Boolean asThreads,
+                                   @Query("authors") String authors,
+                                   @Query("keywords") String keywords,
+                                   @Query("keywords_match") String keywords_match,
+                                   @Query("limit") String limit,
+                                   @Query("min_unread_level") String minUnreadLevel,
+                                   @Query("newsgroup_ids") String newsgroupIds,
+                                   @Query("offset") Integer offset,
+                                   @Query("only_roots") Boolean onlyRoots,
+                                   @Query("only_starred") Boolean onlyStarred,
+                                   @Query("only_sticky") Boolean onlySticky,
+                                   @Query("reverse_order") String reverseOrder,
+                                   @Query("since") String sinceDate,
+                                   @Query("until") String untilDate);
 
-    @GET("/posts")
-    RetrievingPosts blockingGetPosts(@Query("as_meta") String asMeta,
+
+    @GET("/posts/{id}")
+    RetrievingPosts blockingIdGetPosts(@Path("id") String id,
+                                       @Query("as_meta") String asMeta,
                                      @Query("as_threads") Boolean asThreads,
                                      @Query("authors") String authors,
                                      @Query("keywords") String keywords,
@@ -85,58 +80,37 @@ public interface WebNewsService {
                                      @Query("until") String untilDate);
 
     @POST("/posts")
-    void post(@Body PostRequestBody body,
-              Callback<Response> responseCallback);
+    Call<Response> post(@Body PostRequestBody body);
 
-    @POST("/posts")
-    Response blockingPost(@Body PostRequestBody body);
 
     @DELETE("/posts/{id}")
-    void deletePost(@Path("id") String id,
-                    @Body CancelPostRequestBody body,
-                    Callback<Response> responseCallback);
+    Call<Response> deletePost(@Path("id") String id,
+                    @Body CancelPostRequestBody body);
 
     @DELETE("/unreads")
-    void markPostRead(@Body UnreadRequestBody body,
-                      Callback<Response> responseCallback);
+    Call<Response> markPostRead(@Query("post_ids") String body);
 
     @POST("/unreads")
-    void markPostUnread(@Body UnreadRequestBody body,
-                        Callback<Response> responseCallback);
+    Call<Response> markPostUnread(@Body UnreadRequestBody body);
 
     @POST("/posts/{id}/star")
-    void starPost(@Path("id") String id,
-                  Callback<Response> responseCallback);
+    Call<Response> starPost(@Path("id") String id);
 
     @DELETE("/posts/{id}/star")
-    void unstarPost(@Path("id") String id,
-                    Callback<Response> responseCallback);
+    Call<Response> unstarPost(@Path("id") String id);
 
     @PATCH("/posts/{id}/sticky")
-    void stickyPost(@Path("id") String id,
-                    @Body StickyRequestBody body,
-                    Callback<Response> responseCallback);
+    Call<Response> stickyPost(@Path("id") String id,
+                    @Body StickyRequestBody body);
 
     @POST("/oauth/token")
-    void getAccessToken(@Query("grant_type") String grantType,
+    Call<AccessToken> getAccessToken(@Query("grant_type") String grantType,
                                @Query("code") String code,
                                @Query("redirect_uri") String redirectUri,
                                @Query("client_id") String clientId,
-                               @Query("client_secret") String clientSecret,
-                               Callback<AccessToken> accessTokenCallback);
-    @POST("/oauth/token")
-    AccessToken blockingGetAccessToken(@Query("grant_type") String grantType,
-                        @Query("code") String code,
-                        @Query("redirect_uri") String redirectUri,
-                        @Query("client_id") String clientId,
-                        @Query("client_secret") String clientSecret);
+                               @Query("client_secret") String clientSecret);
 
     @POST("/oauth/token")
-    void refreshAccessToken(@Query("grant_type") String grantType,
-                            @Query("refresh_token") String refreshToken,
-                            Callback<AccessToken> accessTokenCallback);
-
-    @POST("/oauth/token")
-    AccessToken blockingRefreshAccessToken(@Query("grant_type") String grantType,
-                                           @Query("refresh_token") String refreshToken);
+    Call<AccessToken> refreshAccessToken(@Query("grant_type") String grantType,
+                            @Query("refresh_token") String refreshToken);
 }

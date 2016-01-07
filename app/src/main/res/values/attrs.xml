@@ -12,6 +12,7 @@
     <attr name="down_arrow_icon" format="reference"/>
     <attr name="divider_color" format="reference"/>
     <attr name="inactive_color" format="reference"/>
+    <attr name="more_icon" format="reference"/>
 
     <declare-styleable name="ScrimInsetsView">
         <attr name="insetForegroundNotificationBar" format="reference|color" />

@@ -32,7 +32,7 @@ import edu.csh.cshwebnews.models.NewsGroups;
 import edu.csh.cshwebnews.models.Post;
 import edu.csh.cshwebnews.models.RetrievingPosts;
 import edu.csh.cshwebnews.models.WebNewsAccount;
-import retrofit.RetrofitError;
+import retrofit.Response;
 
 public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -50,12 +50,12 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             if(extras.getBoolean("get_posts",true)) {
-                RetrievingPosts posts = Utility.webNewsService.blockingGetPosts("false", //as_meta
+                Response<RetrievingPosts> postsResponse = Utility.webNewsService.getPosts("false", //as_meta
                         extras.getBoolean("as_threads"), //as_threads
                         null, //authors
                         null, //keywords
                         null, //keywords_match
-                        "20",//limit
+                        "20", //limit
                         null, //min_unread_level
                         extras.getString("newsgroup_id"), //newsGroupId
                         extras.getInt("offset"), //offset
@@ -65,7 +65,18 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                         "false", //reverse_order
                         null, //since
                         extras.getString("until") //until
-                );
+                ).execute();
+
+                if(!postsResponse.isSuccess()) {
+                    EventBus.getDefault().post(new FinishLoadingEvent(false,postsResponse.errorBody().toString()));
+                    if(postsResponse.code() == 401) {
+                        AccountManager.get(getContext()).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE,authToken);
+                    }
+                    throw new Exception();
+                }
+
+                RetrievingPosts posts = postsResponse.body();
+
                 List<ContentValues> postList = new ArrayList<ContentValues>(posts.getListOfPosts().size());
 
                 Calendar c = Calendar.getInstance();
@@ -86,6 +97,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
 
                     date = dateTimeFormat.parseDateTime(postObj.getCreatedAt());
                     String finalDate;
+                    String verboseDate;
 
                     if(date.getYear() == c.get(Calendar.YEAR)) {
                         if(date.getDayOfYear() == c.get(Calendar.DAY_OF_YEAR)) {
@@ -96,7 +108,9 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                     } else {
                         finalDate = date.toString("MM/dd/yyyy", Locale.US);
                     }
+                    verboseDate = date.toString("MM/dd/yyyy", Locale.US) + " " + date.toString("HH:mm", Locale.US);
 
+                    values.put(WebNewsContract.PostEntry.DATE_VERBOSE,verboseDate);
                     values.put(WebNewsContract.PostEntry.CREATED_AT, finalDate);
                     values.put(WebNewsContract.PostEntry.RAW_DATE, postObj.getCreatedAt());
                     values.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, postObj.getFollowupNewsgroupId());
@@ -141,7 +155,16 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             if(extras.getBoolean("get_newsgroups",true)) {
-                NewsGroups newsGroups = Utility.webNewsService.blockingGetNewsGroups();
+                Response<NewsGroups> newsGroupsResponse = Utility.webNewsService.getNewsGroups().execute();
+                if(!newsGroupsResponse.isSuccess()) {
+                    EventBus.getDefault().post(new FinishLoadingEvent(false,newsGroupsResponse.errorBody().toString()));
+                    if(newsGroupsResponse.code() == 401) {
+                        AccountManager.get(getContext()).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE,authToken);
+                    }
+                    throw new Exception();
+                }
+
+                NewsGroups newsGroups = newsGroupsResponse.body();
 
                 List<ContentValues> newsgroupList = new ArrayList<ContentValues>(newsGroups.getNewsGroupList().size());
 
@@ -171,13 +194,11 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             EventBus.getDefault().post(new FinishLoadingEvent(true,null));
         }
-        catch (RetrofitError e) {
-            EventBus.getDefault().post(new FinishLoadingEvent(false,e.getResponse().getReason()));
-            if(e.getResponse() != null && e.getResponse().getStatus() == 401){
-                AccountManager.get(getContext()).invalidateAuthToken(WebNewsAccount.ACCOUNT_TYPE,authToken);
-            }
-            Log.e("RETROFIT ERROR", "Response: " + e.getResponse()+"\n" +
-                                    "Message: " +e.getMessage() +"\n");
+        catch (IOException e) {
+            Log.e("SyncAdapter",e.getMessage());
+        }
+        catch (Exception e) {
+            Log.e("SyncAdapter","Failed to get posts");
         }
     }
 

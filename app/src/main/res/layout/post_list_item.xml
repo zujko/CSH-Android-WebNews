@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/post_author_image"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentTop="true"/>
+
+    <TextView
+        android:id="@+id/post_author_text"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/post_author_image"
+        android:layout_toLeftOf="@+id/post_date_text"
+        android:layout_alignTop="@id/post_author_image"/>
+
+    <TextView
+        android:id="@+id/post_summary_text"
+        android:textSize="14sp"
+        android:maxLines="3"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_author_text"
+        android:layout_toRightOf="@id/post_author_image"
+        android:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/post_date_text"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/post_author_image"
+        android:visibility="visible"/>
+
+    <!-- Expanded Items -->
+
+    <ImageView
+        android:src="@drawable/ic_star_border_light"
+        android:id="@+id/post_head_star_image"
+        android:layout_width="40dp"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/post_author_image"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:src="@drawable/ic_reply_light"
+        android:id="@+id/post_head_reply_image"
+        android:layout_width="40dp"
+        android:layout_height="35dp"
+        android:layout_toLeftOf="@id/post_head_star_image"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/post_head_newsgroup_text"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_author_text"
+        android:layout_toRightOf="@id/post_author_image"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/post_head_full_date_text"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_head_newsgroup_text"
+        android:layout_toRightOf="@id/post_author_image"
+        android:visibility="gone"/>
+    <TextView
+        android:text="View headers"
+        android:textColor="@color/blue"
+        android:clickable="true"
+        android:id="@+id/post_head_view_headers_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_head_full_date_text"
+        android:layout_toRightOf="@id/post_author_image"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/post_head_headers_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_head_view_headers_text"
+        android:visibility="gone"/>
+    <com.klinker.android.link_builder.LinkConsumableTextView
+        android:textColor="@color/black"
+        android:id="@+id/post_body_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_head_headers_text"
+        android:paddingTop="8dp"
+        android:visibility="gone"/>
+
+</RelativeLayout>

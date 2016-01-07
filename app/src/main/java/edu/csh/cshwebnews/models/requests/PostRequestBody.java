@@ -5,12 +5,12 @@ public class PostRequestBody {
     final String subject;
     final String newsgroup_ids;
     final String body;
-    final Integer parent_id;
-    final Integer followup_newsgroup_id;
+    final String parent_id;
+    final String followup_newsgroup_id;
     final String posting_host;
 
 
-    public PostRequestBody(String subject, String newsgroupIds, String body, Integer parentId, Integer followupId, String postingHost) {
+    public PostRequestBody(String subject, String newsgroupIds, String body, String parentId, String followupId, String postingHost) {
         this.subject = subject;
         this.newsgroup_ids = newsgroupIds;
         this.body = body;
