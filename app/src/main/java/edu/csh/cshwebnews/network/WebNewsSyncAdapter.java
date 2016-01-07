@@ -97,6 +97,7 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
 
                     date = dateTimeFormat.parseDateTime(postObj.getCreatedAt());
                     String finalDate;
+                    String verboseDate;
 
                     if(date.getYear() == c.get(Calendar.YEAR)) {
                         if(date.getDayOfYear() == c.get(Calendar.DAY_OF_YEAR)) {
@@ -107,7 +108,9 @@ public class WebNewsSyncAdapter extends AbstractThreadedSyncAdapter {
                     } else {
                         finalDate = date.toString("MM/dd/yyyy", Locale.US);
                     }
+                    verboseDate = date.toString("MM/dd/yyyy", Locale.US) + " " + date.toString("HH:mm", Locale.US);
 
+                    values.put(WebNewsContract.PostEntry.DATE_VERBOSE,verboseDate);
                     values.put(WebNewsContract.PostEntry.CREATED_AT, finalDate);
                     values.put(WebNewsContract.PostEntry.RAW_DATE, postObj.getCreatedAt());
                     values.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, postObj.getFollowupNewsgroupId());

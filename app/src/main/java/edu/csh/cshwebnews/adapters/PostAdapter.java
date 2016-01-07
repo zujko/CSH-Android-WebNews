@@ -101,9 +101,9 @@ public class PostAdapter extends CursorAdapter {
         context.getTheme().resolveAttribute(R.attr.more_icon, typedValue, true);
         viewHolder.mMoreImage.setImageResource(typedValue.resourceId);
 
-        viewHolder.mNewsgroupText.setText(cursor.getString(WebNewsContract.COL_NEWSGROUP_IDS));
+        viewHolder.mNewsgroupText.setText(cursor.getString(WebNewsContract.COL_NEWSGROUP_IDS).replaceAll("\\[|\\]", ""));
         //TODO Fix this date to be more readable
-        viewHolder.mFullDateText.setText(cursor.getString(WebNewsContract.COL_RAW_DATE));
+        viewHolder.mFullDateText.setText(cursor.getString(WebNewsContract.COL_DATE_VERBOSE));
         viewHolder.mHeadersText.setText(cursor.getString(WebNewsContract.COL_HEADERS));
         viewHolder.mBodyText.setText(cursor.getString(WebNewsContract.COL_BODY));
 
