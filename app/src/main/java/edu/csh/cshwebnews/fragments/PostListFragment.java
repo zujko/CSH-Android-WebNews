@@ -252,7 +252,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String unread = (String) view.getTag(R.string.unreadclass_tag);
-        if( unread != null && unread.equals("null")) {
+        if(unread != null) {
             WebNewsApplication.getJobManager().addJobInBackground(new ReadPostJob((String)view.getTag(R.string.postid_tag), getActivity()));
         }
 

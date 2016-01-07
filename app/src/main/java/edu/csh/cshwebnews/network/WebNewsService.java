@@ -22,6 +22,7 @@ import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
+import retrofit.http.HTTP;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -87,8 +88,8 @@ public interface WebNewsService {
     Call<Response> deletePost(@Path("id") String id,
                     @Body CancelPostRequestBody body);
 
-    @DELETE("/unreads")
-    Call<Response> markPostRead(@Query("post_ids") String body);
+    @HTTP(method = "DELETE", path = "/unreads", hasBody = true)
+    Call<Response> markPostRead(@Body UnreadRequestBody body);
 
     @POST("/unreads")
     Call<Response> markPostUnread(@Body UnreadRequestBody body);

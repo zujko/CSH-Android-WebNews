@@ -11,6 +11,7 @@ import com.path.android.jobqueue.RetryConstraint;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.models.JobPriority;
+import edu.csh.cshwebnews.models.requests.UnreadRequestBody;
 import retrofit.Response;
 
 public class ReadPostJob extends Job {
@@ -19,7 +20,7 @@ public class ReadPostJob extends Job {
     Context context;
 
     public ReadPostJob(String post, Context context) {
-        super(new Params(JobPriority.VERY_HIGH).requireNetwork());
+        super(new Params(JobPriority.VERY_HIGH).requireNetwork().persist());
         this.post = post;
         this.context = context;
     }
@@ -31,7 +32,7 @@ public class ReadPostJob extends Job {
 
     @Override
     public void onRun() throws Throwable {
-        Response<com.squareup.okhttp.Response> response = Utility.webNewsService.markPostRead(post).execute();
+        Response<com.squareup.okhttp.Response> response = Utility.webNewsService.markPostRead(new UnreadRequestBody(post)).execute();
         if (response.isSuccess()) {
             Log.d("READ POST","SUCCESS");
             updateDB();
