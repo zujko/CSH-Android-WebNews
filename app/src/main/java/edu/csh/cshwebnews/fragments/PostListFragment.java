@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.squareup.picasso.Picasso;
@@ -27,14 +28,16 @@ import edu.csh.cshwebnews.R;
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.WebNewsApplication;
 import edu.csh.cshwebnews.activities.NewPostActivity;
+import edu.csh.cshwebnews.activities.PostActivity;
 import edu.csh.cshwebnews.adapters.PostListAdapter;
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.events.FinishLoadingEvent;
 import edu.csh.cshwebnews.jobs.LoadPostsJob;
+import edu.csh.cshwebnews.jobs.ReadPostJob;
 import edu.csh.cshwebnews.network.WebNewsSyncAdapter;
 
 
-public class PostListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AbsListView.OnScrollListener {
+public class PostListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AbsListView.OnScrollListener, AdapterView.OnItemClickListener {
 
     @Bind(R.id.fab) FloatingActionButton floatingActionButton;
     @Bind(R.id.listview) ListView mListView;
@@ -82,6 +85,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         mListView.addFooterView(mProgressBarLayout);
         mListView.setOnScrollListener(this);
         mListView.setAdapter(mListAdapter);
+        mListView.setOnItemClickListener(this);
 
         getLoaderManager().initLoader(POST_LOADER, getArguments(), this);
         return rootView;
@@ -104,7 +108,9 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("state", mListView.onSaveInstanceState());
+        if(mListView != null) {
+            outState.putParcelable("state", mListView.onSaveInstanceState());
+        }
     }
 
     @Override
@@ -151,7 +157,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mListAdapter.swapCursor(data);
-        if(instanceState != null) {
+        if(instanceState != null && instanceState.getParcelable("state") != null) {
             mListView.onRestoreInstanceState(instanceState.getParcelable("state"));
         }
         instanceState = null;
@@ -187,7 +193,7 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(Utility.isNetworkConnected(getActivity())) {
+                if (Utility.isNetworkConnected(getActivity())) {
                     WebNewsSyncAdapter.syncImmediately(getActivity(), getArguments());
                 } else {
                     noNetworkSnackbar(rootView);
@@ -242,4 +248,31 @@ public class PostListFragment extends Fragment implements LoaderManager.LoaderCa
             swipeContainer.setRefreshing(false);
         }
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        String unread = (String) view.getTag(R.string.unreadclass_tag);
+        if( unread != null && unread.equals("null")) {
+            WebNewsApplication.getJobManager().addJobInBackground(new ReadPostJob((String)view.getTag(R.string.postid_tag), getActivity()));
+        }
+
+        Bundle bundle = new Bundle();
+        bundle.putString("id", (String) view.getTag(R.string.postid_tag));
+        bundle.putString("subject",(String)view.getTag(R.string.subjecttext_tag));
+        bundle.putString("body",(String)view.getTag(R.string.bodytext_tag));
+        bundle.putString("image_url",(String)view.getTag(R.string.authorurl_tag));
+        bundle.putString("simple_date",(String)view.getTag(R.string.simpledate_tag));
+        bundle.putString("newsgroup",getArguments().getString("newsgroup"));
+        bundle.putString("author_name", (String) view.getTag(R.string.authorname_tag));
+        bundle.putBoolean("as_threads",true);
+        bundle.putBoolean("load_with_id", true);
+
+        WebNewsApplication.getJobManager().addJobInBackground(new LoadPostsJob(bundle, getActivity()));
+
+        Intent intent = new Intent(getActivity(), PostActivity.class);
+        intent.putExtra("bundle",bundle);
+        startActivity(intent);
+    }
+
+
 }

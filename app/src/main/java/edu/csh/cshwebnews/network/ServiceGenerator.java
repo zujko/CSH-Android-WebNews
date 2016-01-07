@@ -1,5 +1,6 @@
 package edu.csh.cshwebnews.network;
 
+import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -17,7 +18,6 @@ public class ServiceGenerator {
 
         /* Add a StethoInterceptor for debugging */
         OkHttpClient okHttpClient = new OkHttpClient();
-
         //Non OAuth request, add headers
         if (accessToken != null && tokenType != null) {
             okHttpClient.networkInterceptors().add(new Interceptor() {
@@ -34,6 +34,8 @@ public class ServiceGenerator {
                 }
             });
         }
+
+        okHttpClient.networkInterceptors().add(new StethoInterceptor());
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)

@@ -7,6 +7,11 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+
 import edu.csh.cshwebnews.database.WebNewsContract;
 import edu.csh.cshwebnews.network.WebNewsService;
 
@@ -36,6 +41,8 @@ public class Utility {
 
     public static String clientId;
     public static String clientSecret;
+
+    public static HashMap<String,Boolean> expandedStates;
 
     /**
      * Checks if the device is connected to a network
@@ -71,5 +78,32 @@ public class Utility {
             }
         }
         return 0;
+    }
+
+    /**
+     * Returns a formatted body string with > appended to the start of each line.
+     * @param author
+     * @param replyBody
+     * @return
+     */
+    public static String replyBody(String author, String replyBody) {
+        StringBuilder body = new StringBuilder();
+        body.append(author);
+        body.append(" wrote:\n\n");
+
+        BufferedReader bufReader = new BufferedReader(new StringReader(replyBody));
+
+        String line;
+        try {
+            while( (line=bufReader.readLine()) != null ) {
+                body.append(">");
+                body.append(line);
+                body.append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        body.append("\n");
+        return body.toString();
     }
 }

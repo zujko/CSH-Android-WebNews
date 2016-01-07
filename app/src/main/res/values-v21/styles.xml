@@ -22,6 +22,7 @@
         <item name="down_arrow_icon">@drawable/ic_arrow_down_light_active</item>
         <item name="divider_color">@color/divider_light</item>
         <item name="inactive_color">@color/primary_text_disabled_material_light</item>
+        <item name="more_icon">@drawable/ic_more_light</item>
     </style>
 
     <style name="CSHThemeDark" parent="Theme.AppCompat.NoActionBar">
@@ -45,6 +46,7 @@
         <item name="down_arrow_icon">@drawable/ic_arrow_down_dark_active</item>
         <item name="divider_color">@color/divider_dark</item>
         <item name="inactive_color">@color/primary_text_disabled_material_dark</item>
+        <item name="more_icon">@drawable/ic_more_dark</item>
     </style>
 
     <style name="ToolBar" parent="Theme.AppCompat.NoActionBar">

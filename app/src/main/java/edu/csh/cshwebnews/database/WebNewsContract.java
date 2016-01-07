@@ -39,7 +39,8 @@ public class WebNewsContract {
             PostEntry.AUTHOR_AVATAR_URL,
             PostEntry.RAW_DATE,
             PostEntry.BODY_SUMMARY,
-            PostEntry.UNREAD_CLASS
+            PostEntry.UNREAD_CLASS,
+            PostEntry.DATE_VERBOSE
     };
     public static final int COL_ID = 0;
     public static final int COL_BODY = 1;
@@ -62,6 +63,7 @@ public class WebNewsContract {
     public static final int COL_RAW_DATE = 18;
     public static final int COL_BODY_SUMMARY = 19;
     public static final int COL_UNREAD_CLASS = 20;
+    public static final int COL_DATE_VERBOSE = 21;
 
     public static final int USER_COL_ID = 0;
     public static final int USER_COL_USERNAME = 1;
@@ -175,6 +177,8 @@ public class WebNewsContract {
         public static final String BODY_SUMMARY     = "body_summary";
 
         public static final String RAW_DATE         = "raw_date";
+
+        public static final String DATE_VERBOSE     = "date_verbose";
 
         public static Uri buildPostsUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI,id);

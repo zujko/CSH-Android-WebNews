@@ -17,6 +17,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import de.greenrobot.event.EventBus;
@@ -75,6 +76,14 @@ public class LoadPostsJob extends Job {
             RetrievingPosts posts = postsResponse.body();
 
             int size = posts.getListOfPosts().size();
+            List<Post> listOfPosts = posts.getListOfPosts();
+            if(args.getBoolean("as_threads")) {
+                if(listOfPosts == null) {
+                    listOfPosts = posts.getListOfDescendants();
+                } else {
+                    listOfPosts.addAll(posts.getListOfDescendants());
+                }
+            }
 
             if (size > 0) {
                 ContentValues[] postList = new ContentValues[size];
@@ -85,7 +94,7 @@ public class LoadPostsJob extends Job {
 
                 for (int i = 0; i < size; i++) {
                     ContentValues values = new ContentValues();
-                    Post postObj = posts.getListOfPosts().get(i);
+                    Post postObj = listOfPosts.get(i);
                     values.put(WebNewsContract.PostEntry._ID, postObj.getId());
                     values.put(WebNewsContract.PostEntry.ANCESTOR_IDS, postObj.getListOfAncestorIds().toString());
                     values.put(WebNewsContract.PostEntry.BODY, postObj.getBody());
@@ -98,6 +107,7 @@ public class LoadPostsJob extends Job {
 
                     date = dateTimeFormat.parseDateTime(postObj.getCreatedAt());
                     String finalDate;
+                    String verboseDate;
 
                     if (date.getYear() == c.get(Calendar.YEAR)) {
                         if (date.getDayOfYear() == c.get(Calendar.DAY_OF_YEAR)) {
@@ -108,7 +118,9 @@ public class LoadPostsJob extends Job {
                     } else {
                         finalDate = date.toString("MM/dd/yyyy", Locale.US);
                     }
+                    verboseDate = date.toString("MM/dd/yyyy", Locale.US) + " " + date.toString("HH:mm", Locale.US);
 
+                    values.put(WebNewsContract.PostEntry.DATE_VERBOSE,verboseDate);
                     values.put(WebNewsContract.PostEntry.CREATED_AT, finalDate);
                     values.put(WebNewsContract.PostEntry.RAW_DATE, postObj.getCreatedAt());
                     values.put(WebNewsContract.PostEntry.FOLLOWUP_NEWSGROUP_ID, postObj.getFollowupNewsgroupId());

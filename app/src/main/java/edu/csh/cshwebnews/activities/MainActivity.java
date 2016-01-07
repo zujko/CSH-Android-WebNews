@@ -1,6 +1,5 @@
 package edu.csh.cshwebnews.activities;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,9 +52,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     ReadOnlyNewsgroupAdapter mReadOnlyAdapter;
     ScrimInsetsFrameLayout mInsetsFrameLayout;
     ActionBarDrawerToggle drawerToggle;
-    String newsgroupNameState;
+    private static String newsgroupNameState;
     Fragment currentFragment;
     MergeAdapter mergeAdapter;
+    private int iconState = 0;
     final int NEWSGROUP_LOADER = 0;
     final int READ_ONLY_NEWSGROUP_LOADER = 1;
 
@@ -107,9 +107,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("name",newsgroupNameState);
+        outState.putString("name", newsgroupNameState);
+        outState.putString("icon", String.valueOf(iconState));
         getSupportFragmentManager().putFragment(outState, "currentFragment", currentFragment);
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -161,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * Creates the merge adapter for the navigation drawer by combining all adapters and views
      */
     private void createMergeAdapter() {
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = getLayoutInflater();
 
         //Adds space between static items and the header
         mergeAdapter.addView(inflater.inflate(R.layout.space_layout, null));
@@ -226,28 +228,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         drawer.setStatusBarBackground(R.color.csh_pink_dark);
 
-        drawerToggle = new ActionBarDrawerToggle(this,drawer,toolBar,R.string.app_name,R.string.app_name) {
-
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                //Disables hamburger icon animation
-                if(drawerView != null){
-                    super.onDrawerSlide(drawerView, 0);
-                } else {
-                    super.onDrawerSlide(drawerView, slideOffset);
-                }
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-        };
+        drawerToggle = new ActionBarDrawerToggle(this,drawer,toolBar,R.string.app_name,R.string.app_name);
         drawer.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
     }
@@ -333,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 } else {
                     currentFragment = new PostListFragment();
                     Bundle args = createFragmentBundle(title);
+                    args.putString("newsgroup", title);
                     currentFragment.setArguments(args);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frag_container, currentFragment).commit();
                 }
