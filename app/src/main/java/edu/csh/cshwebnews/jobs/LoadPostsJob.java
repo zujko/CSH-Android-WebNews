@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
+import com.path.android.jobqueue.RetryConstraint;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -181,7 +182,9 @@ public class LoadPostsJob extends Job {
     protected void onCancel() {}
 
     @Override
-    protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return false;
+    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
+                                                     int maxRunCount) {
+        return RetryConstraint.createExponentialBackoff(runCount, 1000);
     }
+
 }

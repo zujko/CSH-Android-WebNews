@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
+import com.path.android.jobqueue.RetryConstraint;
 
 import edu.csh.cshwebnews.Utility;
 import edu.csh.cshwebnews.database.WebNewsContract;
@@ -45,9 +46,11 @@ public class ReadPostJob extends Job {
     }
 
     @Override
-    protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return false;
+    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
+                                                     int maxRunCount) {
+        return RetryConstraint.createExponentialBackoff(runCount, 1000);
     }
+
 
     private void updateDB() {
         ContentValues values = new ContentValues();

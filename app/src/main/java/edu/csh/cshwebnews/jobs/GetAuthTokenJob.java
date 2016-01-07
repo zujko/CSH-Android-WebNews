@@ -7,6 +7,7 @@ import android.content.Intent;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
+import com.path.android.jobqueue.RetryConstraint;
 
 import de.greenrobot.event.EventBus;
 import edu.csh.cshwebnews.Utility;
@@ -76,8 +77,9 @@ public class GetAuthTokenJob extends Job {
     protected void onCancel() {}
 
     @Override
-    protected boolean shouldReRunOnThrowable(Throwable throwable) {
-        return false;
+    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
+                                                     int maxRunCount) {
+        return RetryConstraint.createExponentialBackoff(runCount, 1000);
     }
 
     /**
