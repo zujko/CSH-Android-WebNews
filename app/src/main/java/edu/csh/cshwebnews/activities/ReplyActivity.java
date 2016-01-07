@@ -33,6 +33,7 @@ public class ReplyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reply);
+        overridePendingTransition(R.anim.activity_open_translate, R.anim.activity_close_scale);
         extras = getIntent();
         Log.d("ReplyActivity","ID EXTRA: "+extras.getStringExtra("id"));
 
@@ -76,6 +77,12 @@ public class ReplyActivity extends AppCompatActivity {
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(R.anim.activity_open_scale, R.anim.activity_close_translate);
     }
 
     @Override
