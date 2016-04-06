@@ -1,4 +1,4 @@
-# CSH-Android-WebNews
+# CSH-Android-WebNews [DEPRECATED]
 An app to access Computer Science House's internal newsgroup.
 
 ##License
